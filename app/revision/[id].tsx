@@ -67,9 +67,14 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
           {open === n.id
             ? n.children.map((c) => (
                 <View key={c.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm, borderWidth: 2, borderColor: color.line, borderRadius: radius.md, padding: space.md }}>
-                  <T v="body" style={{ flex: 1 }}>
-                    {c.title}
-                  </T>
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <T v="body">{c.title}</T>
+                    {c.fromProgramme ? (
+                      <T v="small" style={{ color: color.tealDark }}>
+                        Ajouté : au programme, pas dans ton cours
+                      </T>
+                    ) : null}
+                  </View>
                   <MasteryTag value={c.mastery} compact />
                 </View>
               ))
@@ -159,6 +164,7 @@ export default function RevisionScreen() {
                 <Pill icon="calendar" text={r.examDate ? `Interro ${whenLabel(r.examDate)}` : shortDate(r.createdAt)} />
                 <Pill icon="camera" text={`${r.photoCount} ${r.photoCount > 1 ? "pages" : "page"}`} />
                 {r.subject ? <Pill icon="bookmark" text={r.subject} /> : null}
+                {r.programme ? <Pill icon="school" text={`Programme : ${r.programme.chapter}`} /> : null}
               </View>
             </View>
           </View>

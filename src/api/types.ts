@@ -38,11 +38,13 @@ export interface RevisionCard {
   createdBy: "parent" | "enfant";
   photoCount: number;
   counts: { mastered: number; review: number; new: number };
+  programmeChapterId: string | null;
   progress: number;
 }
 
 export interface Sheet {
   notionId: string;
+  fromProgramme?: boolean;
   parentTitle: string;
   title: string;
   essentiel: string;
@@ -52,11 +54,12 @@ export interface Sheet {
   retenir: string;
 }
 
-export interface RevisionDetail extends Omit<RevisionCard, "counts"> {
+export interface RevisionDetail extends Omit<RevisionCard, "counts" | "programmeChapterId"> {
+  programme: { chapterId: string; chapter: string; subject: string; grade: string } | null;
   summary: string;
   questionCount: number;
   steps: { sheets: boolean; quizBest: number | null; examBest: number | null };
-  notions: { id: string; title: string; mastery: Mastery; children: { id: string; title: string; mastery: Mastery }[] }[];
+  notions: { id: string; title: string; mastery: Mastery; children: { id: string; title: string; mastery: Mastery; fromProgramme: boolean }[] }[];
   sheets: Sheet[];
 }
 
@@ -151,4 +154,19 @@ export interface Device {
 export interface UploadFile {
   data: string;
   mimeType: "image/jpeg" | "image/png" | "image/webp" | "application/pdf";
+}
+
+export interface ProgrammeChapter {
+  id: string;
+  title: string;
+  notions: string[];
+  revisions: { id: string; title: string; progress: number }[];
+  status: "todo" | "started" | "mastered";
+}
+
+export interface Programme {
+  available: boolean;
+  grade: string;
+  schoolYear: string;
+  subjects: { subject: string; source: string; verified: boolean; cycleWide: boolean; chapters: ProgrammeChapter[] }[];
 }

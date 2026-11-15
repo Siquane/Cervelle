@@ -163,6 +163,7 @@ export default function ParentHome() {
               ) : null}
 
               <View style={{ gap: space.md }}>
+                <Button tone="white" icon="school" label={`Programme de ${selected.grade || "l'année"}`} onPress={() => router.push({ pathname: "/programme", params: { lid: selected.id } })} />
                 <Button tone="white" icon="document-text" label="Interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid: selected.id } })} />
                 <Button tone="white" icon="game-controller" label={`Ouvrir l'espace de ${selected.name}`} onPress={() => router.push({ pathname: "/child", params: { lid: selected.id } })} />
               </View>

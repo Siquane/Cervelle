@@ -163,6 +163,7 @@ export default function ChildHome() {
           </View>
           <Mascot size={86} accessories={["lunettes"]} />
         </Card>
+        <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />
         <Button tone="white" icon="document-text" label="Mes interros analysées" onPress={() => router.push({ pathname: "/exam", params: { lid } })} />
       </ScrollView>
 

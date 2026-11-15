@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
+import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../src/api/client";
 import { learnerPath, useRefreshLearner, useRevision } from "../../src/api/hooks";
 import type { SessionResult } from "../../src/api/types";
@@ -51,6 +52,14 @@ export default function Sheets() {
         <T v="label">{s.parentTitle}</T>
         <T v="h2">{s.title}</T>
       </View>
+      {s.fromProgramme ? (
+        <View style={{ flexDirection: "row", gap: space.sm, alignItems: "center", backgroundColor: color.tealSoft, borderRadius: radius.md, padding: space.md }}>
+          <Ionicons name="school" size={20} color={color.tealDark} />
+          <T v="small" style={{ flex: 1, color: color.tealDark }}>
+            Cette fiche n'était pas dans ton cours, mais elle est au programme de ta classe.
+          </T>
+        </View>
+      ) : null}
       <Card style={{ backgroundColor: color.skySoft, borderColor: color.skySoft }}>
         <T v="bodyBold">{s.essentiel}</T>
       </Card>

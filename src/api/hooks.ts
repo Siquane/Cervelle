@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-import type { Device, ExamReview, Home, Learner, Overview, RevisionCard, RevisionDetail, ShopItem } from "./types";
+import type { Device, ExamReview, Home, Learner, Overview, Programme, RevisionCard, RevisionDetail, ShopItem } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -18,7 +18,10 @@ export const keys = {
   exams: (lid: string) => ["exams", lid] as const,
   exam: (lid: string, id: string) => ["exam", lid, id] as const,
   devices: (lid: string) => ["devices", lid] as const,
+  programme: (lid: string) => ["programme", lid] as const,
 };
+
+export const useProgramme = (lid: string) => useQuery({ queryKey: keys.programme(lid), queryFn: () => api.get<Programme>(`${L(lid)}/programme`) });
 
 export const useLearners = (enabled = true) =>
   useQuery({ queryKey: keys.learners, enabled, queryFn: () => api.get<{ learners: Learner[] }>("/cervelle/learners").then((r) => r.learners) });
@@ -66,7 +69,7 @@ export const useDevices = (lid: string) =>
 export function useRefreshLearner(lid: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners]) {
+    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid)]) {
       qc.invalidateQueries({ queryKey: k });
     }
   };

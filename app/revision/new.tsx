@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Image, Pressable, View } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../src/api/client";
@@ -15,10 +15,11 @@ import { color, radius, space } from "../../src/theme/tokens";
 
 export default function NewRevision() {
   const { lid } = useLid();
+  const params = useLocalSearchParams<{ subject?: string }>();
   const refresh = useRefreshLearner(lid);
   const [pages, setPages] = useState<PickedPage[]>([]);
   const [title, setTitle] = useState("");
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState(params.subject ?? "");
   const [examDate, setExamDate] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
 

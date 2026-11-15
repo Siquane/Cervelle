@@ -1,0 +1,58 @@
+name: EAS Update (Android)
+
+# Sends JavaScript changes to the installed APKs without a new build. Runs on
+# every push to main, or by hand. Skipped when package.json or app.json
+# changed without a new runtimeVersion (native change: build a new APK).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: eas-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Native changes without a new runtimeVersion?
+        id: guard
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE:app.json" 2>/dev/null; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          changed=$(git diff --name-only "$BEFORE" "$AFTER" -- package.json app.json)
+          old_rt=$(git show "$BEFORE:app.json" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).expo.runtimeVersion ?? ""))')
+          new_rt=$(node -p 'require("./app.json").expo.runtimeVersion')
+          if [ -n "$changed" ] && [ "$old_rt" = "$new_rt" ]; then
+            echo "::warning::$changed a changé sans nouveau runtimeVersion ($new_rt) : mise à jour non publiée. Augmentez runtimeVersion et compilez un nouvel APK."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - if: steps.guard.outputs.skip != 'true'
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - if: steps.guard.outputs.skip != 'true'
+        run: npm install --legacy-peer-deps
+      - if: steps.guard.outputs.skip != 'true'
+        run: eas init --non-interactive --force && node scripts/configure-updates.js
+      - if: steps.guard.outputs.skip != 'true'
+        env:
+          EXPO_PUBLIC_API_URL: https://appli-planning-familial-0lyd.onrender.com
+        run: eas update --channel preview --non-interactive --message "${{ github.event.head_commit.message || 'Mise à jour manuelle' }}"

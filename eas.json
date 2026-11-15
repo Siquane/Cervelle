@@ -1,0 +1,15 @@
+{
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": { "EXPO_PUBLIC_API_URL": "https://appli-planning-familial-0lyd.onrender.com" },
+      "autoIncrement": true,
+      "channel": "preview"
+    }
+  }
+}

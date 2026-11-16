@@ -293,6 +293,7 @@ export default function ChildHome() {
         <Button tone="white" icon="chatbubbles" label="Poser une question" onPress={() => { setMenu(false); router.push({ pathname: "/assistant", params: { lid } }); }} />
         <Button tone="white" icon="journal" label="Journal de bord" onPress={() => { setMenu(false); router.push({ pathname: "/journal", params: { lid } }); }} />
         <Button tone="white" icon="bulb" label="Quel élève es-tu ?" onPress={() => { setMenu(false); router.push({ pathname: "/profil", params: { lid } }); }} />
+        <Button tone="white" icon="settings" label="Réglages" onPress={() => { setMenu(false); router.push("/reglages"); }} />
         {asParent ? null : (
           <Button tone="white" icon="log-out" label="Délier ce téléphone" onPress={async () => { setMenu(false); await signOut(); router.replace("/auth"); }} />
         )}

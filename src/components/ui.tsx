@@ -3,23 +3,36 @@ import { ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text a
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { color, font, GUTTER, radius, size, space } from "../theme/tokens";
+import { color, font, GUTTER, radius, reading, size, space } from "../theme/tokens";
+import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
 
 type Variant = "title" | "h2" | "h3" | "body" | "bodyBold" | "small" | "label";
 
-const textStyles: Record<Variant, TextStyle> = {
-  title: { fontFamily: font.title, fontSize: size.xxl, lineHeight: 40, color: color.ink },
-  h2: { fontFamily: font.title, fontSize: size.xl, lineHeight: 34, color: color.ink },
-  h3: { fontFamily: font.titleBold, fontSize: size.lg, lineHeight: 26, color: color.ink },
-  body: { fontFamily: font.text, fontSize: size.md, lineHeight: 24, color: color.ink },
-  bodyBold: { fontFamily: font.textBold, fontSize: size.md, lineHeight: 24, color: color.ink },
-  small: { fontFamily: font.textSemi, fontSize: size.sm, lineHeight: 20, color: color.muted },
-  label: { fontFamily: font.textBlack, fontSize: size.xs, lineHeight: 18, color: color.muted, letterSpacing: 0.6, textTransform: "uppercase" },
-};
+/** Calculé à l'affichage : la police peut changer (Réglages → Police pour la dyslexie). */
+function textStyle(v: Variant): TextStyle {
+  const k = reading.lineScale;
+  switch (v) {
+    case "title":
+      return { fontFamily: font.title, fontSize: size.xxl, lineHeight: 40, color: color.ink };
+    case "h2":
+      return { fontFamily: font.title, fontSize: size.xl, lineHeight: 34, color: color.ink };
+    case "h3":
+      return { fontFamily: font.titleBold, fontSize: size.lg, lineHeight: 26, color: color.ink };
+    case "body":
+      return { fontFamily: font.text, fontSize: size.md, lineHeight: Math.round(24 * k), color: color.ink };
+    case "bodyBold":
+      return { fontFamily: font.textBold, fontSize: size.md, lineHeight: Math.round(24 * k), color: color.ink };
+    case "small":
+      return { fontFamily: font.textSemi, fontSize: size.sm, lineHeight: Math.round(20 * k), color: color.muted };
+    case "label":
+      return { fontFamily: font.textBlack, fontSize: size.xs, lineHeight: Math.round(18 * k), color: color.muted, letterSpacing: 0.6, textTransform: "uppercase" };
+  }
+}
 
 export function T({ v = "body", style, ...rest }: TextProps & { v?: Variant; style?: StyleProp<TextStyle> }) {
-  return <RNText {...rest} style={[textStyles[v], style]} />;
+  useFontRefresh();
+  return <RNText {...rest} style={[textStyle(v), style]} />;
 }
 
 /** A page: safe area, scroll, side gutter. */
@@ -90,6 +103,7 @@ export function Button({
   style?: StyleProp<ViewStyle>;
   small?: boolean;
 }) {
+  useFontRefresh();
   const t = tones[tone];
   const off = disabled || loading;
   return (
@@ -109,7 +123,7 @@ export function Button({
       ) : (
         <>
           {icon === "coin" ? <Coin size={small ? 18 : 22} /> : icon ? <Ionicons name={icon} size={small ? 18 : 22} color={t.fg} /> : null}
-          <RNText style={[styles.btnText, small && { fontSize: size.sm }, { color: t.fg }]}>{label}</RNText>
+          <RNText style={[styles.btnText, { fontFamily: font.textBlack }, small && { fontSize: size.sm }, { color: t.fg }]}>{label}</RNText>
         </>
       )}
     </Pressable>
@@ -138,13 +152,14 @@ export function ProgressBar({ value, tint = color.brand, track = color.line, hei
 
 /** Two or more choices side by side (a child's name, a time range…). */
 export function Segmented<K extends string>({ options, value, onChange, tint = color.brand }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
+  useFontRefresh();
   return (
     <View style={styles.segment} accessibilityRole="tablist">
       {options.map((o) => {
         const on = o.key === value;
         return (
           <Pressable key={o.key} onPress={() => onChange(o.key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={[styles.segmentItem, on && { backgroundColor: tint }]}>
-            <RNText numberOfLines={1} style={[styles.segmentText, { color: on ? color.white : color.muted }]}>
+            <RNText numberOfLines={1} style={[styles.segmentText, { fontFamily: font.textBlack, color: on ? color.white : color.muted }]}>
               {o.label}
             </RNText>
           </Pressable>
@@ -187,9 +202,9 @@ export const styles = StyleSheet.create({
     gap: space.sm,
   },
   btnSmall: { minHeight: 44, paddingHorizontal: space.lg, borderRadius: radius.sm },
-  btnText: { fontFamily: font.textBlack, fontSize: size.md },
+  btnText: { fontSize: size.md },
   card: { backgroundColor: color.card, borderRadius: radius.lg, padding: space.lg, borderWidth: 2, borderColor: color.line },
   segment: { flexDirection: "row", backgroundColor: "#E8EBF3", borderRadius: radius.lg, padding: 5, gap: 5 },
   segmentItem: { flex: 1, minHeight: 46, borderRadius: radius.md, alignItems: "center", justifyContent: "center", paddingHorizontal: space.sm },
-  segmentText: { fontFamily: font.textBlack, fontSize: size.md },
+  segmentText: { fontSize: size.md },
 });

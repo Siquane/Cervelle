@@ -1,6 +1,6 @@
 export type Level = "primaire" | "college" | "lycee" | "superieur" | "adulte";
 export type Mastery = "new" | "review" | "mastered";
-export type QuizMode = "qcm" | "cartes" | "interro" | "a_revoir";
+export type QuizMode = "qcm" | "cartes" | "interro" | "a_revoir" | "express";
 export type QuestionType = "qcm" | "vrai_faux" | "carte" | "courte" | "trous" | "ordre";
 
 export interface MascotLevel {

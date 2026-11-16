@@ -12,6 +12,7 @@ import { QuestionView, type Answer } from "../src/components/QuestionView";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { MODE_LABEL } from "../src/lib/format";
 import { useLid } from "../src/lib/lid";
+import { syncNotifications } from "../src/lib/notifications";
 import { color, font, space } from "../src/theme/tokens";
 
 function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
@@ -68,6 +69,8 @@ export default function Quiz() {
     onSuccess: (r) => {
       setSummary(r);
       refresh();
+      // Les notions « À revoir » ont changé : rappels recalculés (téléphone de l'enfant seulement).
+      void syncNotifications();
     },
   });
 

@@ -182,3 +182,10 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
   réinitialiser).
 - Côté Passerelle : fusionner `main` avant de pousser ; migrations datées
   après la dernière de `main` ; ne jamais redescendre `runtimeVersion`.
+
+## Play Store (test interne)
+
+- Profil EAS `production` (fichier `.aab`, version augmentée automatiquement, canal `preview`).
+- Workflow « EAS Build (Android APK / Play Store) » : `kind` = `apk` ou `play-store` ; l'`.aab` est joint au run (artefact `cervelle-play-store`).
+- Marche à suivre complète : `docs/play-store.md` (créer l'appli dans la Play Console, test interne, testeurs, installation sur un compte Family Link).
+- Non confirmé : un compte enfant supervisé par Family Link peut-il rejoindre un test interne ? Sinon : réglage « sources inconnues » dans Family Link.

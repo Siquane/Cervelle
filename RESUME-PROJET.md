@@ -189,3 +189,4 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
 - Workflow « EAS Build (Android APK / Play Store) » : `kind` = `apk` ou `play-store` ; l'`.aab` est joint au run (artefact `cervelle-play-store`).
 - Marche à suivre complète : `docs/play-store.md` (créer l'appli dans la Play Console, test interne, testeurs, installation sur un compte Family Link).
 - Non confirmé : un compte enfant supervisé par Family Link peut-il rejoindre un test interne ? Sinon : réglage « sources inconnues » dans Family Link.
+- Politique de confidentialité : `docs/politique-confidentialite.html`, publiée sur https://claude.ai/artifact/3XxwLUFfpgffLdoFg4aWcG (à rendre publique par l'utilisatrice, menu Partager). À republier si les données traitées changent.

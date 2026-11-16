@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cervelle · Confidentialité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F3F6FB; --surface: #FFFFFF; --line: #E3E6EF; --fg: #1F1A3D; --muted: #5E5B7C;
+    --brand: #FF5C8A; --brand-soft: #FFE3EC; --teal: #0B8A7E; --link: #C2305E;
+    --display: "Outfit", "Segoe UI", system-ui, sans-serif;
+    --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14112B; --surface: #1F1A3D; --line: #34305A; --fg: #F3F1FF; --muted: #B9B5D6;
+      --brand: #FF7AA0; --brand-soft: #3A2346; --teal: #3FD6C6; --link: #FF8FB1; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14112B; --surface: #1F1A3D; --line: #34305A; --fg: #F3F1FF; --muted: #B9B5D6;
+    --brand: #FF7AA0; --brand-soft: #3A2346; --teal: #3FD6C6; --link: #FF8FB1; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.65; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); }
+  header { display: grid; gap: 12px; margin-bottom: 36px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; letter-spacing: .14em; font-size: 13px; color: var(--muted); }
+  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(32px, 6vw, 46px); line-height: 1.1; margin: 0; text-wrap: balance; }
+  .meta { color: var(--muted); font-size: 14px; margin: 0; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+  @media (min-width: 900px) { .grid { grid-template-columns: 220px minmax(0, 1fr); } nav { position: sticky; top: 24px; align-self: start; } }
+  nav { font-size: 14px; }
+  nav p { margin: 0 0 8px; font-family: var(--display); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; color: var(--muted); }
+  nav ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+  nav a { color: var(--fg); text-decoration: none; }
+  nav a:hover, nav a:focus-visible { color: var(--link); text-decoration: underline; }
+  main { min-width: 0; max-width: 68ch; display: grid; gap: 34px; }
+  .summary { background: var(--brand-soft); border-radius: 18px; padding: 20px 22px; display: grid; gap: 8px; }
+  .summary h2 { margin: 0; font-size: 19px; }
+  section { display: grid; gap: 10px; scroll-margin-top: 24px; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 23px; line-height: 1.3; margin: 0; text-wrap: balance; }
+  h3 { font-family: var(--display); font-weight: 700; font-size: 17px; margin: 6px 0 0; }
+  p, li { margin: 0; }
+  ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  a { color: var(--link); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  strong { font-weight: 700; }
+  .note { color: var(--muted); font-size: 14px; }
+  .table { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 540px; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  th { font-family: var(--display); font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+  .contact { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .email { font-weight: 700; user-select: all; }
+  button.copy { font: inherit; font-size: 13px; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px 10px; cursor: pointer; }
+  button.copy:hover { border-color: var(--brand); }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg width="28" height="27" viewBox="8 26 190 150" aria-hidden="true"><path d="M 40 140 C 20 136 18 108 35 98 C 26 77 46 57 66 62 C 70 41 96 35 108 50 C 122 35 151 41 152 62 C 173 59 186 82 174 98 C 189 112 181 139 160 140 C 156 159 132 165 118 154 C 108 167 86 167 78 154 C 62 165 40 159 40 140 Z" fill="#FF8FB1" stroke="#1F1A3D" stroke-width="7" stroke-linejoin="round"/><ellipse cx="82" cy="105" rx="11" ry="14" fill="#1F1A3D"/><ellipse cx="122" cy="105" rx="11" ry="14" fill="#1F1A3D"/><circle cx="85" cy="100" r="4.5" fill="#fff"/><circle cx="125" cy="100" r="4.5" fill="#fff"/></svg>
+      CERVELLE
+    </div>
+    <h1>Politique de confidentialité</h1>
+    <p class="meta">Application mobile Cervelle (révisions scolaires) · En vigueur le 16 novembre 2026</p>
+  </header>
+
+  <div class="grid">
+    <nav aria-label="Sommaire">
+      <p>Sommaire</p>
+      <ol>
+        <li><a href="#responsable">Responsable</a></li>
+        <li><a href="#donnees">Données collectées</a></li>
+        <li><a href="#finalites">Finalités et bases légales</a></li>
+        <li><a href="#claude">Ce que reçoit Claude</a></li>
+        <li><a href="#enfants">Enfants et parents</a></li>
+        <li><a href="#amis">Amis</a></li>
+        <li><a href="#prestataires">Prestataires</a></li>
+        <li><a href="#transferts">Transferts hors UE</a></li>
+        <li><a href="#conservation">Durées de conservation</a></li>
+        <li><a href="#securite">Sécurité</a></li>
+        <li><a href="#droits">Vos droits</a></li>
+        <li><a href="#modifs">Modifications</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <div class="summary">
+        <h2>En bref</h2>
+        <ul>
+          <li>Cervelle aide un enfant à réviser ses cours. Elle est utilisée par une famille, sous le contrôle d'un parent.</li>
+          <li>Aucune publicité, aucune revente de données, aucun pistage publicitaire.</li>
+          <li>Pour préparer les fiches et les quiz, les photos des cours sont envoyées à Claude (Anthropic) <strong>sans le prénom de l'enfant</strong> : seulement son niveau scolaire.</li>
+          <li>C'est le parent qui crée le profil de l'enfant et qui connecte son téléphone avec un code.</li>
+          <li>Entre amis, les enfants ne partagent qu'un prénom, leur mascotte, un niveau et des minutes de travail, et seulement si un parent de <strong>chaque</strong> enfant a accepté. Ils ne peuvent pas s'écrire librement.</li>
+          <li>Le parent peut tout supprimer depuis l'application.</li>
+        </ul>
+      </div>
+
+      <section id="responsable">
+        <h2>1. Responsable du traitement</h2>
+        <p>Cervelle est éditée par Anaïs Guyon, qui décide de l'usage des données et en est responsable au sens du Règlement général sur la protection des données (RGPD). Cervelle utilise le même serveur et les mêmes comptes parents que l'application Passerelle, du même éditeur.</p>
+        <p>Contact pour toute question ou demande :</p>
+        <p class="contact"><span class="email" id="email">Siquane.lab@gmail.com</span> <button class="copy" type="button" data-copy="Siquane.lab@gmail.com">Copier l'adresse</button></p>
+      </section>
+
+      <section id="donnees">
+        <h2>2. Données collectées</h2>
+        <p>Cervelle ne collecte que ce que la famille saisit ou photographie, plus quelques données techniques nécessaires au service.</p>
+        <h3>Le compte parent</h3>
+        <ul>
+          <li>Adresse e-mail, prénom et mot de passe (enregistré sous forme chiffrée, jamais en clair). C'est le compte Passerelle du parent.</li>
+        </ul>
+        <h3>Le profil de l'enfant</h3>
+        <ul>
+          <li>Prénom, niveau scolaire et classe (par exemple « 5e »), couleur choisie.</li>
+          <li>Jeu : pièces, niveau de la mascotte, série de jours, accessoires achetés dans la boutique.</li>
+          <li>Facultatif : résultat du questionnaire « Quel élève es-tu ? », durées du minuteur.</li>
+        </ul>
+        <h3>Les révisions</h3>
+        <ul>
+          <li>Photos ou PDF des cours, et photos des interros corrigées. Ils peuvent contenir le nom de l'enfant ou de son école s'il est écrit sur la feuille : nous conseillons de photographier seulement le contenu du cours.</li>
+          <li>Ce que Cervelle en tire : titre, matière, notions, fiches, questions, chapitre du programme.</li>
+          <li>Les réponses de l'enfant aux quiz, ses résultats, le temps passé et la date de l'interro si elle est indiquée.</li>
+          <li>Les messages échangés avec l'assistant « Aide-moi à… ».</li>
+        </ul>
+        <h3>L'organisation</h3>
+        <ul>
+          <li>Agenda (emploi du temps, éventuellement lu sur une photo), liste de tâches, habitudes et leur suivi.</li>
+          <li>Journal : humeur du jour et quelques mots (ce que j'ai appris, ce dont je suis fier·e, ce qui était difficile).</li>
+        </ul>
+        <h3>Données techniques</h3>
+        <ul>
+          <li>Pour chaque téléphone d'enfant connecté : un jeton de connexion (enregistré sous forme chiffrée), un nom d'appareil, la date de dernière utilisation.</li>
+          <li>Si l'enfant accepte les notifications : un identifiant de notification, uniquement pour prévenir « Tes fiches sont prêtes ». Les rappels de révision sont programmés sur le téléphone lui-même.</li>
+          <li>Un compteur d'utilisation de Claude par famille, pour appliquer les limites quotidiennes.</li>
+        </ul>
+      </section>
+
+      <section id="finalites">
+        <h2>3. Finalités et bases légales</h2>
+        <div class="table">
+          <table>
+            <thead><tr><th>Ce que nous faisons</th><th>Base légale (RGPD)</th></tr></thead>
+            <tbody>
+              <tr><td>Fournir l'application : fiches, quiz, révisions espacées, agenda, jeu</td><td>Exécution du contrat avec le parent (art. 6.1.b)</td></tr>
+              <tr><td>Préparer les révisions et corriger les réponses avec Claude</td><td>Exécution du contrat (art. 6.1.b)</td></tr>
+              <tr><td>Relier deux enfants amis</td><td>Consentement d'un parent de chaque enfant (art. 6.1.a et 8)</td></tr>
+              <tr><td>Notification « Tes fiches sont prêtes »</td><td>Consentement donné sur le téléphone (art. 6.1.a)</td></tr>
+              <tr><td>Sécurité du service, limites quotidiennes d'utilisation</td><td>Intérêt légitime (art. 6.1.f)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="claude">
+        <h2>4. Ce que reçoit Claude</h2>
+        <p>Cervelle utilise Claude, un service d'intelligence artificielle d'Anthropic, pour :</p>
+        <ul>
+          <li>lire les photos d'un cours et en tirer des fiches et des questions ;</li>
+          <li>corriger une réponse tapée par l'enfant quand la correction automatique ne suffit pas ;</li>
+          <li>analyser une interro corrigée ;</li>
+          <li>répondre dans l'assistant « Aide-moi à… » ;</li>
+          <li>lire un emploi du temps photographié.</li>
+        </ul>
+        <p>Claude reçoit le contenu nécessaire (photos, question, réponse, messages) et le <strong>niveau scolaire</strong> de l'enfant. <strong>Aucun prénom, aucune adresse e-mail, aucun identifiant</strong> n'est transmis. Anthropic n'utilise pas ces données pour entraîner ses modèles.</p>
+      </section>
+
+      <section id="enfants">
+        <h2>5. Enfants et parents</h2>
+        <ul>
+          <li>Cervelle s'adresse aux enfants et adolescents, mais c'est le <strong>parent</strong> qui ouvre le compte, crée le profil de l'enfant et autorise chaque téléphone avec un code à usage unique.</li>
+          <li>Le parent voit les révisions, les résultats et les progrès de son enfant. Il peut retirer l'accès d'un téléphone et supprimer le profil à tout moment.</li>
+          <li>Aucune publicité n'est affichée, et aucune donnée n'est utilisée pour du marketing.</li>
+        </ul>
+      </section>
+
+      <section id="amis">
+        <h2>6. Amis</h2>
+        <ul>
+          <li>Un enfant peut proposer à un autre enfant de devenir amis avec un code. Le lien n'existe que si <strong>un parent de chaque enfant</strong> l'a accepté.</li>
+          <li>Les amis voient seulement : le prénom, la mascotte, le niveau et les minutes de travail de la semaine.</li>
+          <li>Ils ne peuvent pas s'écrire de messages libres : seulement des encouragements tout faits et des défis d'une semaine.</li>
+          <li>Les révisions, les notes, le journal et l'agenda ne sont jamais visibles par les amis.</li>
+        </ul>
+      </section>
+
+      <section id="prestataires">
+        <h2>7. Prestataires (sous-traitants)</h2>
+        <p>Cervelle s'appuie sur des prestataires qui traitent les données pour son compte, uniquement pour faire fonctionner le service :</p>
+        <div class="table">
+          <table>
+            <thead><tr><th>Prestataire</th><th>Rôle</th><th>Localisation</th></tr></thead>
+            <tbody>
+              <tr><td>Neon</td><td>Base de données</td><td>Union européenne (Francfort)</td></tr>
+              <tr><td>Render</td><td>Hébergement du serveur</td><td>Selon la région du service ; société américaine</td></tr>
+              <tr><td>Cloudflare (R2)</td><td>Stockage privé des photos de cours et d'interros</td><td>Société américaine</td></tr>
+              <tr><td>Anthropic</td><td>Fiches, quiz, corrections et assistant (Claude)</td><td>États-Unis</td></tr>
+              <tr><td>Expo</td><td>Mises à jour de l'application et envoi des notifications</td><td>États-Unis</td></tr>
+              <tr><td>Google (Firebase Cloud Messaging)</td><td>Acheminement des notifications sur Android</td><td>États-Unis</td></tr>
+              <tr><td>Brevo</td><td>E-mails de mot de passe oublié (compte parent)</td><td>France / Union européenne</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Les données ne sont jamais vendues ni utilisées à des fins publicitaires.</p>
+      </section>
+
+      <section id="transferts">
+        <h2>8. Transferts hors de l'Union européenne</h2>
+        <p>Certains prestataires sont établis aux États-Unis. Ces transferts sont encadrés par le cadre de protection des données UE–États-Unis (Data Privacy Framework) lorsque le prestataire y adhère, ou à défaut par les clauses contractuelles types de la Commission européenne.</p>
+      </section>
+
+      <section id="conservation">
+        <h2>9. Durées de conservation</h2>
+        <ul>
+          <li>Les données d'un enfant sont conservées tant que son profil existe.</li>
+          <li>Supprimer une révision efface aussi ses photos.</li>
+          <li>Supprimer le profil d'un enfant (espace parent) efface toutes ses données : révisions, photos, résultats, agenda, journal, liens d'amitié.</li>
+          <li>Supprimer le compte parent (dans Passerelle) efface tous les profils d'enfants de la famille.</li>
+          <li>Les codes de connexion expirent au bout de 15 minutes.</li>
+        </ul>
+      </section>
+
+      <section id="securite">
+        <h2>10. Sécurité</h2>
+        <ul>
+          <li>Connexions chiffrées (HTTPS) entre l'application et le serveur.</li>
+          <li>Mots de passe, codes et jetons de connexion enregistrés sous forme chiffrée.</li>
+          <li>Photos stockées dans un espace privé, accessibles seulement par des liens temporaires.</li>
+          <li>Un téléphone d'enfant n'accède qu'aux données de cet enfant.</li>
+        </ul>
+      </section>
+
+      <section id="droits">
+        <h2>11. Vos droits</h2>
+        <p>Vous pouvez accéder à vos données et à celles de votre enfant, les corriger, les supprimer, vous opposer à un traitement, retirer votre accord ou demander une copie (portabilité). La plupart de ces actions se font directement dans l'application ; pour le reste, écrivez à l'adresse ci-dessus. Nous répondons sous un mois.</p>
+        <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez saisir la CNIL (<a href="https://www.cnil.fr">cnil.fr</a>).</p>
+      </section>
+
+      <section id="modifs">
+        <h2>12. Modifications</h2>
+        <p>Cette politique peut évoluer avec l'application. La date en haut de page indique la dernière version. En cas de changement important, les parents en sont informés dans l'application.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer>Cervelle · Politique de confidentialité · 16 novembre 2026</footer>
+</div>
+<script>
+  document.querySelectorAll("button.copy").forEach((b) => {
+    b.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Copiée"; }
+      catch { const r = document.createRange(); r.selectNodeContents(document.getElementById("email")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Sélectionnée"; }
+      setTimeout(() => (b.textContent = "Copier l'adresse"), 2000);
+    });
+  });
+</script>
+</body>
+</html>

@@ -45,6 +45,7 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
         <Step done={r.steps.quizBest !== null} label="QCM" detail={r.steps.quizBest !== null ? `Meilleur score : ${r.steps.quizBest} %` : "10 questions rapides"} onPress={() => play("qcm")} />
         <Step done={r.steps.examBest !== null} label="Interro" detail={r.steps.examBest !== null ? `Meilleure note : ${Math.round(r.steps.examBest / 5)}/20` : "15 questions de tous types, notée sur 20"} onPress={() => play("interro")} />
         <Button tone="white" small icon="albums" label="Cartes mémoire" onPress={() => play("cartes")} style={{ marginTop: space.sm }} />
+        <Button tone="white" small icon="flash" label="Révision express · 6 questions" onPress={() => play("express")} />
       </Card>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>

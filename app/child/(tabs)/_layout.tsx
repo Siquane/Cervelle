@@ -7,6 +7,7 @@ import { api } from "../../../src/api/client";
 import { learnerPath, useFriends, useHome, useRefreshLearner } from "../../../src/api/hooks";
 import type { FocusResult } from "../../../src/api/types";
 import { useLid } from "../../../src/lib/lid";
+import { useChildNotifications } from "../../../src/lib/notifications";
 import { useTimer } from "../../../src/state/timer";
 import { color, font } from "../../../src/theme/tokens";
 
@@ -75,6 +76,7 @@ function useTimerWatcher(lid: string) {
 export default function ChildTabs() {
   const { lid } = useLid();
   useTimerWatcher(lid);
+  useChildNotifications(lid);
   const friends = useFriends(lid);
   const news = (friends.data?.cheers.length ?? 0) + (friends.data?.challenges.filter((c) => c.status === "pending" && !c.sentByMe).length ?? 0);
 

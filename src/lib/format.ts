@@ -48,6 +48,7 @@ export const MODE_LABEL: Record<string, string> = {
   cartes: "Cartes mémoire",
   interro: "Interro",
   a_revoir: "À revoir",
+  express: "Révision express",
   minuteur: "Minuteur",
 };
 

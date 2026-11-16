@@ -17,7 +17,7 @@ export function MasteryTag({ value, compact }: { value: Mastery; compact?: boole
   return (
     <View style={[s.tag, { backgroundColor: m.bg }]}>
       <Ionicons name={m.icon} size={compact ? 14 : 16} color={m.fg} />
-      <Text style={[s.tagText, { color: m.fg }, compact && { fontSize: size.xs }]}>{m.label}</Text>
+      <Text style={[s.tagText, { fontFamily: font.textBlack, color: m.fg }, compact && { fontSize: size.xs }]}>{m.label}</Text>
     </View>
   );
 }
@@ -76,17 +76,17 @@ export function Stat({ icon, value, tint, label }: { icon: keyof typeof Ionicons
   return (
     <View style={s.stat} accessibilityLabel={`${label} : ${value}`}>
       {icon === "coin" ? <Coin /> : <Ionicons name={icon} size={20} color={tint} />}
-      <Text style={s.statText}>{value}</Text>
+      <Text style={[s.statText, { fontFamily: font.textBlack }]}>{value}</Text>
     </View>
   );
 }
 
 const s = StyleSheet.create({
   tag: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill },
-  tagText: { fontFamily: font.textBlack, fontSize: size.sm },
+  tagText: { fontSize: size.sm },
   backdrop: { flex: 1, backgroundColor: "rgba(31,26,61,0.45)" },
   sheet: { backgroundColor: color.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 22, paddingBottom: 34, gap: space.lg },
   grabber: { alignSelf: "center", width: 44, height: 5, borderRadius: 3, backgroundColor: color.line },
   stat: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: color.card, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 2, borderColor: color.line },
-  statText: { fontFamily: font.textBlack, fontSize: size.md, color: color.ink },
+  statText: { fontSize: size.md, color: color.ink },
 });

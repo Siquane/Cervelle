@@ -43,14 +43,31 @@ export const learnerColor: Record<string, { main: string; dark: string; soft: st
 
 export const learnerColorOf = (c: string) => learnerColor[c] ?? learnerColor.violet;
 
-export const font = {
-  title: "Baloo2_800ExtraBold",
-  titleBold: "Baloo2_700Bold",
-  text: "Nunito_400Regular",
-  textSemi: "Nunito_600SemiBold",
-  textBold: "Nunito_700Bold",
-  textBlack: "Nunito_800ExtraBold",
-} as const;
+// Titres : Outfit. Texte : Atkinson Hyperlegible (lettres qu'on ne confond pas : l, I, 1).
+// Option « Police pour la dyslexie » (Réglages) : le texte passe en OpenDyslexic,
+// les titres restent en Outfit.
+const STANDARD = {
+  title: "Outfit_700Bold",
+  titleBold: "Outfit_600SemiBold",
+  text: "AtkinsonHyperlegible_400Regular",
+  textSemi: "AtkinsonHyperlegible_400Regular",
+  textBold: "AtkinsonHyperlegible_700Bold",
+  textBlack: "AtkinsonHyperlegible_700Bold",
+};
+
+const DYSLEXIA = { ...STANDARD, text: "OpenDyslexic", textSemi: "OpenDyslexic", textBold: "OpenDyslexic_Bold", textBlack: "OpenDyslexic_Bold" };
+
+/** Modifié sur place par applyReading : toujours lire `font.x` au moment de l'affichage. */
+export const font: Record<keyof typeof STANDARD, string> = { ...STANDARD };
+
+/** OpenDyslexic est haute : les lignes de texte ont besoin de plus de place. */
+export const reading = { dyslexia: false, lineScale: 1 };
+
+export function applyReading(dyslexia: boolean) {
+  Object.assign(font, dyslexia ? DYSLEXIA : STANDARD);
+  reading.dyslexia = dyslexia;
+  reading.lineScale = dyslexia ? 1.3 : 1;
+}
 
 export const size = { xs: 13, sm: 15, md: 17, lg: 20, xl: 26, xxl: 32 } as const;
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 22, xxl: 32 } as const;

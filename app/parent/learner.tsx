@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { api, errorMessage } from "../../src/api/client";
 import { useLearners, useQueryClient, keys } from "../../src/api/hooks";
 import type { Learner, Level } from "../../src/api/types";
@@ -32,6 +32,9 @@ export default function LearnerForm() {
   const [confirm, setConfirm] = useState(false);
   const qc = useQueryClient();
   const setLearner = useParentPrefs((s) => s.setLearner);
+  // Passerelle's family members, to link the profile (agenda synchronisation).
+  const members = useQuery({ queryKey: ["members"], queryFn: () => api.get<{ members: { id: string; name: string }[] }>("/members").then((r) => r.members) });
+  const [memberId, setMemberId] = useState<string | null>(null);
 
   useEffect(() => {
     if (existing) {
@@ -39,12 +42,13 @@ export default function LearnerForm() {
       setLevel(existing.level);
       setGrade(existing.grade);
       setTint(existing.color);
+      setMemberId(existing.memberId);
     }
   }, [existing]);
 
   const save = useMutation({
     mutationFn: () => {
-      const body = { name: name.trim(), level, grade: grade.trim(), color: tint };
+      const body = { name: name.trim(), level, grade: grade.trim(), color: tint, memberId };
       return id ? api.patch<{ learner: Learner }>(`/cervelle/learners/${id}`, body) : api.post<{ learner: Learner }>("/cervelle/learners", body);
     },
     onSuccess: (r) => {
@@ -92,6 +96,18 @@ export default function LearnerForm() {
           ))}
         </View>
       </View>
+      {members.data?.length ? (
+        <View style={{ gap: space.sm }}>
+          <T v="bodyBold">Membre de la famille dans Passerelle</T>
+          <T v="small">Pour synchroniser son agenda avec le planning familial, quand tu le demandes.</T>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
+            <Chip label="Aucun" on={!memberId} onPress={() => setMemberId(null)} />
+            {members.data.map((m) => (
+              <Chip key={m.id} label={m.name} on={memberId === m.id} onPress={() => setMemberId(m.id)} />
+            ))}
+          </View>
+        </View>
+      ) : null}
       {save.error ? <ErrorBox message={errorMessage(save.error)} /> : null}
       <Button label="Enregistrer" icon="checkmark" loading={save.isPending} disabled={!name.trim()} onPress={() => save.mutate()} />
       {id ? <Button tone="ghost" label="Supprimer ce profil" icon="trash" onPress={() => setConfirm(true)} /> : null}

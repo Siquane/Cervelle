@@ -48,6 +48,7 @@ export const MODE_LABEL: Record<string, string> = {
   cartes: "Cartes mémoire",
   interro: "Interro",
   a_revoir: "À revoir",
+  minuteur: "Minuteur",
 };
 
 /** Today in the phone's zone, « YYYY-MM-DD ». */

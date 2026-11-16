@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useLearners, useOverview } from "../../src/api/hooks";
+import { useMutation } from "@tanstack/react-query";
+import { api } from "../../src/api/client";
+import { keys, useFriendRequests, useLearners, useOverview, useQueryClient } from "../../src/api/hooks";
+import { LEVEL_LABEL } from "../../src/lib/format";
 import { errorMessage } from "../../src/api/client";
 import { MasteryTag } from "../../src/components/bits";
 import { BottomSheet } from "../../src/components/bits";
@@ -28,6 +31,13 @@ export default function ParentHome() {
     if (selected && selected.id !== learnerId) setLearner(selected.id);
   }, [selected, learnerId, setLearner]);
 
+  const requests = useFriendRequests();
+  const qc = useQueryClient();
+  const decide = useMutation({
+    mutationFn: (b: { id: string; yes: boolean }) => (b.yes ? api.post(`/cervelle/friend-requests/${b.id}/approve`) : api.delete(`/cervelle/friend-requests/${b.id}`)),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.friendRequests }),
+  });
+
   const tint = learnerColorOf(selected?.color ?? "violet");
   const o = overview.data;
 
@@ -43,6 +53,28 @@ export default function ParentHome() {
           </T>
         </Pressable>
       </View>
+
+      {requests.data?.length ? (
+        <Card style={{ gap: space.md, backgroundColor: color.sunSoft, borderColor: color.sun }}>
+          <T v="h3">Demandes d'amis</T>
+          <T v="small">Les amis voient seulement le prénom, la mascotte, le niveau et les minutes de travail de la semaine. Pas de messages libres.</T>
+          {requests.data.map((r) => (
+            <View key={r.id} style={{ gap: space.sm }}>
+              <T v="body">
+                {(() => {
+                  const other = `${r.other.name} (${[LEVEL_LABEL[r.other.level] ?? r.other.level, r.other.grade].filter(Boolean).join(", ")})`;
+                  const ask = r.outgoing ? `${r.child.name} veut devenir ami avec ${other}.` : `${other} veut devenir ami avec ${r.child.name}.`;
+                  return `${ask} ${r.otherApproved ? "L'autre famille a déjà dit oui." : "L'autre famille doit aussi dire oui."}`;
+                })()}
+              </T>
+              <View style={{ flexDirection: "row", gap: space.md }}>
+                <Button small tone="teal" icon="checkmark" label="Accepter" disabled={decide.isPending} onPress={() => decide.mutate({ id: r.id, yes: true })} style={{ flex: 1 }} />
+                <Button small tone="white" label="Refuser" disabled={decide.isPending} onPress={() => decide.mutate({ id: r.id, yes: false })} style={{ flex: 1 }} />
+              </View>
+            </View>
+          ))}
+        </Card>
+      ) : null}
 
       {learners.isLoading ? <Loading /> : null}
       {learners.error ? <ErrorBox message={errorMessage(learners.error)} onRetry={() => learners.refetch()} /> : null}
@@ -165,6 +197,10 @@ export default function ParentHome() {
               <View style={{ gap: space.md }}>
                 <Button tone="white" icon="school" label={`Programme de ${selected.grade || "l'année"}`} onPress={() => router.push({ pathname: "/programme", params: { lid: selected.id } })} />
                 <Button tone="white" icon="document-text" label="Interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid: selected.id } })} />
+                <Button tone="white" icon="calendar" label={`Agenda de ${selected.name}`} onPress={() => router.push({ pathname: "/child/agenda", params: { lid: selected.id } })} />
+                <Button tone="white" icon="checkbox" label="Tâches" onPress={() => router.push({ pathname: "/todos", params: { lid: selected.id } })} />
+                <Button tone="white" icon="repeat" label="Habitudes" onPress={() => router.push({ pathname: "/habits", params: { lid: selected.id } })} />
+                <Button tone="white" icon="journal" label="Journal de bord" onPress={() => router.push({ pathname: "/journal", params: { lid: selected.id } })} />
                 <Button tone="white" icon="game-controller" label={`Ouvrir l'espace de ${selected.name}`} onPress={() => router.push({ pathname: "/child", params: { lid: selected.id } })} />
               </View>
             </>

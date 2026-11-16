@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-import type { Device, ExamReview, Home, Learner, Overview, Programme, RevisionCard, RevisionDetail, ShopItem } from "./types";
+import type { Agenda, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, ShopItem, Stats, Todo } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -19,7 +19,23 @@ export const keys = {
   exam: (lid: string, id: string) => ["exam", lid, id] as const,
   devices: (lid: string) => ["devices", lid] as const,
   programme: (lid: string) => ["programme", lid] as const,
+  agenda: (lid: string) => ["agenda", lid] as const,
+  todos: (lid: string) => ["todos", lid] as const,
+  habits: (lid: string) => ["habits", lid] as const,
+  journal: (lid: string) => ["journal", lid] as const,
+  stats: (lid: string) => ["stats", lid] as const,
+  friends: (lid: string) => ["friends", lid] as const,
+  friendRequests: ["friendRequests"] as const,
 };
+
+export const useAgenda = (lid: string) => useQuery({ queryKey: keys.agenda(lid), queryFn: () => api.get<Agenda>(`${L(lid)}/agenda`) });
+export const useTodos = (lid: string) => useQuery({ queryKey: keys.todos(lid), queryFn: () => api.get<{ todos: Todo[] }>(`${L(lid)}/todos`).then((r) => r.todos) });
+export const useHabits = (lid: string) => useQuery({ queryKey: keys.habits(lid), queryFn: () => api.get<{ today: string; habits: Habit[] }>(`${L(lid)}/habits`) });
+export const useJournal = (lid: string) => useQuery({ queryKey: keys.journal(lid), queryFn: () => api.get<{ today: string; entries: JournalEntry[] }>(`${L(lid)}/journal`) });
+export const useStats = (lid: string) => useQuery({ queryKey: keys.stats(lid), queryFn: () => api.get<Stats>(`${L(lid)}/stats`) });
+export const useFriends = (lid: string) => useQuery({ queryKey: keys.friends(lid), queryFn: () => api.get<Friends>(`${L(lid)}/friends`), refetchInterval: 60_000 });
+export const useFriendRequests = (enabled = true) =>
+  useQuery({ queryKey: keys.friendRequests, enabled, queryFn: () => api.get<{ requests: FriendRequest[] }>("/cervelle/friend-requests").then((r) => r.requests) });
 
 export const useProgramme = (lid: string) => useQuery({ queryKey: keys.programme(lid), queryFn: () => api.get<Programme>(`${L(lid)}/programme`) });
 
@@ -69,7 +85,7 @@ export const useDevices = (lid: string) =>
 export function useRefreshLearner(lid: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid)]) {
+    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid)]) {
       qc.invalidateQueries({ queryKey: k });
     }
   };

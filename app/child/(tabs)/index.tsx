@@ -4,16 +4,21 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
-import { api, errorMessage } from "../../src/api/client";
-import { learnerPath, useHome, useRefreshLearner } from "../../src/api/hooks";
-import { BottomSheet, RevisionIcon, Stat } from "../../src/components/bits";
-import { Mascot } from "../../src/components/mascot/Mascot";
-import { RevisionRow } from "../../src/components/RevisionRow";
-import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../src/components/ui";
-import { whenLabel } from "../../src/lib/format";
-import { useLid } from "../../src/lib/lid";
-import { useSession } from "../../src/state/session";
-import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../src/theme/tokens";
+import { api, errorMessage } from "../../../src/api/client";
+import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useTodos } from "../../../src/api/hooks";
+import type { Reward, Todo } from "../../../src/api/types";
+import { Check, Section, celebrate } from "../../../src/components/organize";
+import { EVENT_KIND, itemsForDay } from "../../../src/lib/agenda";
+import { weekdayOf } from "../../../src/lib/dates";
+import { todayIso } from "../../../src/lib/format";
+import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
+import { Mascot } from "../../../src/components/mascot/Mascot";
+import { RevisionRow } from "../../../src/components/RevisionRow";
+import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
+import { whenLabel } from "../../../src/lib/format";
+import { useLid } from "../../../src/lib/lid";
+import { useSession } from "../../../src/state/session";
+import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../../src/theme/tokens";
 
 export default function ChildHome() {
   const { lid, asParent } = useLid();
@@ -22,11 +27,32 @@ export default function ChildHome() {
   const signOut = useSession((s) => s.signOut);
   const [ask, setAsk] = useState("");
   const [menu, setMenu] = useState(false);
+  const agenda = useAgenda(lid);
+  const todos = useTodos(lid);
+  const habits = useHabits(lid);
+  const qc = useQueryClient();
+  const afterReward = (r: Reward) => {
+    refresh();
+    qc.invalidateQueries({ queryKey: keys.todos(lid) });
+    qc.invalidateQueries({ queryKey: keys.habits(lid) });
+    celebrate(r);
+  };
+  const tick = useMutation({
+    mutationFn: (t: Todo) => api.patch<Reward>(`${learnerPath(lid)}/todos/${t.id}`, { done: !t.done }),
+    onSuccess: afterReward,
+    onError: (e) => Alert.alert("Tâche", errorMessage(e)),
+  });
+  const habitTick = useMutation({
+    mutationFn: (h: { id: string; on: boolean }) =>
+      h.on ? api.delete<Reward>(`${learnerPath(lid)}/habits/${h.id}/check?day=${habits.data?.today ?? todayIso()}`) : api.post<Reward>(`${learnerPath(lid)}/habits/${h.id}/check`, {}),
+    onSuccess: (r) => afterReward({ ...r, coins: r.coins ?? 0 }),
+    onError: (e) => Alert.alert("Habitude", errorMessage(e)),
+  });
   const chest = useMutation({
     mutationFn: () => api.post<{ coins: number }>(`${learnerPath(lid)}/chest`),
     onSuccess: (r) => {
       refresh();
-      Alert.alert("Coffre ouvert !", `+${r.coins} pièces. Bravo pour tes 3 missions !`);
+      Alert.alert("Coffre ouvert !", `+${r.coins} pièces. Bravo pour tes missions !`);
     },
     onError: (e) => Alert.alert("Coffre", errorMessage(e)),
   });
@@ -46,9 +72,15 @@ export default function ChildHome() {
   const ready = revisions.filter((r) => r.status === "ready");
   const nextExams = ready.filter((r) => r.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!));
   const featured = (nextExams.length ? nextExams : ready).slice(0, 4);
+  const today = habits.data?.today ?? todayIso();
+  const nowHHMM = new Date().toTimeString().slice(0, 5);
+  const todayItems = agenda.data ? itemsForDay(agenda.data.events, agenda.data.exams, today).filter((i) => i.end === null || i.end >= nowHHMM).slice(0, 3) : [];
+  const rank = (t: Todo) => (t.urgent && t.important ? 0 : t.important ? 1 : t.urgent ? 2 : 3);
+  const openTodos = (todos.data ?? []).filter((t) => !t.done).sort((a, b) => rank(a) - rank(b) || (a.dueDay ?? "9").localeCompare(b.dueDay ?? "9")).slice(0, 4);
+  const todayHabits = (habits.data?.habits ?? []).filter((h) => h.days.includes(weekdayOf(today)));
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={["top", "left", "right", "bottom"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={["top", "left", "right"]}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, paddingHorizontal: GUTTER, paddingTop: space.md }}>
         {asParent ? (
           <Pressable accessibilityRole="button" accessibilityLabel="Retour à l'espace parent" hitSlop={10} onPress={() => router.back()}>
@@ -97,7 +129,77 @@ export default function ChildHome() {
           {missions.chestOpened ? (
             <T v="small">Coffre ouvert aujourd'hui. Reviens demain pour de nouvelles missions !</T>
           ) : (
-            <Button tone="sun" icon="gift" label={missions.done === missions.total ? `Ouvrir le coffre (+${missions.chestCoins})` : "Coffre : termine les 3 missions"} disabled={missions.done < missions.total} loading={chest.isPending} onPress={() => chest.mutate()} />
+            <Button tone="sun" icon="gift" label={missions.done === missions.total ? `Ouvrir le coffre (+${missions.chestCoins})` : "Coffre : termine les missions"} disabled={missions.done < missions.total} loading={chest.isPending} onPress={() => chest.mutate()} />
+          )}
+        </Card>
+
+        <Card style={{ gap: space.md }}>
+          <Section title="Aujourd'hui" action="Agenda" onAction={() => router.navigate({ pathname: "/child/agenda", params: { lid } })} />
+          {todayItems.length === 0 ? (
+            <T v="small">{agenda.data?.events.length ? "Plus rien de prévu aujourd'hui." : "Ajoute ton emploi du temps dans l'onglet Agenda."}</T>
+          ) : (
+            todayItems.map((i) => {
+              const k = EVENT_KIND[i.type === "exam" ? "interro" : i.event.kind];
+              return (
+                <View key={i.key} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+                  <View style={{ width: 6, alignSelf: "stretch", borderRadius: 3, backgroundColor: k.main }} />
+                  <T v="bodyBold" style={{ width: 56, fontVariant: ["tabular-nums"] }}>
+                    {i.start ?? "Interro"}
+                  </T>
+                  <T v="body" numberOfLines={1} style={{ flex: 1 }}>
+                    {i.type === "exam" ? i.exam.title : i.event.title}
+                  </T>
+                </View>
+              );
+            })
+          )}
+        </Card>
+
+        <Card style={{ gap: space.md }}>
+          <Section title="Mes tâches" action="Tout voir" onAction={() => router.push({ pathname: "/todos", params: { lid } })} />
+          {openTodos.length === 0 ? (
+            <T v="small">Rien à faire ! Ajoute tes devoirs pour ne rien oublier.</T>
+          ) : (
+            openTodos.map((t) => (
+              <View key={t.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+                <Check on={t.done} label={t.title} onPress={() => tick.mutate(t)} />
+                <T v="body" numberOfLines={2} style={{ flex: 1 }}>
+                  {t.title}
+                </T>
+                {t.urgent && t.important ? <Ionicons name="flame" size={18} color={color.red} accessibilityLabel="Urgent et important" /> : null}
+              </View>
+            ))
+          )}
+          <Button small tone="white" icon="add" label="Ajouter une tâche" onPress={() => router.push({ pathname: "/todos", params: { lid, add: "1" } })} />
+        </Card>
+
+        <Card style={{ gap: space.md }}>
+          <Section title="Mes habitudes" action="Gérer" onAction={() => router.push({ pathname: "/habits", params: { lid } })} />
+          {todayHabits.length === 0 ? (
+            <T v="small">Crée une habitude (lire, dormir assez, sport…) et coche-la chaque jour.</T>
+          ) : (
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
+              {todayHabits.map((h) => {
+                const on = h.checked.includes(today);
+                const c = learnerColorOf(h.color);
+                return (
+                  <Pressable
+                    key={h.id}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: on }}
+                    accessibilityLabel={h.title}
+                    onPress={() => habitTick.mutate({ id: h.id, on })}
+                    style={{ flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, minHeight: 44, borderRadius: radius.pill, borderWidth: 2, borderColor: on ? c.main : color.line, backgroundColor: on ? c.soft : color.card }}
+                  >
+                    <T v="body">{h.emoji}</T>
+                    <T v="bodyBold" style={{ color: on ? c.dark : color.ink }}>
+                      {h.title}
+                    </T>
+                    {on ? <Ionicons name="checkmark" size={18} color={c.dark} /> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
           )}
         </Card>
 
@@ -189,6 +291,8 @@ export default function ChildHome() {
       <BottomSheet open={menu} onClose={() => setMenu(false)} title="Menu">
         <Button tone="white" icon="shirt" label="Habiller Cervelle" onPress={() => { setMenu(false); router.push({ pathname: "/child/shop", params: { lid } }); }} />
         <Button tone="white" icon="chatbubbles" label="Poser une question" onPress={() => { setMenu(false); router.push({ pathname: "/assistant", params: { lid } }); }} />
+        <Button tone="white" icon="journal" label="Journal de bord" onPress={() => { setMenu(false); router.push({ pathname: "/journal", params: { lid } }); }} />
+        <Button tone="white" icon="bulb" label="Quel élève es-tu ?" onPress={() => { setMenu(false); router.push({ pathname: "/profil", params: { lid } }); }} />
         {asParent ? null : (
           <Button tone="white" icon="log-out" label="Délier ce téléphone" onPress={async () => { setMenu(false); await signOut(); router.replace("/auth"); }} />
         )}

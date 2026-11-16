@@ -24,6 +24,8 @@ export interface Learner {
   mascot: MascotLevel;
   owned: string[];
   equipped: string[];
+  timer: { focus: number; pause: number };
+  studyProfile: { profile: string; scores: Record<string, number>; methods: string[]; at?: string } | null;
 }
 
 export interface RevisionCard {
@@ -169,4 +171,151 @@ export interface Programme {
   grade: string;
   schoolYear: string;
   subjects: { subject: string; source: string; verified: boolean; cycleWide: boolean; chapters: ProgrammeChapter[] }[];
+}
+
+// ─── S'organiser ─────────────────────────────────────────────────────────
+
+export type EventKind = "cours" | "interro" | "devoir" | "revision" | "activite";
+
+export interface AgendaEvent {
+  id: string;
+  title: string;
+  kind: EventKind;
+  weekday: number | null;
+  day: string | null;
+  start: string;
+  end: string;
+  room: string;
+  createdBy: "parent" | "enfant";
+  source: "cervelle" | "passerelle";
+  synced: boolean;
+}
+
+export interface AgendaExam {
+  id: string;
+  title: string;
+  subject: string;
+  day: string;
+}
+
+export interface Agenda {
+  events: AgendaEvent[];
+  exams: AgendaExam[];
+  canSync: boolean;
+}
+
+export interface TimetableSlot {
+  weekday: number;
+  start: string;
+  end: string;
+  title: string;
+  room: string;
+}
+
+export interface Todo {
+  id: string;
+  title: string;
+  urgent: boolean;
+  important: boolean;
+  dueDay: string | null;
+  done: boolean;
+  doneAt: string | null;
+  createdBy: "parent" | "enfant";
+  createdAt: string;
+}
+
+export interface Habit {
+  id: string;
+  title: string;
+  emoji: string;
+  color: string;
+  days: number[];
+  createdBy: "parent" | "enfant";
+  /** Day it was created. */
+  since: string;
+  checked: string[];
+}
+
+export interface JournalEntry {
+  day: string;
+  mood: number;
+  learned: string;
+  proud: string;
+  hard: string;
+}
+
+export interface Reward {
+  coins: number;
+  xp: number;
+  learner: Learner;
+  levelUp?: MascotLevel | null;
+  missions?: Missions;
+}
+
+export interface FocusResult extends Reward {
+  counted: boolean;
+  streakIncreased: boolean;
+}
+
+export interface Stats {
+  days: { day: string; minutes: number }[];
+  week: { day: string; minutes: number }[];
+  totals: {
+    minutes: number;
+    sessions: number;
+    minutes30: number;
+    weekMinutes: number;
+    activeDays: number;
+    todosDone: number;
+    habitChecks: number;
+    journalDays: number;
+    notionsMastered: number;
+    streak: number;
+    bestStreak: number;
+  };
+  subjects: { subject: string; minutes: number }[];
+}
+
+export interface PublicLearner {
+  id: string;
+  name: string;
+  color: string;
+  equipped: string[];
+  level: number;
+}
+
+export interface BoardRow extends PublicLearner {
+  weekMinutes: number;
+  me: boolean;
+  sibling: boolean;
+  friendshipId: string | null;
+}
+
+export interface Friends {
+  code: string;
+  week: string;
+  board: BoardRow[];
+  pending: { id: string; name: string; outgoing: boolean }[];
+  cheers: { id: string; fromName: string; kind: string; emoji: string; label: string; createdAt: string }[];
+  cheerKinds: { id: string; emoji: string; label: string }[];
+  challenges: {
+    id: string;
+    week: string;
+    status: "pending" | "active" | "done";
+    sentByMe: boolean;
+    other: PublicLearner;
+    myMinutes: number;
+    theirMinutes: number;
+    result: "won" | "lost" | "tie" | "none" | null;
+    prize: number;
+  }[];
+}
+
+export interface FriendRequest {
+  id: string;
+  child: { id: string; name: string };
+  other: { name: string; grade: string; level: Level };
+  outgoing: boolean;
+  otherApproved: boolean;
+  createdAt: string;
 }

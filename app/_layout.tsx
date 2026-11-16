@@ -26,8 +26,8 @@ export default function RootLayout() {
     AtkinsonHyperlegible_400Regular,
     AtkinsonHyperlegible_700Bold,
     // Option « Police pour la dyslexie ».
-    OpenDyslexic: require("../assets/fonts/OpenDyslexic-Regular.otf"),
-    OpenDyslexic_Bold: require("../assets/fonts/OpenDyslexic-Bold.otf"),
+    OpenDyslexic: require("../assets/fonts/OpenDyslexic-Regular.ttf"),
+    OpenDyslexic_Bold: require("../assets/fonts/OpenDyslexic-Bold.ttf"),
   });
   const readingLoaded = useReading((s) => s.loaded);
   const loadReading = useReading((s) => s.load);

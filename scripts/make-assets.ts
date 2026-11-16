@@ -23,15 +23,15 @@ const LINES_FILTER = `<svg width="0" height="0" style="position:absolute"><filte
 
 (async () => {
   fs.mkdirSync(out, { recursive: true });
-  await render("icon.png", 1024, centered(0.78, "#FFE3EC", ["lunettes"]), false);
+  await render("icon.png", 1024, centered(0.78, "#FFE3EC"), false);
   // Adaptive icon: the system crops to a circle/squircle, keep the drawing in the inner 60 %.
-  await render("android-icon-foreground.png", 1024, centered(0.56, null, ["lunettes"]), true);
+  await render("android-icon-foreground.png", 1024, centered(0.56, null), true);
   await render("android-icon-background.png", 1024, `<div style="width:100%;height:100%;background:#FFE3EC"></div>`, false);
   await render("android-icon-monochrome.png", 1024, centered(0.56, null).replace(/#FF8FB1/g, "#000"), true);
   // Small icon of the notifications: Android only keeps the alpha, so draw the lines in white
   // (light fills become transparent, dark lines opaque).
   await render("notification-icon.png", 96, `${LINES_FILTER}<div style="width:100%;height:100%;filter:url(#lines)">${centered(0.86, null).replace(/#FF8FB1/g, "#FFF")}</div>`, true);
-  await render("splash-icon.png", 512, centered(0.9, null, ["lunettes"]), true);
+  await render("splash-icon.png", 512, centered(0.9, null), true);
   await render("favicon.png", 64, centered(0.95, null), true);
   console.log("assets written to", out);
 })();

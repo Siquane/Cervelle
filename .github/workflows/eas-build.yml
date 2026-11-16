@@ -2,12 +2,28 @@ name: EAS Build (Android APK)
 
 # Builds an installable APK. Run it by hand: Actions → « EAS Build (Android APK) » → Run workflow.
 # Needs the repository secret EXPO_TOKEN (expo.dev → Account settings → Access tokens).
+#
+# Two places to compile:
+#   - « github » (default): on this GitHub machine with `eas build --local`. Does not use
+#     the Expo free-plan build quota. The APK is attached to the run (« Artifacts »).
+#   - « expo »: on Expo's servers (free plan: a limited number of builds per month).
+#     The APK link is on expo.dev.
+# Both sign with the same key stored on Expo, so the APK installs over the previous one.
 on:
   workflow_dispatch:
+    inputs:
+      where:
+        description: "Où compiler l'APK"
+        type: choice
+        options:
+          - github
+          - expo
+        default: github
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,5 +39,31 @@ jobs:
         run: eas init --non-interactive --force
       - name: Point the app at EAS Update
         run: node scripts/configure-updates.js
-      - name: Build Android APK
+
+      # ── Build on Expo's servers ──
+      - name: Build Android APK (Expo)
+        if: inputs.where == 'expo'
         run: eas build --platform android --profile preview --non-interactive
+
+      # ── Build on this GitHub machine ──
+      - name: Free disk space
+        if: inputs.where != 'expo'
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/node_modules/@angular "$AGENT_TOOLSDIRECTORY/CodeQL" || true
+          df -h /
+      - uses: actions/setup-java@v4
+        if: inputs.where != 'expo'
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Build Android APK (GitHub)
+        if: inputs.where != 'expo'
+        run: eas build --platform android --profile preview --non-interactive --local --output "$GITHUB_WORKSPACE/cervelle.apk"
+      - name: Attach the APK to this run
+        if: inputs.where != 'expo'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cervelle-apk
+          path: cervelle.apk
+          retention-days: 30
+          if-no-files-found: error

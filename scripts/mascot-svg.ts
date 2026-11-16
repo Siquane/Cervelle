@@ -1,4 +1,4 @@
-import { ACCESSORIES, BRAIN, EYES, FOLDS, INK_COLOR, VIEWBOX, type Shape } from "../src/components/mascot/geometry";
+import { ACCESSORIES, BRAIN, EYES, eyeShapes, FOLDS, INK_COLOR, VIEWBOX, type Shape } from "../src/components/mascot/geometry";
 
 // The mascot as a plain SVG string (for the icon and splash generator).
 
@@ -23,7 +23,7 @@ export function mascotSvg(opts: { accessories?: string[]; viewBox?: string; body
 <path d="${BRAIN}" fill="${body}" stroke="${INK_COLOR}" stroke-width="5" stroke-linejoin="round"/>
 ${FOLDS.map((d) => `<path d="${d}" fill="none" stroke="#D63D6C" stroke-width="4" stroke-linecap="round"/>`).join("")}
 ${acc.filter((a) => a.behindFace).flatMap((a) => a.shapes.map(shape)).join("")}
-${EYES.map((e) => `<ellipse cx="${e.cx}" cy="${e.cy}" rx="13" ry="15" fill="#fff" stroke="${INK_COLOR}" stroke-width="4"/><circle cx="${e.cx + 2}" cy="${e.cy + 3}" r="7" fill="${INK_COLOR}"/><circle cx="${e.cx + 4}" cy="${e.cy}" r="2.6" fill="#fff"/>`).join("")}
+${EYES.flatMap((e) => eyeShapes(e).map(shape)).join("")}
 <ellipse cx="64" cy="131" rx="9" ry="5.5" fill="#FF5C8A" opacity="0.55"/><ellipse cx="140" cy="131" rx="9" ry="5.5" fill="#FF5C8A" opacity="0.55"/>
 <path d="M 91 131 Q 102 143 113 131" fill="none" stroke="${INK_COLOR}" stroke-width="4.5" stroke-linecap="round"/>
 ${acc.filter((a) => !a.behindFace).flatMap((a) => a.shapes.map(shape)).join("")}

@@ -1,4 +1,4 @@
-// Shapes of Cervelle, the mascot: a round pink brain with big eyes.
+// Shapes of Cervelle, the mascot: a round pink brain with big kawaii eyes.
 // One source for the app (react-native-svg) and for the icon/splash
 // generator (scripts/make-assets.ts). viewBox: -10 -24 220 214.
 
@@ -18,9 +18,27 @@ export const FOLDS = [
 ];
 
 export const EYES = [
-  { cx: 82, cy: 110 },
-  { cx: 122, cy: 110 },
+  { cx: 82, cy: 107 },
+  { cx: 122, cy: 107 },
 ];
+
+/**
+ * One kawaii eye: a single dark oval, a violet glint at the bottom and three
+ * white sparkles. `big` (mood « wow ») scales it up a little. Shared by the
+ * app and the icon generator.
+ */
+export function eyeShapes(e: { cx: number; cy: number }, big = false): Shape[] {
+  const k = big ? 1.15 : 1;
+  const x = (d: number) => e.cx + d * k;
+  const y = (d: number) => e.cy + d * k;
+  return [
+    { kind: "ellipse", cx: x(0), cy: y(1), rx: 11 * k, ry: 14 * k, fill: INK },
+    { kind: "ellipse", cx: x(0), cy: y(7.5), rx: 7 * k, ry: 4.5 * k, fill: "#5B4FD6" },
+    { kind: "ellipse", cx: x(2.8), cy: y(-4.5), rx: 4.8 * k, ry: 5.3 * k, fill: "#FFFFFF" },
+    { kind: "circle", cx: x(-4.4), cy: y(3.8), r: 2 * k, fill: "#FFFFFF" },
+    { kind: "circle", cx: x(4.4), cy: y(6.4), r: 1.2 * k, fill: "#FFFFFF" },
+  ];
+}
 
 /** Accessory drawings, keyed by shop item id. `behindFace` ones go under the eyes. */
 export type Shape =
@@ -67,14 +85,14 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
   },
   lunettes: {
     shapes: [
-      { kind: "circle", cx: 82, cy: 110, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 122, cy: 110, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
-      { kind: "path", d: "M 101 108 C 102 105 102 105 103 108", fill: "none", stroke: INK, strokeWidth: 4 },
+      { kind: "circle", cx: 82, cy: 107, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
+      { kind: "circle", cx: 122, cy: 107, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 101 105 C 102 102 102 102 103 105", fill: "none", stroke: INK, strokeWidth: 4 },
     ],
   },
   masque: {
     behindFace: true,
-    shapes: [{ kind: "path", d: "M 50 100 C 72 90 134 90 156 100 L 152 126 C 132 118 74 118 54 126 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 }],
+    shapes: [{ kind: "path", d: "M 50 97 C 72 87 134 87 156 97 L 152 123 C 132 115 74 115 54 123 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 }],
   },
   noeud: {
     shapes: [

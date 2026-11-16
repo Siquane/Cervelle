@@ -1,5 +1,5 @@
 import Svg, { Circle, Ellipse, G, Path, Rect } from "react-native-svg";
-import { ACCESSORIES, BRAIN, EYES, FOLDS, INK_COLOR, VIEWBOX, type Shape } from "./geometry";
+import { ACCESSORIES, BRAIN, EYES, eyeShapes, FOLDS, INK_COLOR, VIEWBOX, type Shape } from "./geometry";
 
 export type Mood = "happy" | "wow" | "sad" | "sleep";
 
@@ -32,9 +32,9 @@ export function Mascot({ size = 120, accessories = [], mood = "happy" }: { size?
           <Path key={e.cx} d={`M ${e.cx - 11} ${e.cy + 2} Q ${e.cx} ${e.cy + 10} ${e.cx + 11} ${e.cy + 2}`} fill="none" stroke={INK_COLOR} strokeWidth={4} strokeLinecap="round" />
         ) : (
           <G key={e.cx}>
-            <Ellipse cx={e.cx} cy={e.cy} rx={13} ry={mood === "wow" ? 17 : 15} fill="#fff" stroke={INK_COLOR} strokeWidth={4} />
-            <Circle cx={e.cx + 2} cy={e.cy + 3} r={7} fill={INK_COLOR} />
-            <Circle cx={e.cx + 4} cy={e.cy} r={2.6} fill="#fff" />
+            {eyeShapes(e, mood === "wow").map((sh, j) => (
+              <ShapeView key={j} s={sh} />
+            ))}
           </G>
         ),
       )}

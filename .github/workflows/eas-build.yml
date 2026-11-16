@@ -1,0 +1,27 @@
+name: EAS Build (Android APK)
+
+# Builds an installable APK. Run it by hand: Actions → « EAS Build (Android APK) » → Run workflow.
+# Needs the repository secret EXPO_TOKEN (expo.dev → Account settings → Access tokens).
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Link EAS project
+        run: eas init --non-interactive --force
+      - name: Point the app at EAS Update
+        run: node scripts/configure-updates.js
+      - name: Build Android APK
+        run: eas build --platform android --profile preview --non-interactive

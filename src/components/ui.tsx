@@ -1,0 +1,195 @@
+import { ReactNode } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { color, font, GUTTER, radius, size, space } from "../theme/tokens";
+import { Coin } from "./Coin";
+
+type Variant = "title" | "h2" | "h3" | "body" | "bodyBold" | "small" | "label";
+
+const textStyles: Record<Variant, TextStyle> = {
+  title: { fontFamily: font.title, fontSize: size.xxl, lineHeight: 40, color: color.ink },
+  h2: { fontFamily: font.title, fontSize: size.xl, lineHeight: 34, color: color.ink },
+  h3: { fontFamily: font.titleBold, fontSize: size.lg, lineHeight: 26, color: color.ink },
+  body: { fontFamily: font.text, fontSize: size.md, lineHeight: 24, color: color.ink },
+  bodyBold: { fontFamily: font.textBold, fontSize: size.md, lineHeight: 24, color: color.ink },
+  small: { fontFamily: font.textSemi, fontSize: size.sm, lineHeight: 20, color: color.muted },
+  label: { fontFamily: font.textBlack, fontSize: size.xs, lineHeight: 18, color: color.muted, letterSpacing: 0.6, textTransform: "uppercase" },
+};
+
+export function T({ v = "body", style, ...rest }: TextProps & { v?: Variant; style?: StyleProp<TextStyle> }) {
+  return <RNText {...rest} style={[textStyles[v], style]} />;
+}
+
+/** A page: safe area, scroll, side gutter. */
+export function Page({ children, scroll = true, header, footer, bg = color.bg }: { children: ReactNode; scroll?: boolean; header?: ReactNode; footer?: ReactNode; bg?: string }) {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: bg }} edges={["top", "left", "right"]}>
+      {header}
+      {scroll ? (
+        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40, gap: space.lg }} keyboardShouldPersistTaps="handled">
+          {children}
+        </ScrollView>
+      ) : (
+        <View style={{ flex: 1, paddingHorizontal: GUTTER }}>{children}</View>
+      )}
+      {footer}
+    </SafeAreaView>
+  );
+}
+
+export function TopBar({ title, right, onBack }: { title?: string; right?: ReactNode; onBack?: () => void }) {
+  return (
+    <View style={styles.topBar}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Retour"
+        hitSlop={12}
+        onPress={onBack ?? (() => (router.canGoBack() ? router.back() : router.replace("/")))}
+        style={styles.iconBtn}
+      >
+        <Ionicons name="chevron-back" size={26} color={color.ink} />
+      </Pressable>
+      <T v="h3" numberOfLines={1} style={{ flex: 1, textAlign: "center" }}>
+        {title ?? ""}
+      </T>
+      <View style={{ minWidth: 44, alignItems: "flex-end" }}>{right}</View>
+    </View>
+  );
+}
+
+type BtnTone = "brand" | "teal" | "sun" | "sky" | "ghost" | "danger" | "white";
+const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = {
+  brand: { bg: color.brand, edge: color.brandDark, fg: color.white },
+  teal: { bg: color.teal, edge: color.tealDark, fg: color.white },
+  sun: { bg: color.sun, edge: color.sunDark, fg: color.ink },
+  sky: { bg: color.sky, edge: color.skyDark, fg: color.white },
+  danger: { bg: color.red, edge: "#B42A2F", fg: color.white },
+  white: { bg: color.white, edge: color.line, fg: color.ink },
+  ghost: { bg: "transparent", edge: "transparent", fg: color.ink },
+};
+
+/** A chunky button that sinks when pressed. */
+export function Button({
+  label,
+  onPress,
+  tone = "brand",
+  icon,
+  loading,
+  disabled,
+  style,
+  small,
+}: {
+  label: string;
+  onPress?: () => void;
+  tone?: BtnTone;
+  icon?: keyof typeof Ionicons.glyphMap | "coin";
+  loading?: boolean;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  small?: boolean;
+}) {
+  const t = tones[tone];
+  const off = disabled || loading;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!off, busy: !!loading }}
+      onPress={off ? undefined : onPress}
+      style={({ pressed }) => [
+        styles.btn,
+        small && styles.btnSmall,
+        { backgroundColor: t.bg, borderColor: t.edge, borderBottomWidth: tone === "ghost" ? 0 : pressed && !off ? 2 : 5, opacity: off && !loading ? 0.5 : 1, marginTop: pressed && !off && tone !== "ghost" ? 3 : 0 },
+        style,
+      ]}
+    >
+      {loading ? (
+        <ActivityIndicator color={t.fg} />
+      ) : (
+        <>
+          {icon === "coin" ? <Coin size={small ? 18 : 22} /> : icon ? <Ionicons name={icon} size={small ? 18 : 22} color={t.fg} /> : null}
+          <RNText style={[styles.btnText, small && { fontSize: size.sm }, { color: t.fg }]}>{label}</RNText>
+        </>
+      )}
+    </Pressable>
+  );
+}
+
+export function Card({ children, style, onPress }: { children: ReactNode; style?: StyleProp<ViewStyle>; onPress?: () => void }) {
+  if (onPress) {
+    return (
+      <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }, style]}>
+        {children}
+      </Pressable>
+    );
+  }
+  return <View style={[styles.card, style]}>{children}</View>;
+}
+
+export function ProgressBar({ value, tint = color.brand, track = color.line, height = 12 }: { value: number; tint?: string; track?: string; height?: number }) {
+  const pct = Math.max(0, Math.min(100, value));
+  return (
+    <View style={{ height, backgroundColor: track, borderRadius: radius.pill, overflow: "hidden" }} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }}>
+      <View style={{ width: `${pct}%`, height: "100%", backgroundColor: tint, borderRadius: radius.pill }} />
+    </View>
+  );
+}
+
+/** Two or more choices side by side (a child's name, a time range…). */
+export function Segmented<K extends string>({ options, value, onChange, tint = color.brand }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
+  return (
+    <View style={styles.segment} accessibilityRole="tablist">
+      {options.map((o) => {
+        const on = o.key === value;
+        return (
+          <Pressable key={o.key} onPress={() => onChange(o.key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={[styles.segmentItem, on && { backgroundColor: tint }]}>
+            <RNText numberOfLines={1} style={[styles.segmentText, { color: on ? color.white : color.muted }]}>
+              {o.label}
+            </RNText>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+export function Loading() {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 40 }}>
+      <ActivityIndicator size="large" color={color.brand} />
+    </View>
+  );
+}
+
+export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <Card style={{ gap: space.md, alignItems: "flex-start", backgroundColor: color.redSoft, borderColor: color.redSoft }}>
+      <T v="bodyBold" style={{ color: color.red }}>
+        {message}
+      </T>
+      {onRetry ? <Button small tone="white" label="Réessayer" icon="refresh" onPress={onRetry} /> : null}
+    </Card>
+  );
+}
+
+export const styles = StyleSheet.create({
+  topBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: GUTTER - 6, paddingVertical: space.sm, gap: space.sm },
+  iconBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
+  btn: {
+    minHeight: 56,
+    borderRadius: radius.md,
+    borderWidth: 2,
+    paddingHorizontal: space.xl,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: space.sm,
+  },
+  btnSmall: { minHeight: 44, paddingHorizontal: space.lg, borderRadius: radius.sm },
+  btnText: { fontFamily: font.textBlack, fontSize: size.md },
+  card: { backgroundColor: color.card, borderRadius: radius.lg, padding: space.lg, borderWidth: 2, borderColor: color.line },
+  segment: { flexDirection: "row", backgroundColor: "#E8EBF3", borderRadius: radius.lg, padding: 5, gap: 5 },
+  segmentItem: { flex: 1, minHeight: 46, borderRadius: radius.md, alignItems: "center", justifyContent: "center", paddingHorizontal: space.sm },
+  segmentText: { fontFamily: font.textBlack, fontSize: size.md },
+});

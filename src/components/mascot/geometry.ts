@@ -18,8 +18,8 @@ export const FOLDS = [
 ];
 
 export const EYES = [
-  { cx: 82, cy: 107 },
-  { cx: 122, cy: 107 },
+  { cx: 82, cy: 101 },
+  { cx: 122, cy: 101 },
 ];
 
 /**
@@ -85,14 +85,14 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
   },
   lunettes: {
     shapes: [
-      { kind: "circle", cx: 82, cy: 107, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 122, cy: 107, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
-      { kind: "path", d: "M 101 105 C 102 102 102 102 103 105", fill: "none", stroke: INK, strokeWidth: 4 },
+      { kind: "circle", cx: 82, cy: 101, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
+      { kind: "circle", cx: 122, cy: 101, r: 19, fill: "none", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 101 99 C 102 96 102 96 103 99", fill: "none", stroke: INK, strokeWidth: 4 },
     ],
   },
   masque: {
     behindFace: true,
-    shapes: [{ kind: "path", d: "M 50 97 C 72 87 134 87 156 97 L 152 123 C 132 115 74 115 54 123 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 }],
+    shapes: [{ kind: "path", d: "M 50 91 C 72 81 134 81 156 91 L 152 117 C 132 109 74 109 54 117 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 }],
   },
   noeud: {
     shapes: [

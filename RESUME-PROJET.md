@@ -1,7 +1,7 @@
 # Revue de projet — Cervelle
 
 À lire en premier dans une nouvelle session. Remplace l'historique des
-conversations précédentes. Dernière mise à jour : 16 novembre 2026.
+conversations précédentes. Dernière mise à jour : 16 novembre 2026 (soir).
 
 ## En une phrase
 
@@ -15,20 +15,19 @@ design n'est repris).
 
 | Élément | État |
 |---|---|
-| Serveur (routes `/cervelle/*`) | Fait, testé. PR **Siquane/Appli-planning-familial#41**, non fusionnée |
-| Appli Expo | Fait, testée en web local. PR **Siquane/cervelle#1**, CI verte, non fusionnée |
-| Programme officiel | CM2 et 5e, toutes matières, relu sur les textes officiels |
-| Clé Claude sur Render | À vérifier : `ANTHROPIC_API_KEY` (même clé que les menus de Passerelle) |
-| Secret `EXPO_TOKEN` du dépôt cervelle | À ajouter par l'utilisatrice |
-| APK | Jamais compilé (workflow « EAS Build (Android APK) ») |
-| Essai avec le vrai Claude | Jamais fait : tous les tests simulent Claude |
+| Serveur (routes `/cervelle/*`) | Fait, en ligne (PR Siquane/Appli-planning-familial#41, #42 fusionnées) |
+| Appli Expo | Faite (PR Siquane/cervelle#1, #2, #3 fusionnées), APK installé et fonctionnel |
+| Programme officiel | CM2, 6e, 5e, 4e et 3e, toutes matières, relu sur les textes officiels |
+| Notifications de l'enfant | Rappels d'interro (J-3, veille + révision express), « À revoir » quotidien, « fiches prêtes » (push). Firebase : projet « Cervelle » à part |
+| Typo | Outfit (titres) + Atkinson Hyperlegible (texte), option OpenDyslexic dans Réglages |
 
-Branches de travail : `ccr-80182f3f-ln4dhr` dans les deux dépôts.
+Branche de travail : `claude/beautiful-albattani-vhs43a` dans les deux dépôts.
 
-**Prochaines étapes, dans l'ordre** : fusionner #41 (Render redéploie) →
-vérifier la clé → fusionner cervelle#1 → ajouter `EXPO_TOKEN` → lancer EAS
-Build → installer → tester avec une vraie leçon et ajuster les consignes
-données à Claude.
+**Pour activer les notifications** : fusionner la PR serveur (Render
+redéploie et applique la migration), puis la PR de l'appli (avec
+`google-services.json`), déposer la clé FCM (compte de service du projet
+Firebase « Cervelle ») sur expo.dev → projet cervelle → Credentials, et lancer
+« EAS Build (Android APK) » : runtime 2, il faut réinstaller l'APK.
 
 ## Architecture
 
@@ -112,7 +111,14 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
 - Identité : `src/theme/tokens.ts` (voir aussi `CLAUDE.md`).
 - Workflows : `eas-build.yml` (APK à la main), `eas-update.yml` (mise à jour
   JS à chaque push sur `main`, sauf changement natif), `checks.yml`.
-- `runtimeVersion` : "1". À augmenter si `package.json` ou `app.json` change.
+- `runtimeVersion` : "2" (expo-notifications, polices). À augmenter si `package.json` ou `app.json` change.
+- `src/lib/reminders.ts` (calcul des rappels, testé) et `src/lib/notifications.ts`
+  (programmation sur le téléphone de l'enfant, jeton push envoyé à
+  `PUT /cervelle/child/push`, ouverture de l'écran au toucher). Rien n'est
+  programmé sur le téléphone d'un parent.
+- `app/reglages.tsx` : rappels (enfant) et police pour la dyslexie (tous).
+  `src/state/reading.ts` + `applyReading` dans `tokens.ts` : lire `font.x` au
+  moment de l'affichage, jamais dans un `StyleSheet.create`.
 
 ## Décisions prises avec l'utilisatrice
 
@@ -129,7 +135,8 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
 
 ## Programme officiel
 
-- Classes couvertes : CM2 et 5e (année 2026-2027), toutes matières.
+- Classes couvertes : CM2, 6e, 5e, 4e et 3e (année 2026-2027), toutes matières.
+  En 4e et 3e, français et maths restent sur le programme 2020.
 - Les sites officiels (éduscol, education.gouv.fr) bloquent les serveurs
   (Cloudflare) : les textes ont été fournis par l'utilisatrice et rangés dans
   `docs/programmes/` du dépôt Passerelle. Pour une nouvelle classe, lui
@@ -144,8 +151,10 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
    préparation, elle échoue au bout de 15 min (bouton « Réessayer », qui ne
    marche que si les photos ont été gardées dans R2). Une vraie file
    d'attente serait plus sûre.
-2. **Pas de notifications** : aucun rappel avant une interro, ni de
-   notification quand une révision est prête.
+2. **Notifications** : les rappels datés sont calculés à l'ouverture de
+   l'appli (7 jours d'avance) : si l'enfant ne l'ouvre pas pendant une
+   semaine, plus de rappel « À revoir ». « Fiches prêtes » a besoin de
+   Firebase dans l'APK et de la clé FCM sur le projet Expo « cervelle ».
 3. **Aucun test d'écran** dans l'appli (seulement typecheck et un test de
    formatage) ; vérification visuelle faite en version web locale.
 4. **Coût Claude** : non mesuré ; une révision envoie jusqu'à 8 images et
@@ -159,11 +168,9 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
 
 ## Idées pour la suite
 
-- Rappels d'interro (veille et J-3) avec révision express.
-- Autres classes du programme (CM1, 6e, 4e, 3e, lycée).
+- Autres classes du programme (CM1, lycée).
 - Tableau des dépenses Claude par famille.
 - Code parent pour sortir de l'espace enfant.
-- Notification « ta révision est prête ».
 
 ## Règles de travail
 

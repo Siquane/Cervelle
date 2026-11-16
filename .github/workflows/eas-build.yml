@@ -1,4 +1,4 @@
-name: EAS Build (Android APK)
+name: EAS Build (Android APK / Play Store)
 
 # Builds an installable APK. Run it by hand: Actions → « EAS Build (Android APK) » → Run workflow.
 # Needs the repository secret EXPO_TOKEN (expo.dev → Account settings → Access tokens).
@@ -9,6 +9,9 @@ name: EAS Build (Android APK)
 #   - « expo »: on Expo's servers (free plan: a limited number of builds per month).
 #     The APK link is on expo.dev.
 # Both sign with the same key stored on Expo, so the APK installs over the previous one.
+#
+# « kind »: « apk » (to install by hand) or « play-store » (an .aab to upload in the Play
+# Console, internal testing track, see docs/play-store.md).
 on:
   workflow_dispatch:
     inputs:
@@ -19,10 +22,20 @@ on:
           - github
           - expo
         default: github
+      kind:
+        description: "Quoi compiler : apk (à installer à la main) ou play-store (.aab pour la Play Console)"
+        type: choice
+        options:
+          - apk
+          - play-store
+        default: apk
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PROFILE: ${{ inputs.kind == 'play-store' && 'production' || 'preview' }}
+      OUT: ${{ inputs.kind == 'play-store' && 'cervelle.aab' || 'cervelle.apk' }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
@@ -41,9 +54,9 @@ jobs:
         run: node scripts/configure-updates.js
 
       # ── Build on Expo's servers ──
-      - name: Build Android APK (Expo)
+      - name: Build Android (Expo)
         if: inputs.where == 'expo'
-        run: eas build --platform android --profile preview --non-interactive
+        run: eas build --platform android --profile "$PROFILE" --non-interactive
 
       # ── Build on this GitHub machine ──
       - name: Free disk space
@@ -56,14 +69,14 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - name: Build Android APK (GitHub)
+      - name: Build Android (GitHub)
         if: inputs.where != 'expo'
-        run: eas build --platform android --profile preview --non-interactive --local --output "$GITHUB_WORKSPACE/cervelle.apk"
-      - name: Attach the APK to this run
+        run: eas build --platform android --profile "$PROFILE" --non-interactive --local --output "$GITHUB_WORKSPACE/$OUT"
+      - name: Attach the file to this run
         if: inputs.where != 'expo'
         uses: actions/upload-artifact@v4
         with:
-          name: cervelle-apk
-          path: cervelle.apk
+          name: ${{ inputs.kind == 'play-store' && 'cervelle-play-store' || 'cervelle-apk' }}
+          path: ${{ env.OUT }}
           retention-days: 30
           if-no-files-found: error

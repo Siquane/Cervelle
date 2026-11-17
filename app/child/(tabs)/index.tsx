@@ -103,7 +103,7 @@ export default function ChildHome() {
             <T v="small" style={{ color: tint.dark }}>
               Niveau {m.level} · {m.name}
             </T>
-            <ProgressBar value={levelPct} tint={tint.main} track={color.white} />
+            <ProgressBar value={levelPct} tint={tint.main} track={color.line} />
             <T v="small">Touche pour habiller Cervelle</T>
           </View>
         </Card>

@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text a
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { color, font, GUTTER, radius, reading, size, space } from "../theme/tokens";
+import { color, font, GUTTER, onColor, radius, reading, size, space } from "../theme/tokens";
 import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
 
@@ -74,11 +74,12 @@ export function TopBar({ title, right, onBack }: { title?: string; right?: React
 
 type BtnTone = "brand" | "teal" | "sun" | "sky" | "ghost" | "danger" | "white";
 const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = {
-  brand: { bg: color.brand, edge: color.brandDark, fg: color.white },
-  teal: { bg: color.teal, edge: color.tealDark, fg: color.white },
-  sun: { bg: color.sun, edge: color.sunDark, fg: color.ink },
-  sky: { bg: color.sky, edge: color.skyDark, fg: color.white },
-  danger: { bg: color.red, edge: color.redDark, fg: color.white },
+  brand: { bg: color.brandFill, edge: color.brandEdge, fg: color.white },
+  teal: { bg: color.tealFill, edge: color.tealEdge, fg: color.white },
+  sun: { bg: color.sun, edge: color.sunEdge, fg: color.onSun },
+  sky: { bg: color.skyFill, edge: color.skyEdge, fg: color.white },
+  // Outline: a destructive action should not shout like the main button.
+  danger: { bg: color.card, edge: color.red, fg: color.red },
   white: { bg: color.card, edge: color.line, fg: color.ink },
   ghost: { bg: "transparent", edge: "transparent", fg: color.ink },
 };
@@ -153,7 +154,7 @@ export function ProgressBar({ value, tint = color.brand, track = color.line, hei
 }
 
 /** Two or more choices side by side (a child's name, a time range…). */
-export function Segmented<K extends string>({ options, value, onChange, tint = color.brand }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
+export function Segmented<K extends string>({ options, value, onChange, tint = color.brandFill }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
   useFontRefresh();
   return (
     <View style={styles.segment} accessibilityRole="tablist">
@@ -161,7 +162,7 @@ export function Segmented<K extends string>({ options, value, onChange, tint = c
         const on = o.key === value;
         return (
           <Pressable key={o.key} onPress={() => onChange(o.key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={[styles.segmentItem, on && { backgroundColor: tint }]}>
-            <RNText numberOfLines={1} style={[styles.segmentText, { fontFamily: font.textBlack, color: on ? color.white : color.muted }]}>
+            <RNText numberOfLines={1} style={[styles.segmentText, { fontFamily: font.textBlack, color: on ? onColor(tint) : color.muted }]}>
               {o.label}
             </RNText>
           </Pressable>

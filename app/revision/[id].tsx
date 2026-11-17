@@ -17,7 +17,7 @@ import { color, radius, space } from "../../src/theme/tokens";
 function Step({ done, label, detail, onPress }: { done: boolean; label: string; detail: string; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={{ flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 52 }}>
-      <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: done ? color.green : color.line, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: done ? color.greenFill : color.line, alignItems: "center", justifyContent: "center" }}>
         {done ? <Ionicons name="checkmark" size={22} color={color.white} /> : null}
       </View>
       <View style={{ flex: 1 }}>

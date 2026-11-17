@@ -220,7 +220,7 @@ export default function ChildHome() {
         {featured.length ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
             {featured.map((r) => (
-              <Pressable key={r.id} accessibilityRole="button" onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={({ pressed }) => [{ width: 170, borderRadius: radius.lg, backgroundColor: tint.main, borderBottomWidth: 5, borderColor: tint.dark, padding: space.lg, gap: space.sm, opacity: pressed ? 0.9 : 1 }]}>
+              <Pressable key={r.id} accessibilityRole="button" onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={({ pressed }) => [{ width: 170, borderRadius: radius.lg, backgroundColor: tint.fill, borderBottomWidth: 5, borderColor: tint.edge, padding: space.lg, gap: space.sm, opacity: pressed ? 0.9 : 1 }]}>
                 <RevisionIcon icon={r.icon} seed={r.id} size={64} />
                 <T v="bodyBold" numberOfLines={2} style={{ color: color.white, minHeight: 48 }}>
                   {r.title}
@@ -283,7 +283,7 @@ export default function ChildHome() {
           }}
           style={{ flex: 1, minHeight: 52, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, backgroundColor: color.card, paddingHorizontal: 16, fontFamily: font.textSemi, fontSize: size.md, color: color.ink }}
         />
-        <Pressable accessibilityRole="button" accessibilityLabel="Ajouter une révision" onPress={() => router.push({ pathname: "/revision/new", params: { lid } })} style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.brand, borderBottomWidth: 4, borderColor: color.brandDark, alignItems: "center", justifyContent: "center" }}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Ajouter une révision" onPress={() => router.push({ pathname: "/revision/new", params: { lid } })} style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.brandFill, borderBottomWidth: 4, borderColor: color.brandEdge, alignItems: "center", justifyContent: "center" }}>
           <Ionicons name="add" size={32} color={color.white} />
         </Pressable>
       </View>

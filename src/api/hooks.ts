@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-import type { Agenda, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, ShopItem, Stats, Todo } from "./types";
+import type { Agenda, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -62,7 +62,7 @@ export const useRevision = (lid: string, id: string) =>
     refetchInterval: (q) => (q.state.data?.status === "processing" ? 3000 : false),
   });
 
-export const useShop = (lid: string) => useQuery({ queryKey: keys.shop(lid), queryFn: () => api.get<{ coins: number; items: ShopItem[] }>(`${L(lid)}/shop`) });
+export const useShop = (lid: string) => useQuery({ queryKey: keys.shop(lid), queryFn: () => api.get<Shop>(`${L(lid)}/shop`) });
 
 export const useExams = (lid: string) =>
   useQuery({

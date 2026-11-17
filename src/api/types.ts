@@ -119,13 +119,29 @@ export interface Overview {
   recentSessions: { id: string; mode: string; seconds: number; correct: number; total: number; revisionTitle: string | null; createdAt: string }[];
 }
 
+export type ShopSlot = "tete" | "visage" | "cou" | "tenue" | "main" | "couleur" | "decor";
+
 export interface ShopItem {
   id: string;
   name: string;
-  slot: "tete" | "visage" | "cou";
+  slot: ShopSlot;
   price: number;
+  /** saison: on sale only part of the year; legendaire: very expensive; badge: won with a badge. */
+  kind: "normal" | "saison" | "legendaire" | "badge";
+  /** saison: « MM-DD » first and last day. */
+  season: [string, string] | null;
+  /** badge: the badge's name. */
+  badge: string | null;
+  onSale: boolean;
   owned: boolean;
   equipped: boolean;
+}
+
+export interface Shop {
+  coins: number;
+  items: ShopItem[];
+  /** 3 saved outfits (item ids), null when empty. */
+  outfits: (string[] | null)[];
 }
 
 export interface ExamAnalysis {

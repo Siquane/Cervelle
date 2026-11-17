@@ -78,8 +78,8 @@ const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = {
   teal: { bg: color.teal, edge: color.tealDark, fg: color.white },
   sun: { bg: color.sun, edge: color.sunDark, fg: color.ink },
   sky: { bg: color.sky, edge: color.skyDark, fg: color.white },
-  danger: { bg: color.red, edge: "#B42A2F", fg: color.white },
-  white: { bg: color.white, edge: color.line, fg: color.ink },
+  danger: { bg: color.red, edge: color.redDark, fg: color.white },
+  white: { bg: color.card, edge: color.line, fg: color.ink },
   ghost: { bg: "transparent", edge: "transparent", fg: color.ink },
 };
 
@@ -115,6 +115,8 @@ export function Button({
         styles.btn,
         small && styles.btnSmall,
         { backgroundColor: t.bg, borderColor: t.edge, borderBottomWidth: tone === "ghost" ? 0 : pressed && !off ? 2 : 5, opacity: off && !loading ? 0.5 : 1, marginTop: pressed && !off && tone !== "ghost" ? 3 : 0 },
+        // Dark theme: the pink button glows a little, like Passerelle's neon.
+        tone === "brand" && !off ? { boxShadow: `0 0 16px ${color.glow}` } : null,
         style,
       ]}
     >
@@ -204,7 +206,7 @@ export const styles = StyleSheet.create({
   btnSmall: { minHeight: 44, paddingHorizontal: space.lg, borderRadius: radius.sm },
   btnText: { fontSize: size.md },
   card: { backgroundColor: color.card, borderRadius: radius.lg, padding: space.lg, borderWidth: 2, borderColor: color.line },
-  segment: { flexDirection: "row", backgroundColor: "#E8EBF3", borderRadius: radius.lg, padding: 5, gap: 5 },
+  segment: { flexDirection: "row", backgroundColor: color.chip, borderRadius: radius.lg, padding: 5, gap: 5 },
   segmentItem: { flex: 1, minHeight: 46, borderRadius: radius.md, alignItems: "center", justifyContent: "center", paddingHorizontal: space.sm },
   segmentText: { fontSize: size.md },
 });

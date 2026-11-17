@@ -16,7 +16,7 @@ const FAMILY_TINT: Record<Method["family"], { fg: string; bg: string }> = {
   Comprendre: { fg: color.skyDark, bg: color.skySoft },
   Apprendre: { fg: color.brandDark, bg: color.brandSoft },
   Réviser: { fg: color.sunDark, bg: color.sunSoft },
-  "S'organiser": { fg: "#6D3FD9", bg: "#EDE5FE" },
+  "S'organiser": { fg: color.violet, bg: color.violetSoft },
   "Se concentrer": { fg: color.tealDark, bg: color.tealSoft },
 };
 

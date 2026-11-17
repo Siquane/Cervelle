@@ -13,7 +13,7 @@ type Key = "exams" | "review" | "ready";
 
 const ROWS: { key: Key; icon: keyof typeof Ionicons.glyphMap; title: string; text: (p: ReminderPrefs) => string }[] = [
   { key: "exams", icon: "calendar", title: "Mes interros", text: (p) => `3 jours avant, à ${p.time}. Et la veille à ${EVE_HOUR} h, avec une révision express.` },
-  { key: "review", icon: "refresh-circle", title: "Mes notions À revoir", text: (p) => `Chaque jour à ${p.time}, s'il y a des notions à revoir.` },
+  { key: "review", icon: "refresh-circle", title: "Mes notions à revoir", text: (p) => `Chaque jour à ${p.time}, s'il y a des notions à revoir.` },
   { key: "ready", icon: "sparkles", title: "Fiches prêtes", text: () => "Quand Cervelle a fini de préparer tes fiches." },
 ];
 
@@ -61,7 +61,7 @@ function Reminders() {
       {allowed === false ? (
         <Card style={{ gap: space.sm, backgroundColor: color.sunSoft, borderColor: color.sun }}>
           <T v="bodyBold">Les notifications sont coupées sur ce téléphone.</T>
-          <T v="body">Pour recevoir tes rappels, autorise-les dans les réglages.</T>
+          <T v="body">Pour recevoir tes rappels, autorise les notifications de Cervelle dans les réglages du téléphone.</T>
           <Button tone="white" small icon="settings" label="Ouvrir les réglages" onPress={() => Linking.openSettings()} />
         </Card>
       ) : null}
@@ -86,7 +86,7 @@ export default function Reglages() {
       <Row
         icon="text"
         title="Police pour la dyslexie"
-        text="Le texte passe en OpenDyslexic, avec plus d'espace entre les lignes. Réglage de ce téléphone."
+        text="Une écriture pensée pour les lecteurs dyslexiques, avec plus d'espace entre les lignes. Seulement sur ce téléphone."
         value={dyslexia}
         onChange={(on) => void setDyslexia(on)}
       />

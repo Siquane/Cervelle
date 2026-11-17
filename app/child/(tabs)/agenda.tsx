@@ -30,7 +30,7 @@ export default function AgendaTab() {
     onSuccess: (r) => {
       setSyncOpen(false);
       qc.invalidateQueries({ queryKey: keys.agenda(lid) });
-      Alert.alert("Synchronisé", `${r.pushed} créneau${r.pushed > 1 ? "x" : ""} envoyé${r.pushed > 1 ? "s" : ""} vers Passerelle, ${r.pulled} reçu${r.pulled > 1 ? "s" : ""}${r.removed ? `, ${r.removed} retiré${r.removed > 1 ? "s" : ""}` : ""}.`);
+      Alert.alert("C'est à jour", `${r.pushed} ajouté${r.pushed > 1 ? "s" : ""} au planning de la famille, ${r.pulled} reçu${r.pulled > 1 ? "s" : ""} dans Cervelle${r.removed ? `, ${r.removed} retiré${r.removed > 1 ? "s" : ""}` : ""}.`);
     },
   });
 
@@ -117,7 +117,7 @@ export default function AgendaTab() {
           })
         )}
 
-        <Button icon="add" label="Ajouter un créneau" onPress={() => router.push({ pathname: "/agenda/event", params: { lid, day } })} />
+        <Button icon="add" label="Ajouter à mon agenda" onPress={() => router.push({ pathname: "/agenda/event", params: { lid, day } })} />
         <Button tone="white" icon="camera" label="Importer mon emploi du temps" onPress={() => router.push({ pathname: "/agenda/import", params: { lid } })} />
         {asParent ? <Button tone="white" icon="sync" label="Synchroniser avec Passerelle" onPress={() => setSyncOpen(true)} /> : null}
       </ScrollView>

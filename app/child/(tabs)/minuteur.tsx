@@ -63,16 +63,16 @@ export default function TimerTab() {
   const prefs = useMutation({
     mutationFn: (b: { focus: number; pause: number }) => api.patch<{ learner: Learner }>(`${learnerPath(lid)}/timer`, b),
     onSuccess: () => refresh(),
-    onError: (e) => Alert.alert("Minuteur", errorMessage(e)),
+    onError: (e) => Alert.alert("Réglages non enregistrés", errorMessage(e)),
   });
   const finish = useMutation({
     mutationFn: (body: { seconds: number; label: string; revisionId: string | null; todoId: string | null }) => api.post<FocusResult>(`${learnerPath(lid)}/focus`, body),
     onSuccess: (r) => {
       refresh();
-      if (!r.counted) Alert.alert("Séance enregistrée", "Moins de 5 minutes : elle ne compte pas encore pour ta série. Tu feras mieux la prochaine fois !");
+      if (!r.counted) Alert.alert("Presque !", "À partir de 5 minutes, ta séance compte pour ta série de jours.");
       else celebrate(r, "Séance terminée !");
     },
-    onError: (e) => Alert.alert("Minuteur", errorMessage(e)),
+    onError: (e) => Alert.alert("Séance non enregistrée", errorMessage(e)),
   });
 
   if (home.isLoading || !home.data) return <Loading />;

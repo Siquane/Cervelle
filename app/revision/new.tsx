@@ -34,7 +34,7 @@ export default function NewRevision() {
         setPages((p) => [...p.filter((x) => x.mimeType !== "application/pdf"), ...picked].slice(0, MAX_PAGES));
       }
     } catch (e) {
-      Alert.alert(e instanceof PermissionDenied ? "Autorisation" : "Fichier", errorMessage(e));
+      Alert.alert(e instanceof PermissionDenied ? "Autorisation nécessaire" : "Fichier non ajouté", errorMessage(e));
     } finally {
       setPicking(false);
     }

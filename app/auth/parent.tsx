@@ -25,7 +25,7 @@ export default function ParentLogin() {
       await save({ kind: "parent", accessToken: data.accessToken, refreshToken: data.refreshToken, name: user?.name ?? "", email: user?.email ?? email.trim() });
       router.replace("/parent");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Connexion impossible.");
+      setError(e instanceof Error ? e.message : "Connexion impossible. Vérifie ta connexion Internet et réessaie.");
     } finally {
       setBusy(false);
     }
@@ -40,7 +40,8 @@ export default function ParentLogin() {
       </View>
       {error ? <ErrorBox message={error} /> : null}
       <Button label="Se connecter" icon="log-in" loading={busy} disabled={!email.trim() || !password} onPress={submit} />
-      <T v="small">Pas encore de compte ? Crée-le dans l'appli Passerelle, puis reviens ici. Le premier chargement peut prendre une minute : le serveur se réveille.</T>
+      <T v="small">Pas encore de compte ? Crée-le dans l'appli Passerelle, puis reviens ici.</T>
+      <T v="small">La première connexion peut prendre une minute.</T>
     </Page>
   );
 }

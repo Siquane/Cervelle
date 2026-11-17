@@ -21,11 +21,11 @@ export default function ChildCode() {
     setError(null);
     try {
       const { status, data } = await postWithRetry("/cervelle/child/login", { code: value, deviceName: Device.default.deviceName ?? "" });
-      if (status !== 201 || typeof data.token !== "string") throw new Error(typeof data.error === "string" ? data.error : "Code refusé.");
+      if (status !== 201 || typeof data.token !== "string") throw new Error(typeof data.error === "string" ? data.error : "Ce code ne marche pas. Demande un nouveau code à tes parents.");
       await save({ kind: "child", token: data.token, learner: data.learner as Learner });
       router.replace("/child");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Code refusé.");
+      setError(e instanceof Error ? e.message : "Ce code ne marche pas. Demande un nouveau code à tes parents.");
       setCode("");
     } finally {
       setBusy(false);
@@ -40,7 +40,7 @@ export default function ChildCode() {
           Entre ton code
         </T>
         <T v="body" style={{ textAlign: "center", color: color.muted }}>
-          Demande à un parent de créer un code dans son espace Cervelle (Mes enfants → Relier un téléphone).
+          Demande à un parent de créer un code dans son espace Cervelle (Mes enfants → Connecter un téléphone).
         </T>
       </View>
       <Pressable onPress={() => input.current?.focus()} accessibilityLabel="Code à 6 chiffres" style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}>

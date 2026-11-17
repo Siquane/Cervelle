@@ -15,7 +15,7 @@ export default function Exams() {
       <Button icon="camera" label="Envoyer une interro corrigée" onPress={() => router.push({ pathname: "/exam/new", params: { lid } })} />
       {exams.isLoading ? <Loading /> : null}
       {exams.error ? <ErrorBox message={errorMessage(exams.error)} onRetry={() => exams.refetch()} /> : null}
-      {exams.data?.length === 0 ? <T v="body" style={{ color: color.muted }}>Aucune interro envoyée pour l'instant.</T> : null}
+      {exams.data?.length === 0 ? <T v="body" style={{ color: color.muted }}>Pas encore d'interro corrigée. Prends ta copie en photo : Cervelle t'explique tes erreurs.</T> : null}
       {exams.data?.map((e) => (
         <Card key={e.id} onPress={() => router.push({ pathname: "/exam/[id]", params: { id: e.id, lid } })} style={{ flexDirection: "row", gap: space.md, alignItems: "center" }}>
           <View style={{ width: 64, alignItems: "center" }}>

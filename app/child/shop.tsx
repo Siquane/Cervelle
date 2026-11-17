@@ -21,7 +21,7 @@ export default function Shop() {
     mutationFn: ({ item, action }: { item: ShopItem; action: "buy" | "on" | "off" }) =>
       action === "buy" ? api.post(`${learnerPath(lid)}/shop/${item.id}/buy`) : api.post(`${learnerPath(lid)}/shop/${item.id}/equip`, { on: action === "on" }),
     onSuccess: refresh,
-    onError: (e) => Alert.alert("Boutique", errorMessage(e)),
+    onError: (e) => Alert.alert("Achat impossible", errorMessage(e)),
   });
 
   const learner = home.data?.learner;

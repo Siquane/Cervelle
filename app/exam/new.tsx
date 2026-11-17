@@ -25,7 +25,7 @@ export default function NewExam() {
       const picked = await pickPhotos(source, MAX_PAGES - pages.length);
       setPages((p) => [...p, ...picked].slice(0, MAX_PAGES));
     } catch (e) {
-      Alert.alert("Photos", errorMessage(e));
+      Alert.alert("Photo non ajoutée", errorMessage(e));
     }
   }
 

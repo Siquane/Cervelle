@@ -17,15 +17,15 @@ function Devices({ lid }: { lid: string }) {
     mutationFn: (id: string) => api.delete(`/cervelle/learners/${lid}/devices/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.devices(lid) }),
   });
-  if (!devices.data?.length) return <T v="small">Aucun téléphone relié.</T>;
+  if (!devices.data?.length) return <T v="small">Aucun téléphone connecté. Crée un code et tape-le sur le téléphone de ton enfant.</T>;
   return (
     <View style={{ gap: space.sm }}>
       {devices.data.map((d) => (
         <View key={d.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
           <T v="body" style={{ flex: 1 }} numberOfLines={1}>
-            {d.name || "Téléphone"} · relié le {shortDate(d.createdAt)}
+            {d.name || "Téléphone"} · connecté le {shortDate(d.createdAt)}
           </T>
-          <Button small tone="white" label="Délier" onPress={() => unlink.mutate(d.id)} loading={unlink.isPending && unlink.variables === d.id} />
+          <Button small tone="white" label="Déconnecter" onPress={() => unlink.mutate(d.id)} loading={unlink.isPending && unlink.variables === d.id} />
         </View>
       ))}
     </View>
@@ -37,7 +37,7 @@ function LearnerCard({ l }: { l: Learner }) {
   const create = useMutation({
     mutationFn: () => api.post<{ code: string; expiresAt: string }>(`/cervelle/learners/${l.id}/code`),
     onSuccess: setCode,
-    onError: (e) => Alert.alert("Code", errorMessage(e)),
+    onError: (e) => Alert.alert("Code non créé", errorMessage(e)),
   });
   const tint = learnerColorOf(l.color);
   return (
@@ -58,10 +58,10 @@ function LearnerCard({ l }: { l: Learner }) {
           <T style={{ fontFamily: font.title, fontSize: 40, lineHeight: 48, letterSpacing: 6, color: tint.dark }} selectable>
             {code.code}
           </T>
-          <T v="small">Valable 15 minutes, une seule fois.</T>
+          <T v="small">Tape ce code sur le téléphone de ton enfant. Il marche 15 minutes, une seule fois.</T>
         </View>
       ) : (
-        <Button tone="white" icon="phone-portrait" label="Relier un téléphone" loading={create.isPending} onPress={() => create.mutate()} />
+        <Button tone="white" icon="phone-portrait" label="Connecter un téléphone" loading={create.isPending} onPress={() => create.mutate()} />
       )}
       <Devices lid={l.id} />
     </Card>

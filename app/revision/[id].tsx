@@ -115,7 +115,7 @@ export default function RevisionScreen() {
   const [tab, setTab] = useState<"progress" | "sheets">("progress");
   const [menu, setMenu] = useState(false);
 
-  const retry = useMutation({ mutationFn: () => api.post(`${learnerPath(lid)}/revisions/${id}/retry`), onSuccess: () => { revision.refetch(); refresh(); }, onError: (e) => Alert.alert("Révision", errorMessage(e)) });
+  const retry = useMutation({ mutationFn: () => api.post(`${learnerPath(lid)}/revisions/${id}/retry`), onSuccess: () => { revision.refetch(); refresh(); }, onError: (e) => Alert.alert("Préparation non relancée", errorMessage(e)) });
   const remove = useMutation({ mutationFn: () => api.delete(`${learnerPath(lid)}/revisions/${id}`), onSuccess: () => { refresh(); router.back(); } });
   const setDate = useMutation({ mutationFn: (examDate: string | null) => api.patch(`${learnerPath(lid)}/revisions/${id}`, { examDate }), onSuccess: () => { revision.refetch(); refresh(); } });
 
@@ -171,7 +171,7 @@ export default function RevisionScreen() {
           </View>
           <Segmented options={[{ key: "progress", label: "Progression" }, { key: "sheets", label: "Fiches" }]} value={tab} onChange={setTab} />
           {tab === "progress" ? <Progression r={r} lid={lid} /> : <SheetList r={r} lid={lid} />}
-          <Button tone="white" icon="chatbubbles" label="Poser une question sur ce cours" onPress={() => router.push({ pathname: "/assistant", params: { lid, revisionId: r.id } })} />
+          <Button tone="white" icon="chatbubbles" label="Poser une question à Cervelle" onPress={() => router.push({ pathname: "/assistant", params: { lid, revisionId: r.id } })} />
         </>
       ) : null}
 

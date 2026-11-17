@@ -21,7 +21,7 @@ export default function Welcome() {
         <Button label="Je suis parent" icon="people" tone="white" onPress={() => router.push("/auth/parent")} />
       </View>
       <T v="small" style={{ textAlign: "center" }}>
-        Les parents se connectent avec leur compte Passerelle. Les élèves entrent le code donné par un parent.
+        Les parents se connectent avec leur e-mail. Les élèves entrent le code donné par un parent.
       </T>
     </Page>
   );

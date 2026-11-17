@@ -8,7 +8,8 @@ les notions, des fiches et des quiz. Pour les enfants (primaire → lycée), les
 
 - **Serveur** : celui de Passerelle (`Siquane/Appli-planning-familial`,
   dossier `server/`, routes `/cervelle/*`). Mêmes comptes et même famille.
-- **Parents** : connexion avec le compte Passerelle. Ils créent un profil par
+- **Parents** : compte créé dans Cervelle avec un code reçu par e-mail (ou
+  connexion par mot de passe). C'est le même compte que Passerelle. Ils créent un profil par
   enfant, ajoutent des révisions, suivent le temps passé, les notions
   maîtrisées et les prochaines interros.
 - **Enfants** : sur leur propre téléphone, « Je suis élève » puis un code à

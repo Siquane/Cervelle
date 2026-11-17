@@ -319,3 +319,47 @@ export interface FriendRequest {
   otherApproved: boolean;
   createdAt: string;
 }
+
+export type BadgeShape = "star" | "shield" | "hexagon" | "round" | "flower" | "diamond";
+
+export interface BadgeSuccess {
+  id: string;
+  label: string;
+  icon: string;
+  shape: BadgeShape;
+  /** 0 (pas encore) à 3 (or). */
+  tier: number;
+  tiers: number[];
+  value: number;
+  next: { target: number; left: string; describe: string } | null;
+  describe: string;
+  coins: number[];
+  isNew: boolean;
+}
+
+export interface BadgeWindow {
+  key: string;
+  family: "saison" | "fete";
+  label: string;
+  icon: string;
+  shape: BadgeShape;
+  earned: boolean;
+  when: "now" | "soon" | "past";
+  days: number;
+  needs: number;
+  from: string;
+  to: string;
+  hint: string;
+  coins: number;
+  isNew: boolean;
+}
+
+export interface Badges {
+  records: { id: string; label: string; icon: string; value: number; unit: string }[];
+  successes: BadgeSuccess[];
+  windows: BadgeWindow[];
+  newCount: number;
+  earnedCount: number;
+  coinsEarned: number;
+  added: string[];
+}

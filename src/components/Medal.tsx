@@ -105,7 +105,7 @@ export function Medal({ shape, metal, icon, size = 96, dot = false }: { shape: B
           <ShapeArt shape={shape} fill={`url(#inner${id})`} stroke={dark} strokeWidth={3} />
         </G>
       </Svg>
-      <View style={{ position: "absolute", left: 0, right: 0, top: size * 0.17, alignItems: "center", opacity: locked ? 0.55 : 1 }}>
+      <View style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", opacity: locked ? 0.55 : 1 }}>
         <Mascot size={size * 0.52} mood={locked ? "sleep" : metal === "or" ? "wow" : "happy"} />
       </View>
       <View

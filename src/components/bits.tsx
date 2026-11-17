@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -44,10 +45,12 @@ export function MasteryHelp() {
 }
 
 export function BottomSheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+  // Above the phone's navigation buttons.
+  const insets = useSafeAreaInsets();
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={s.backdrop} onPress={onClose} accessibilityLabel="Fermer" />
-      <View style={s.sheet}>
+      <View style={[s.sheet, { paddingBottom: 34 + insets.bottom }]}>
         <View style={s.grabber} />
         <T v="h2">{title}</T>
         {children}

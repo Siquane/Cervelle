@@ -55,6 +55,10 @@ Elles sont listées dans **Tableau de bord**. Pour Cervelle :
 - **Public cible** : l'appli s'adresse à des enfants. Google demande alors une
   **politique de confidentialité** (une adresse web) et applique ses règles
   « Familles ». Aucune pub, aucun prénom n'est envoyé à Claude (seulement le niveau).
+- **Politique de confidentialité** : `docs/politique-confidentialite.html`, publiée sur
+  https://claude.ai/artifact/3XxwLUFfpgffLdoFg4aWcG. La rendre **publique** (menu
+  Partager de la page) avant de coller l'adresse dans la Play Console
+  (**Règles et programmes → Contenu de l'application → Règles de confidentialité**).
 
 ## 4. Installer sur le téléphone de l'enfant
 

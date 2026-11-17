@@ -99,7 +99,7 @@ export default function ChildTabs() {
             title: t.title,
             tabBarIcon: ({ focused, color: c }) => <Ionicons name={focused ? t.on : t.icon} size={26} color={c as string} />,
             tabBarBadge: t.name === "amis" && news > 0 ? news : undefined,
-            tabBarBadgeStyle: { backgroundColor: color.brand, fontFamily: font.textBlack },
+            tabBarBadgeStyle: { backgroundColor: color.brandFill, color: color.white, fontFamily: font.textBlack },
           }}
         />
       ))}

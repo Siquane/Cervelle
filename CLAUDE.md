@@ -13,6 +13,11 @@
   l'affichage, jamais dans un `StyleSheet.create` ; mascotte cerveau dessinée en SVG
   (`src/components/mascot/geometry.ts`, une seule source pour l'appli et les
   icônes). Jetons dans `src/theme/tokens.ts`.
+- Couleurs accessibles (WCAG 2.2, calculées en OKLCH) : texte ≥ 4,5:1,
+  icônes ≥ 3:1. Couleur vive = décor (barres, anneaux, bordures) ; texte en
+  `brand`/`teal`/`sky`/`green`/`red`/`sunDark` ; blanc seulement sur
+  `brandFill`/`tealFill`/`skyFill`/`greenFill` ou `tint.fill` (bord `…Edge`,
+  `tint.edge`) ; sur le jaune, texte `onSun`. Bouton « danger » = contour.
 - Étiquettes : new = « En cours » (ciel), review = « À revoir » (soleil),
   mastered = « Maîtrisé » (vert).
 - Textes en français, tutoiement, phrases courtes lisibles par un enfant de 8 ans.

@@ -70,7 +70,7 @@ export default function AgendaTab() {
                 accessibilityState={{ selected: on }}
                 accessibilityLabel={`${WEEKDAYS[i]} ${dayNumber(d)}`}
                 onPress={() => setDay(d)}
-                style={{ flex: 1, alignItems: "center", paddingVertical: 8, borderRadius: radius.md, backgroundColor: on ? color.brand : d === today ? color.brandSoft : "transparent", gap: 2 }}
+                style={{ flex: 1, alignItems: "center", paddingVertical: 8, borderRadius: radius.md, backgroundColor: on ? color.brandFill : d === today ? color.brandSoft : "transparent", gap: 2 }}
               >
                 <T v="label" style={{ color: on ? color.white : color.muted, fontSize: 11 }}>
                   {WEEKDAYS_SHORT[i]}

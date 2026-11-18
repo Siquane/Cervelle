@@ -127,7 +127,7 @@ export interface ShopItem {
   slot: ShopSlot;
   price: number;
   /** saison: on sale only part of the year; legendaire: very expensive; badge: won with a badge. */
-  kind: "normal" | "saison" | "legendaire" | "badge";
+  kind: "normal" | "saison" | "legendaire" | "badge" | "chemin";
   /** saison: « MM-DD » first and last day. */
   season: [string, string] | null;
   /** badge: the badge's name. */
@@ -355,7 +355,7 @@ export interface BadgeSuccess {
 
 export interface BadgeWindow {
   key: string;
-  family: "saison" | "fete";
+  family: "saison" | "fete" | "chemin";
   label: string;
   icon: string;
   shape: BadgeShape;
@@ -427,4 +427,17 @@ export interface DuelResult {
   result: "won" | "lost" | "draw" | null;
   coins: number;
   corrections: { questionId: string; correct: boolean; expected: string }[];
+}
+
+export type StarReward = { type: "coins"; coins: number } | { type: "chest" } | { type: "item" };
+
+export interface StarPath {
+  month: string;
+  theme: { id: "espace" | "ocean" | "jungle" | "nuit"; label: string; item: string; itemName: string };
+  stars: number;
+  end: number;
+  breakdown: { revision: number; regularite: number; missions: number; defis: number };
+  rules: { quiz: number; goodQuiz: number; interro: number; day: number; week: number; chest: number; win: number; badge: number };
+  steps: { at: number; reward: StarReward; reached: boolean; result: { coins: number; item: string | null; itemName: string | null } | null }[];
+  fresh: { at: number; coins: number; item: string | null; itemName: string | null }[];
 }

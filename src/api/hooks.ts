@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-import type { Agenda, Badges, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
+import type { Agenda, Badges, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -28,6 +28,7 @@ export const keys = {
   friendRequests: ["friendRequests"] as const,
   badges: (lid: string) => ["badges", lid] as const,
   duels: (lid: string) => ["duels", lid] as const,
+  stars: (lid: string, month: string) => ["stars", lid, month] as const,
 };
 
 export const useAgenda = (lid: string) => useQuery({ queryKey: keys.agenda(lid), queryFn: () => api.get<Agenda>(`${L(lid)}/agenda`) });
@@ -41,6 +42,9 @@ export const useWeekly = (lid: string, week: string) =>
   useQuery({ queryKey: ["weekly", lid, week], enabled: !!lid, queryFn: () => api.get<WeeklyReport>(`${L(lid)}/weekly?week=${week}`) });
 
 export const useDuels = (lid: string) => useQuery({ queryKey: keys.duels(lid), queryFn: () => api.get<{ duels: Duel[] }>(`${L(lid)}/duels`).then((r) => r.duels), refetchInterval: 60_000 });
+
+/** Asking also pays the steps reached (server side). `month` « AAAA-MM », empty for this month. */
+export const useStars = (lid: string, month = "") => useQuery({ queryKey: keys.stars(lid, month), queryFn: () => api.get<StarPath>(`${L(lid)}/stars${month ? `?month=${month}` : ""}`) });
 
 export const useStats = (lid: string) => useQuery({ queryKey: keys.stats(lid), queryFn: () => api.get<Stats>(`${L(lid)}/stats`) });
 export const useFriends = (lid: string) => useQuery({ queryKey: keys.friends(lid), queryFn: () => api.get<Friends>(`${L(lid)}/friends`), refetchInterval: 60_000 });
@@ -97,7 +101,7 @@ export const useDevices = (lid: string) =>
 export function useRefreshLearner(lid: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid), keys.duels(lid)]) {
+    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid), keys.duels(lid), ["stars", lid]]) {
       qc.invalidateQueries({ queryKey: k });
     }
   };

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useTodos } from "../../../src/api/hooks";
+import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useTodos } from "../../../src/api/hooks";
 import type { Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
 import { EVENT_KIND, itemsForDay } from "../../../src/lib/agenda";
@@ -24,6 +24,7 @@ import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../
 
 export default function ChildHome() {
   const { lid, asParent } = useLid();
+  const stars = useStars(lid);
   const home = useHome(lid);
   const refresh = useRefreshLearner(lid);
   const signOut = useSession((s) => s.signOut);
@@ -96,6 +97,9 @@ export default function ChildHome() {
         ) : null}
         <Stat icon="flame" tint={learner.streak ? "#FF7A1A" : color.faint} value={learner.streak} label="Jours d'affilée" />
         <Stat icon="coin" tint={color.sunDark} value={learner.coins} label="Pièces" />
+        <Pressable accessibilityRole="button" accessibilityLabel="Chemin d'étoiles" onPress={() => router.push({ pathname: "/etoiles", params: { lid } })}>
+          <Stat icon="star" tint="#E0A100" value={stars.data?.stars ?? "…"} label="Étoiles" />
+        </Pressable>
         <View style={{ flex: 1 }} />
         <Pressable accessibilityRole="button" accessibilityLabel="Menu" hitSlop={10} onPress={() => setMenu(true)}>
           <Ionicons name="ellipsis-horizontal-circle" size={34} color={color.ink} />

@@ -106,6 +106,23 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
 
+  // Chemin d'étoiles (cadeaux du 50e palier)
+  casque_astronaute: {
+    shapes: [
+      { kind: "path", d: "M 14 112 C 6 30 200 30 192 112", fill: "none", stroke: "#DDF3FF", strokeWidth: 10 },
+      { kind: "path", d: "M 14 112 C 6 30 200 30 192 112", fill: "none", ...st },
+      { kind: "rect", x: 8, y: 108, width: 190, height: 16, rx: 8, fill: "#E3E6EF", ...st },
+      { kind: "path", d: "M 150 44 L 168 14", fill: "none", ...st },
+      { kind: "circle", cx: 170, cy: 10, r: 7, fill: "#FF5C8A", ...st },
+    ],
+  },
+  couronne_feuilles: {
+    shapes: [
+      ...[60, 76, 92, 114, 130, 146].map((x, i) => ({ kind: "ellipse" as const, cx: x, cy: 50 - Math.round(Math.sin(((i + 0.5) / 6) * Math.PI) * 12), rx: 11, ry: 7, fill: i % 2 ? "#3DD486" : "#22A85A", stroke: INK, strokeWidth: 3 })),
+      { kind: "circle", cx: 103, cy: 34, r: 7, fill: "#FF5C8A", ...st },
+    ],
+  },
+
   // ── Visage ──
   paillettes: {
     layer: "face",
@@ -137,6 +154,16 @@ export const WARDROBE: Record<string, Item> = {
   chauve_souris: {
     layer: "face",
     shapes: [{ kind: "path", d: "M 102 92 C 90 84 70 82 50 92 C 58 96 60 104 56 112 C 70 108 80 116 84 122 C 92 114 98 112 102 114 C 106 112 112 114 120 122 C 124 116 134 108 148 112 C 144 104 146 96 154 92 C 134 82 114 84 102 92 Z", fill: "#3D3A66", ...st }],
+  },
+
+  tuba: {
+    shapes: [
+      { kind: "rect", x: 56, y: 86, width: 94, height: 38, rx: 18, fill: "#8EC5FF", ...st },
+      { kind: "rect", x: 56, y: 98, width: 94, height: 8, rx: 4, fill: "#FF8A3D" },
+      // The snorkel: a thick ink line, then the yellow inside it.
+      { kind: "path", d: "M 150 140 L 176 140 L 176 40", fill: "none", stroke: INK, strokeWidth: 13 },
+      { kind: "path", d: "M 150 140 L 176 140 L 176 40", fill: "none", stroke: "#FFC23D", strokeWidth: 7 },
+    ],
   },
 
   // ── Cou ──
@@ -175,6 +202,13 @@ export const WARDROBE: Record<string, Item> = {
   cape: {
     layer: "behind",
     shapes: [{ kind: "path", d: "M 40 120 C 20 150 4 176 -2 186 L 208 186 C 202 176 186 150 166 120 Z", fill: "#E5484D", ...st }],
+  },
+  cape_etoiles: {
+    layer: "behind",
+    shapes: [
+      { kind: "path", d: "M 40 120 C 20 150 4 176 -2 186 L 208 186 C 202 176 186 150 166 120 Z", fill: "#2B2560", ...st },
+      ...[[30, 170], [70, 160], [120, 172], [170, 164], [100, 150]].map(([x, y]) => ({ kind: "circle" as const, cx: x, cy: y, r: 3, fill: "#FFC23D" })),
+    ],
   },
   ailes_papillon: {
     layer: "behind",

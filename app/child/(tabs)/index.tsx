@@ -41,13 +41,13 @@ export default function ChildHome() {
   const tick = useMutation({
     mutationFn: (t: Todo) => api.patch<Reward>(`${learnerPath(lid)}/todos/${t.id}`, { done: !t.done }),
     onSuccess: afterReward,
-    onError: (e) => Alert.alert("Tâche", errorMessage(e)),
+    onError: (e) => Alert.alert("Tâche non enregistrée", errorMessage(e)),
   });
   const habitTick = useMutation({
     mutationFn: (h: { id: string; on: boolean }) =>
       h.on ? api.delete<Reward>(`${learnerPath(lid)}/habits/${h.id}/check?day=${habits.data?.today ?? todayIso()}`) : api.post<Reward>(`${learnerPath(lid)}/habits/${h.id}/check`, {}),
     onSuccess: (r) => afterReward({ ...r, coins: r.coins ?? 0 }),
-    onError: (e) => Alert.alert("Habitude", errorMessage(e)),
+    onError: (e) => Alert.alert("Habitude non enregistrée", errorMessage(e)),
   });
   const chest = useMutation({
     mutationFn: () => api.post<{ coins: number }>(`${learnerPath(lid)}/chest`),
@@ -55,7 +55,7 @@ export default function ChildHome() {
       refresh();
       Alert.alert("Coffre ouvert !", `+${r.coins} pièces. Bravo pour tes missions !`);
     },
-    onError: (e) => Alert.alert("Coffre", errorMessage(e)),
+    onError: (e) => Alert.alert("Coffre fermé", errorMessage(e)),
   });
 
   if (home.isLoading) return <Loading />;
@@ -132,7 +132,7 @@ export default function ChildHome() {
           {missions.chestOpened ? (
             <T v="small">Coffre ouvert aujourd'hui. Reviens demain pour de nouvelles missions !</T>
           ) : (
-            <Button tone="sun" icon="gift" label={missions.done === missions.total ? `Ouvrir le coffre (+${missions.chestCoins})` : "Coffre : termine les missions"} disabled={missions.done < missions.total} loading={chest.isPending} onPress={() => chest.mutate()} />
+            <Button tone="sun" icon="gift" label={missions.done === missions.total ? `Ouvrir le coffre (+${missions.chestCoins})` : "Termine tes missions pour ouvrir le coffre"} disabled={missions.done < missions.total} loading={chest.isPending} onPress={() => chest.mutate()} />
           )}
         </Card>
 
@@ -177,7 +177,7 @@ export default function ChildHome() {
         </Card>
 
         <Card style={{ gap: space.md }}>
-          <Section title="Mes habitudes" action="Gérer" onAction={() => router.push({ pathname: "/habits", params: { lid } })} />
+          <Section title="Mes habitudes" action="Mes habitudes" onAction={() => router.push({ pathname: "/habits", params: { lid } })} />
           {todayHabits.length === 0 ? (
             <T v="small">Crée une habitude (lire, dormir assez, sport…) et coche-la chaque jour.</T>
           ) : (
@@ -269,7 +269,7 @@ export default function ChildHome() {
           <Mascot size={86} accessories={["lunettes"]} />
         </Card>
         <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />
-        <Button tone="white" icon="document-text" label="Mes interros analysées" onPress={() => router.push({ pathname: "/exam", params: { lid } })} />
+        <Button tone="white" icon="document-text" label="Mes interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid } })} />
       </ScrollView>
 
       <View style={{ position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: GUTTER, paddingTop: space.sm, paddingBottom: space.lg, backgroundColor: color.bg, flexDirection: "row", gap: space.sm, alignItems: "center" }}>
@@ -293,12 +293,12 @@ export default function ChildHome() {
 
       <BottomSheet open={menu} onClose={() => setMenu(false)} title="Menu">
         <Button tone="white" icon="shirt" label="Habiller Cervelle" onPress={() => { setMenu(false); router.push({ pathname: "/child/shop", params: { lid } }); }} />
-        <Button tone="white" icon="chatbubbles" label="Poser une question" onPress={() => { setMenu(false); router.push({ pathname: "/assistant", params: { lid } }); }} />
+        <Button tone="white" icon="chatbubbles" label="Poser une question à Cervelle" onPress={() => { setMenu(false); router.push({ pathname: "/assistant", params: { lid } }); }} />
         <Button tone="white" icon="journal" label="Journal de bord" onPress={() => { setMenu(false); router.push({ pathname: "/journal", params: { lid } }); }} />
         <Button tone="white" icon="bulb" label="Quel élève es-tu ?" onPress={() => { setMenu(false); router.push({ pathname: "/profil", params: { lid } }); }} />
         <Button tone="white" icon="settings" label="Réglages" onPress={() => { setMenu(false); router.push("/reglages"); }} />
         {asParent ? null : (
-          <Button tone="white" icon="log-out" label="Délier ce téléphone" onPress={async () => { setMenu(false); await signOut(); router.replace("/auth"); }} />
+          <Button tone="white" icon="log-out" label="Déconnecter ce téléphone" onPress={async () => { setMenu(false); await signOut(); router.replace("/auth"); }} />
         )}
       </BottomSheet>
     </SafeAreaView>

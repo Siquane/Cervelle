@@ -22,7 +22,7 @@ export function RevisionRow({ r, lid }: { r: RevisionCard; lid: string }) {
           </View>
         ) : r.status === "failed" ? (
           <T v="small" style={{ color: color.red }} numberOfLines={2}>
-            {r.error ?? "La préparation a échoué."}
+            {r.error ?? "La préparation n'a pas marché. Touche pour réessayer."}
           </T>
         ) : (
           <>

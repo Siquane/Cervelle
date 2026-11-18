@@ -70,7 +70,7 @@ export default function Todos() {
       refresh();
       celebrate(r, "Tâche finie !");
     },
-    onError: (e) => Alert.alert("Tâche", errorMessage(e)),
+    onError: (e) => Alert.alert("Tâche non enregistrée", errorMessage(e)),
   });
 
   if (todos.isLoading) return <Loading />;
@@ -130,7 +130,7 @@ export default function Todos() {
           </View>
         </>
       ) : (
-        <Card style={{ gap: space.md }}>{open_.length ? open_.map(row) : <T v="body">Rien à faire. Profite !</T>}</Card>
+        <Card style={{ gap: space.md }}>{open_.length ? open_.map(row) : <T v="body">Rien à faire ! Ajoute tes devoirs pour ne rien oublier.</T>}</Card>
       )}
       <Button icon="add" label="Ajouter une tâche" onPress={() => open("new")} />
       {done.length ? (

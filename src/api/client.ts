@@ -34,11 +34,11 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
     if (s?.kind === "parent" && retry && (await useSession.getState().refresh())) return request<T>(path, init, false);
     const body = await res.json().catch(() => ({}));
     await useSession.getState().signOut();
-    throw new ApiError(401, body.error ?? "Session expirée, reconnecte-toi.", body.code);
+    throw new ApiError(401, body.error ?? "Tu as été déconnecté. Reconnecte-toi pour continuer.", body.code);
   }
   if (res.status === 204) return undefined as T;
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new ApiError(res.status, body.error ?? `Erreur ${res.status}`, body.code);
+  if (!res.ok) throw new ApiError(res.status, body.error ?? "Ça n'a pas marché. Réessaie dans un instant.", body.code);
   return body as T;
 }
 
@@ -50,4 +50,4 @@ export const api = {
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };
 
-export const errorMessage = (e: unknown) => (e instanceof Error ? e.message : "Une erreur est survenue.");
+export const errorMessage = (e: unknown) => (e instanceof Error ? e.message : "Ça n'a pas marché. Réessaie dans un instant.");

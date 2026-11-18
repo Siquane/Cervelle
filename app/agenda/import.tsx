@@ -28,7 +28,7 @@ export default function ImportTimetable() {
       const picked = await pickPhotos(source, MAX - pages.length);
       setPages((p) => [...p, ...picked].slice(0, MAX));
     } catch (e) {
-      Alert.alert(e instanceof PermissionDenied ? "Autorisation" : "Photo", errorMessage(e));
+      Alert.alert(e instanceof PermissionDenied ? "Autorisation nécessaire" : "Photo non ajoutée", errorMessage(e));
     }
   }
 

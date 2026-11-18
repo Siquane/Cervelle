@@ -92,7 +92,7 @@ export default function Quiz() {
         <Card style={{ alignItems: "center", gap: space.md }}>
           <Mascot size={120} />
           <T v="h3" style={{ textAlign: "center" }}>
-            {mode === "a_revoir" ? "Rien à revoir pour l'instant !" : "Pas de question de ce type dans cette révision."}
+            {mode === "a_revoir" ? "Rien à revoir pour l'instant !" : "Pas de question de ce type ici. Essaie un autre exercice."}
           </T>
           <Button label="Retour" onPress={() => router.back()} />
         </Card>

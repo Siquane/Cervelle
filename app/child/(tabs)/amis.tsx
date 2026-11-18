@@ -35,7 +35,7 @@ export default function FriendsTab() {
       refresh();
       Alert.alert("Demande envoyée", `Quand tes parents et ceux de ${r.friendship.name} auront dit oui, vous serez amis.`);
     },
-    onError: (e) => Alert.alert("Ami", errorMessage(e)),
+    onError: (e) => Alert.alert("Demande non envoyée", errorMessage(e)),
   });
   const cheer = useMutation({
     mutationFn: (b: { toId: string; kind: string }) => api.post(`${learnerPath(lid)}/cheers`, b),
@@ -43,7 +43,7 @@ export default function FriendsTab() {
       setPicked(null);
       Alert.alert("Envoyé !", "Ton encouragement est parti.");
     },
-    onError: (e) => Alert.alert("Encouragement", errorMessage(e)),
+    onError: (e) => Alert.alert("Encouragement non envoyé", errorMessage(e)),
   });
   const challenge = useMutation({
     mutationFn: (toId: string) => api.post(`${learnerPath(lid)}/challenges`, { toId }),
@@ -52,12 +52,12 @@ export default function FriendsTab() {
       refresh();
       Alert.alert("Défi lancé !", "Qui travaillera le plus cette semaine ? Le gagnant remporte 20 pièces.");
     },
-    onError: (e) => Alert.alert("Défi", errorMessage(e)),
+    onError: (e) => Alert.alert("Défi non lancé", errorMessage(e)),
   });
   const answer = useMutation({
     mutationFn: (b: { id: string; action: "accept" | "decline" }) => api.post(`${learnerPath(lid)}/challenges/${b.id}/${b.action}`),
     onSuccess: refresh,
-    onError: (e) => Alert.alert("Défi", errorMessage(e)),
+    onError: (e) => Alert.alert("Réponse non envoyée", errorMessage(e)),
   });
   const unfriend = useMutation({
     mutationFn: (id: string) => api.delete(`${learnerPath(lid)}/friends/${id}`),

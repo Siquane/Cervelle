@@ -63,7 +63,7 @@ export default function EventForm() {
   const tooShort = minutesBetween(start, end) <= 0;
 
   return (
-    <Page header={<TopBar title={existing ? "Modifier le créneau" : "Nouveau créneau"} />}>
+    <Page header={<TopBar title={existing ? "Modifier" : "Ajouter à l'agenda"} />}>
       <Field label="Quoi ?" value={title} onChangeText={setTitle} placeholder="Maths, Anglais, Piscine…" maxLength={60} />
       <View style={{ gap: space.sm }}>
         <T v="bodyBold">Type</T>
@@ -99,11 +99,11 @@ export default function EventForm() {
         </T>
       ) : null}
       <Field label="Salle (facultatif)" value={room} onChangeText={setRoom} placeholder="2-004" maxLength={30} />
-      {existing?.source === "passerelle" ? <T v="small">Ce créneau vient du planning familial : la prochaine synchronisation le remettra comme dans Passerelle.</T> : null}
+      {existing?.source === "passerelle" ? <T v="small">Ceci vient du planning familial : la prochaine synchronisation le remettra comme dans Passerelle.</T> : null}
       {save.error ? <ErrorBox message={errorMessage(save.error)} /> : null}
       <Button label="Enregistrer" icon="checkmark" loading={save.isPending} disabled={!title.trim() || tooShort || (repeat === "once" && !day)} onPress={() => save.mutate()} />
-      {existing ? <Button tone="ghost" icon="trash" label="Supprimer ce créneau" onPress={() => setConfirm(true)} /> : null}
-      <BottomSheet open={confirm} onClose={() => setConfirm(false)} title="Supprimer ce créneau ?">
+      {existing ? <Button tone="ghost" icon="trash" label="Supprimer de l'agenda" onPress={() => setConfirm(true)} /> : null}
+      <BottomSheet open={confirm} onClose={() => setConfirm(false)} title="Supprimer de l'agenda ?">
         {remove.error ? <ErrorBox message={errorMessage(remove.error)} /> : null}
         <Button tone="danger" icon="trash" label="Supprimer" loading={remove.isPending} onPress={() => remove.mutate()} />
         <Button tone="white" label="Annuler" onPress={() => setConfirm(false)} />

@@ -5,10 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useAgenda, useQueryClient } from "../../../src/api/hooks";
+import { keys, learnerPath, useAgenda, useHome, useQueryClient } from "../../../src/api/hooks";
 import { BottomSheet } from "../../../src/components/bits";
 import { Button, Card, ErrorBox, Loading, T } from "../../../src/components/ui";
 import { EVENT_KIND, countByDay, itemsForDay, type AgendaItem } from "../../../src/lib/agenda";
+import { planSessions, plannedRevisionId } from "../../../src/lib/plan";
 import { WEEKDAYS, WEEKDAYS_SHORT, addDays, dayNumber, weekOf } from "../../../src/lib/dates";
 import { longDate, todayIso } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
@@ -21,6 +22,7 @@ export default function AgendaTab() {
   const agenda = useAgenda(lid);
   const qc = useQueryClient();
   const today = todayIso();
+  const home = useHome(lid);
   const [day, setDay] = useState(today);
   const [syncOpen, setSyncOpen] = useState(false);
   const week = weekOf(day);
@@ -36,12 +38,16 @@ export default function AgendaTab() {
 
   if (agenda.isLoading) return <Loading />;
   const data = agenda.data;
-  const items = data ? itemsForDay(data.events, data.exams, day) : [];
-  const counts = data ? countByDay(data.events, data.exams, week) : [];
+  // The timetable plus the revision sessions Cervelle plans before each interro.
+  const events = data ? [...data.events, ...planSessions(data.events, data.exams, todayIso(), home.data?.learner.level)] : [];
+  const items = data ? itemsForDay(events, data.exams, day) : [];
+  const counts = data ? countByDay(events, data.exams, week) : [];
   const [y, m] = day.split("-").map(Number);
 
   const open = (i: AgendaItem) => {
+    const planned = i.type === "event" ? plannedRevisionId(i.event.id) : null;
     if (i.type === "exam") router.push({ pathname: "/revision/[id]", params: { id: i.exam.id, lid } });
+    else if (planned) router.push({ pathname: "/revision/[id]", params: { id: planned, lid } });
     else router.push({ pathname: "/agenda/event", params: { lid, id: i.event.id } });
   };
 
@@ -111,6 +117,7 @@ export default function AgendaTab() {
                     </T>
                   ) : null}
                   {i.type === "exam" ? <T v="small">Touche pour réviser</T> : null}
+                  {i.type === "event" && plannedRevisionId(i.event.id) ? <T v="small">Prévu par Cervelle pour l'interro · touche pour réviser</T> : null}
                 </View>
               </Pressable>
             );

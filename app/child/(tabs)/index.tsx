@@ -9,6 +9,7 @@ import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRe
 import type { Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
 import { EVENT_KIND, itemsForDay } from "../../../src/lib/agenda";
+import { planSessions } from "../../../src/lib/plan";
 import { weekdayOf } from "../../../src/lib/dates";
 import { todayIso } from "../../../src/lib/format";
 import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
@@ -80,7 +81,7 @@ export default function ChildHome() {
   });
   const today = habits.data?.today ?? todayIso();
   const nowHHMM = new Date().toTimeString().slice(0, 5);
-  const todayItems = agenda.data ? itemsForDay(agenda.data.events, agenda.data.exams, today).filter((i) => i.end === null || i.end >= nowHHMM).slice(0, 3) : [];
+  const todayItems = agenda.data ? itemsForDay([...agenda.data.events, ...planSessions(agenda.data.events, agenda.data.exams, today, learner.level)], agenda.data.exams, today).filter((i) => i.end === null || i.end >= nowHHMM).slice(0, 3) : [];
   const rank = (t: Todo) => (t.urgent && t.important ? 0 : t.important ? 1 : t.urgent ? 2 : 3);
   const openTodos = (todos.data ?? []).filter((t) => !t.done).sort((a, b) => rank(a) - rank(b) || (a.dueDay ?? "9").localeCompare(b.dueDay ?? "9")).slice(0, 4);
   const todayHabits = (habits.data?.habits ?? []).filter((h) => h.days.includes(weekdayOf(today)));

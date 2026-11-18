@@ -1,3 +1,4 @@
+import { useStopSpeakingOnLeave } from "../src/lib/voice";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -35,6 +36,7 @@ function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
 }
 
 export default function Quiz() {
+  useStopSpeakingOnLeave();
   const { mode = "qcm", revisionId } = useLocalSearchParams<{ mode?: QuizMode; revisionId?: string }>();
   const { lid } = useLid();
   const refresh = useRefreshLearner(lid);

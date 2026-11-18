@@ -3,7 +3,8 @@
 
 export const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 export const WEEKDAYS_SHORT = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-export const WEEKDAYS_LETTER = ["L", "M", "M", "J", "V", "S", "D"];
+/** Two letters: « M » alone could be Tuesday or Wednesday. */
+export const WEEKDAYS_LETTER = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
 
 export function addDays(day: string, n: number): string {
   return new Date(Date.parse(`${day}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);

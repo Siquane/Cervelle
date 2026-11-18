@@ -22,9 +22,12 @@ function Devices({ lid }: { lid: string }) {
     <View style={{ gap: space.sm }}>
       {devices.data.map((d) => (
         <View key={d.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
-          <T v="body" style={{ flex: 1 }} numberOfLines={1}>
-            {d.name || "Téléphone"} · connecté le {shortDate(d.createdAt)}
-          </T>
+          <View style={{ flex: 1 }}>
+            <T v="bodyBold" numberOfLines={1}>
+              {d.name || "Téléphone"}
+            </T>
+            <T v="small">Connecté le {shortDate(d.createdAt)}</T>
+          </View>
           <Button small tone="white" label="Déconnecter" onPress={() => unlink.mutate(d.id)} loading={unlink.isPending && unlink.variables === d.id} />
         </View>
       ))}

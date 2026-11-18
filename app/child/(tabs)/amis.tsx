@@ -218,7 +218,7 @@ export default function FriendsTab() {
           <T v="small" style={{ textAlign: "center" }}>
             Donne ce code à un copain ou une copine. Vos parents devront dire oui tous les deux.
           </T>
-          <View style={{ flexDirection: "row", gap: space.sm }}>
+          <View style={{ gap: space.sm }}>
             <TextInput
               value={code}
               onChangeText={(v) => setCode(v.toUpperCase().slice(0, 6))}
@@ -227,7 +227,7 @@ export default function FriendsTab() {
               autoCapitalize="characters"
               autoCorrect={false}
               accessibilityLabel="Code de ton ami"
-              style={{ flex: 1, minHeight: 52, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, paddingHorizontal: 16, fontFamily: font.textBlack, fontSize: size.lg, letterSpacing: 3, color: color.ink }}
+              style={{ minHeight: 52, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, paddingHorizontal: 16, fontFamily: font.textBlack, fontSize: size.lg, letterSpacing: 3, color: color.ink }}
             />
             <Button icon="person-add" label="Ajouter" disabled={code.length !== 6} loading={add.isPending} onPress={() => add.mutate()} />
           </View>

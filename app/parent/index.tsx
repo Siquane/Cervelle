@@ -1,3 +1,4 @@
+import { useParentWeeklyReminder } from "../../src/lib/notifications";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
@@ -18,6 +19,7 @@ import { useSession } from "../../src/state/session";
 import { color, font, learnerColorOf, space } from "../../src/theme/tokens";
 
 export default function ParentHome() {
+  useParentWeeklyReminder();
   const learners = useLearners();
   const { learnerId, setLearner } = useParentPrefs();
   const selected = learners.data?.find((l) => l.id === learnerId) ?? learners.data?.[0] ?? null;
@@ -99,6 +101,7 @@ export default function ParentHome() {
           ) : null}
 
           <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid: selected.id } })} style={{ minHeight: 72 }} />
+          <Button tone="white" icon="stats-chart" label={`Bilan de la semaine de ${selected.name}`} onPress={() => router.push("/parent/bilan")} />
 
           {overview.isLoading ? <Loading /> : null}
           {overview.error ? <ErrorBox message={errorMessage(overview.error)} onRetry={() => overview.refetch()} /> : null}

@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-import type { Agenda, Badges, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo } from "./types";
+import type { Agenda, Badges, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -35,6 +35,9 @@ export const useHabits = (lid: string) => useQuery({ queryKey: keys.habits(lid),
 export const useJournal = (lid: string) => useQuery({ queryKey: keys.journal(lid), queryFn: () => api.get<{ today: string; entries: JournalEntry[] }>(`${L(lid)}/journal`) });
 /** Asking also saves the new badges and pays their coins (server side). */
 export const useBadges = (lid: string) => useQuery({ queryKey: keys.badges(lid), queryFn: () => api.get<Badges>(`${L(lid)}/badges`) });
+
+export const useWeekly = (lid: string, week: string) =>
+  useQuery({ queryKey: ["weekly", lid, week], enabled: !!lid, queryFn: () => api.get<WeeklyReport>(`${L(lid)}/weekly?week=${week}`) });
 
 export const useStats = (lid: string) => useQuery({ queryKey: keys.stats(lid), queryFn: () => api.get<Stats>(`${L(lid)}/stats`) });
 export const useFriends = (lid: string) => useQuery({ queryKey: keys.friends(lid), queryFn: () => api.get<Friends>(`${L(lid)}/friends`), refetchInterval: 60_000 });

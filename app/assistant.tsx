@@ -68,7 +68,7 @@ export default function Assistant() {
             </View>
           ) : null}
           {turns.map((t, i) => (
-            <View key={i} style={{ alignSelf: t.role === "user" ? "flex-end" : "flex-start", maxWidth: "88%", backgroundColor: t.role === "user" ? color.brand : color.card, borderRadius: radius.lg, borderWidth: t.role === "user" ? 0 : 2, borderColor: color.line, padding: space.md }}>
+            <View key={i} style={{ alignSelf: t.role === "user" ? "flex-end" : "flex-start", maxWidth: "88%", backgroundColor: t.role === "user" ? color.brandFill : color.card, borderRadius: radius.lg, borderWidth: t.role === "user" ? 0 : 2, borderColor: color.line, padding: space.md }}>
               <T v="body" style={{ color: t.role === "user" ? color.white : color.ink }} selectable>
                 {t.text}
               </T>
@@ -88,7 +88,7 @@ export default function Assistant() {
             maxLength={2000}
             style={{ flex: 1, minHeight: 52, maxHeight: 140, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, backgroundColor: color.card, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, fontFamily: font.textSemi, fontSize: size.md, color: color.ink }}
           />
-          <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" disabled={!text.trim() || ask.isPending} onPress={() => send(text)} style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: text.trim() ? color.brand : color.line, alignItems: "center", justifyContent: "center" }}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" disabled={!text.trim() || ask.isPending} onPress={() => send(text)} style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: text.trim() ? color.brandFill : color.line, alignItems: "center", justifyContent: "center" }}>
             <Ionicons name="send" size={22} color={color.white} />
           </Pressable>
         </View>

@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { AppState, Linking, Switch, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TimeField } from "../src/components/organize";
-import { Button, Card, Page, T, TopBar } from "../src/components/ui";
+import { Button, Card, Page, Segmented, T, TopBar } from "../src/components/ui";
 import { askPermission, notificationsAllowed, useReminderPrefs } from "../src/lib/notifications";
 import { EVE_HOUR, type ReminderPrefs } from "../src/lib/reminders";
 import { useReading } from "../src/state/reading";
 import { useSession } from "../src/state/session";
-import { color, space } from "../src/theme/tokens";
+import { color, scheme, space, type Scheme } from "../src/theme/tokens";
+import { setScheme } from "../src/state/theme";
 
 type Key = "exams" | "review" | "ready";
 
@@ -81,6 +82,20 @@ export default function Reglages() {
   return (
     <Page header={<TopBar title="Réglages" />}>
       {child ? <Reminders /> : null}
+
+      <T v="label">Apparence</T>
+      <Card style={{ gap: space.md }}>
+        <T v="bodyBold">Thème</T>
+        <Segmented<Scheme>
+          options={[
+            { key: "dark", label: "Sombre" },
+            { key: "light", label: "Clair" },
+          ]}
+          value={scheme}
+          onChange={(k) => void setScheme(k)}
+        />
+        <T v="small">L'appli redémarre pour changer de thème. Réglage de ce téléphone.</T>
+      </Card>
 
       <T v="label">Lecture</T>
       <Row

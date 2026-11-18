@@ -18,7 +18,7 @@ import { color, radius, space } from "../src/theme/tokens";
 // The to-do list, sorted like the Eisenhower matrix but in a child's words.
 const BOXES = [
   { key: "ui", urgent: true, important: true, title: "À faire tout de suite", hint: "Urgent et important", fg: color.red, bg: color.redSoft, icon: "flame" },
-  { key: "i", urgent: false, important: true, title: "À prévoir", hint: "Important, pas urgent", fg: "#6D3FD9", bg: "#EDE5FE", icon: "calendar" },
+  { key: "i", urgent: false, important: true, title: "À prévoir", hint: "Important, pas urgent", fg: color.violet, bg: color.violetSoft, icon: "calendar" },
   { key: "u", urgent: true, important: false, title: "Vite fait", hint: "Urgent, pas important", fg: color.skyDark, bg: color.skySoft, icon: "flash" },
   { key: "n", urgent: false, important: false, title: "Plus tard", hint: "Ni urgent ni important", fg: color.green, bg: color.greenSoft, icon: "leaf" },
 ] as const;
@@ -143,7 +143,7 @@ export default function Todos() {
       <BottomSheet open={!!editing} onClose={() => setEditing(null)} title={editing === "new" ? "Nouvelle tâche" : "Modifier la tâche"}>
         <Field label="Quoi ?" value={title} onChangeText={setTitle} placeholder="DM de SVT, apprendre la poésie…" maxLength={80} autoFocus={editing === "new"} />
         <Segmented options={[{ key: "y", label: "Urgent" }, { key: "n", label: "Pas urgent" }]} value={urgent ? "y" : "n"} onChange={(k) => setUrgent(k === "y")} tint={color.red} />
-        <Segmented options={[{ key: "y", label: "Important" }, { key: "n", label: "Pas important" }]} value={important ? "y" : "n"} onChange={(k) => setImportant(k === "y")} tint="#6D3FD9" />
+        <Segmented options={[{ key: "y", label: "Important" }, { key: "n", label: "Pas important" }]} value={important ? "y" : "n"} onChange={(k) => setImportant(k === "y")} tint={color.violet} />
         <DateField label="Pour quand ? (facultatif)" value={dueDay} onChange={setDueDay} />
         {save.error ? <ErrorBox message={errorMessage(save.error)} /> : null}
         <Button label="Enregistrer" icon="checkmark" disabled={!title.trim()} loading={save.isPending} onPress={() => save.mutate()} />

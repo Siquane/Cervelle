@@ -86,10 +86,10 @@ export function Stat({ icon, value, tint, label }: { icon: keyof typeof Ionicons
 
 const s = StyleSheet.create({
   tag: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill },
-  tagText: { fontSize: size.sm },
+  tagText: { fontSize: size.sm, includeFontPadding: false },
   backdrop: { flex: 1, backgroundColor: color.backdrop },
   sheet: { backgroundColor: color.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 22, paddingBottom: 34, gap: space.lg },
   grabber: { alignSelf: "center", width: 44, height: 5, borderRadius: 3, backgroundColor: color.line },
   stat: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: color.card, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 2, borderColor: color.line },
-  statText: { fontSize: size.md, color: color.ink },
+  statText: { fontSize: size.md, color: color.ink, includeFontPadding: false },
 });

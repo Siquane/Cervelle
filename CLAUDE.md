@@ -18,6 +18,9 @@
   `brand`/`teal`/`sky`/`green`/`red`/`sunDark` ; blanc seulement sur
   `brandFill`/`tealFill`/`skyFill`/`greenFill` ou `tint.fill` (bord `…Edge`,
   `tint.edge`) ; sur le jaune, texte `onSun`. Bouton « danger » = contour.
+- Badges : calculés et payés par le serveur (`GET …/badges`, catalogue dans
+  `server/src/lib/cervelle/badges.ts` de Passerelle) ; dessin des médailles
+  dans `src/components/Medal.tsx` (mascotte au centre, métal selon le niveau).
 - Étiquettes : new = « En cours » (ciel), review = « À revoir » (soleil),
   mastered = « Maîtrisé » (vert).
 - Textes en français, tutoiement, phrases courtes lisibles par un enfant de 8 ans.

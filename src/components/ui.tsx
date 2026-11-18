@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { color, font, GUTTER, onColor, radius, reading, size, space } from "../theme/tokens";
@@ -37,17 +37,20 @@ export function T({ v = "body", style, ...rest }: TextProps & { v?: Variant; sty
 
 /** A page: safe area, scroll, side gutter. */
 export function Page({ children, scroll = true, header, footer, bg = color.bg }: { children: ReactNode; scroll?: boolean; header?: ReactNode; footer?: ReactNode; bg?: string }) {
+  // Android draws the app under the phone's navigation buttons (edge to edge):
+  // whatever sits at the bottom (footer, or the end of the page) gets that height too.
+  const bottom = useSafeAreaInsets().bottom;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bg }} edges={["top", "left", "right"]}>
       {header}
       {scroll ? (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40, gap: space.lg }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40 + (footer ? 0 : bottom), gap: space.lg }} keyboardShouldPersistTaps="handled">
           {children}
         </ScrollView>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: GUTTER }}>{children}</View>
+        <View style={{ flex: 1, paddingHorizontal: GUTTER, paddingBottom: footer ? 0 : bottom }}>{children}</View>
       )}
-      {footer}
+      {footer ? <View style={{ paddingBottom: bottom }}>{footer}</View> : null}
     </SafeAreaView>
   );
 }

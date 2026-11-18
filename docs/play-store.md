@@ -50,7 +50,9 @@ test interne (accès à l'appli, publicité, classification du contenu, public c
 Elles sont listées dans **Tableau de bord**. Pour Cervelle :
 
 - **Accès à l'appli** : « Certaines fonctionnalités sont restreintes » → expliquer que
-  l'enfant se connecte avec un code donné par le parent depuis Passerelle.
+  le parent crée son compte dans Cervelle (code reçu par e-mail), puis donne à l'enfant
+  un code à 6 chiffres depuis l'espace parent. Pour l'examen de Google, fournir un compte
+  de test avec mot de passe (connexion « Mot de passe »).
 - **Publicité** : non.
 - **Public cible** : l'appli s'adresse à des enfants. Google demande alors une
   **politique de confidentialité** (une adresse web) et applique ses règles

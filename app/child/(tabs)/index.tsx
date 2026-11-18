@@ -13,6 +13,7 @@ import { weekdayOf } from "../../../src/lib/dates";
 import { todayIso } from "../../../src/lib/format";
 import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
 import { Mascot } from "../../../src/components/mascot/Mascot";
+import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
 import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { whenLabel } from "../../../src/lib/format";
@@ -97,7 +98,9 @@ export default function ChildHome() {
 
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 120 }}>
         <Card onPress={() => router.push({ pathname: "/child/shop", params: { lid } })} style={{ flexDirection: "row", alignItems: "center", gap: space.lg, backgroundColor: tint.soft, borderColor: tint.soft }}>
-          <Mascot size={104} accessories={learner.equipped} mood={learner.streak ? "happy" : "wow"} />
+          <Scene equipped={learner.equipped} width={112} height={112} radius={18}>
+            <Mascot size={104} accessories={learner.equipped} mood={learner.streak ? "happy" : "wow"} />
+          </Scene>
           <View style={{ flex: 1, gap: 6 }}>
             <T v="h3">Salut {learner.name} !</T>
             <T v="small" style={{ color: tint.dark }}>

@@ -21,6 +21,10 @@
 - Badges : calculés et payés par le serveur (`GET …/badges`, catalogue dans
   `server/src/lib/cervelle/badges.ts` de Passerelle) ; dessin des médailles
   dans `src/components/Medal.tsx` (mascotte au centre, métal selon le niveau).
+- Boutique : catalogue côté serveur (`server/src/lib/cervelle/shop.ts`,
+  emplacements tête / visage / cou / tenue / main / couleur / décor) ; dessins
+  dans `src/components/mascot/wardrobe.ts` (mêmes id), décors dans
+  `src/components/mascot/Scene.tsx`.
 - Étiquettes : new = « En cours » (ciel), review = « À revoir » (soleil),
   mastered = « Maîtrisé » (vert).
 - Textes en français, tutoiement, phrases courtes lisibles par un enfant de 8 ans.

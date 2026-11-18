@@ -16,7 +16,7 @@ import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
 import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
-import { whenLabel } from "../../../src/lib/format";
+import { daysUntil, whenLabel } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
 import { useSession } from "../../../src/state/session";
 import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../../src/theme/tokens";
@@ -73,6 +73,11 @@ export default function ChildHome() {
   const ready = revisions.filter((r) => r.status === "ready");
   const nextExams = ready.filter((r) => r.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!));
   const featured = (nextExams.length ? nextExams : ready).slice(0, 4);
+  // An interro in the next 3 days goes to the top, with a quick quiz.
+  const urgentExam = nextExams.find((r) => {
+    const d = daysUntil(r.examDate!.slice(0, 10));
+    return d >= 0 && d <= 3;
+  });
   const today = habits.data?.today ?? todayIso();
   const nowHHMM = new Date().toTimeString().slice(0, 5);
   const todayItems = agenda.data ? itemsForDay(agenda.data.events, agenda.data.exams, today).filter((i) => i.end === null || i.end >= nowHHMM).slice(0, 3) : [];
@@ -110,6 +115,66 @@ export default function ChildHome() {
             <T v="small">Touche pour habiller Cervelle</T>
           </View>
         </Card>
+
+        {urgentExam || dueReview > 0 ? (
+          <Card style={{ gap: space.md, borderColor: color.brand }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+              <Ionicons name="alarm" size={24} color={color.brand} />
+              <T v="h3" style={{ flex: 1 }}>
+                À faire maintenant
+              </T>
+            </View>
+            {urgentExam ? (
+              <View style={{ gap: space.sm }}>
+                <T v="body">
+                  <T v="bodyBold">Interro {whenLabel(urgentExam.examDate!)}</T> : {urgentExam.title}
+                </T>
+                <Button icon="flash" label="Révision express" onPress={() => router.push({ pathname: "/quiz", params: { lid, revisionId: urgentExam.id, mode: "express" } })} />
+              </View>
+            ) : null}
+            {dueReview > 0 ? (
+              <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: "/quiz", params: { lid, mode: "a_revoir" } })} style={{ flexDirection: "row", alignItems: "center", gap: space.md, backgroundColor: color.sunSoft, borderRadius: radius.md, padding: space.md }}>
+                <Ionicons name="alert-circle" size={28} color={color.sunDark} />
+                <View style={{ flex: 1 }}>
+                  <T v="bodyBold">
+                    {dueReview} notion{dueReview > 1 ? "s" : ""} à revoir
+                  </T>
+                  <T v="small">Quelques questions pour ne pas les oublier</T>
+                </View>
+                <Ionicons name="play-circle" size={36} color={color.sunDark} />
+              </Pressable>
+            ) : null}
+          </Card>
+        ) : null}
+
+        <T v="h2">{nextExams.length ? "Révise pour ton prochain contrôle" : "Mes révisions"}</T>
+        {featured.length ? (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
+            {featured.map((r) => (
+              <Pressable key={r.id} accessibilityRole="button" onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={({ pressed }) => [{ width: 170, borderRadius: radius.lg, backgroundColor: tint.fill, borderBottomWidth: 5, borderColor: tint.edge, padding: space.lg, gap: space.sm, opacity: pressed ? 0.9 : 1 }]}>
+                <RevisionIcon icon={r.icon} seed={r.id} size={64} />
+                <T v="bodyBold" numberOfLines={2} style={{ color: color.white, minHeight: 48 }}>
+                  {r.title}
+                </T>
+                <T v="small" style={{ color: "rgba(255,255,255,0.85)" }}>
+                  {r.examDate ? `Interro ${whenLabel(r.examDate)}` : r.subject}
+                </T>
+                <ProgressBar value={r.progress} tint={color.white} track="rgba(255,255,255,0.3)" height={8} />
+                <T v="bodyBold" style={{ color: color.white, fontSize: size.sm }}>
+                  {r.progress} %
+                </T>
+              </Pressable>
+            ))}
+          </ScrollView>
+        ) : (
+          <Card style={{ alignItems: "center", gap: space.md }}>
+            <T v="body" style={{ textAlign: "center" }}>
+              Prends ta leçon en photo : Cervelle prépare des fiches et des quiz en une minute.
+            </T>
+            <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid } })} />
+          </Card>
+        )}
+
 
         <Card style={{ gap: space.md }}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -205,47 +270,6 @@ export default function ChildHome() {
             </View>
           )}
         </Card>
-
-        {dueReview > 0 ? (
-          <Card onPress={() => router.push({ pathname: "/quiz", params: { lid, mode: "a_revoir" } })} style={{ flexDirection: "row", alignItems: "center", gap: space.md, backgroundColor: color.sunSoft, borderColor: color.sun }}>
-            <Ionicons name="alert-circle" size={30} color={color.sunDark} />
-            <View style={{ flex: 1 }}>
-              <T v="bodyBold">
-                {dueReview} notion{dueReview > 1 ? "s" : ""} à revoir
-              </T>
-              <T v="small">Quelques questions pour ne pas les oublier</T>
-            </View>
-            <Ionicons name="play-circle" size={36} color={color.sunDark} />
-          </Card>
-        ) : null}
-
-        <T v="h2">{nextExams.length ? "Révise pour ton prochain contrôle" : "Mes révisions"}</T>
-        {featured.length ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
-            {featured.map((r) => (
-              <Pressable key={r.id} accessibilityRole="button" onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={({ pressed }) => [{ width: 170, borderRadius: radius.lg, backgroundColor: tint.fill, borderBottomWidth: 5, borderColor: tint.edge, padding: space.lg, gap: space.sm, opacity: pressed ? 0.9 : 1 }]}>
-                <RevisionIcon icon={r.icon} seed={r.id} size={64} />
-                <T v="bodyBold" numberOfLines={2} style={{ color: color.white, minHeight: 48 }}>
-                  {r.title}
-                </T>
-                <T v="small" style={{ color: "rgba(255,255,255,0.85)" }}>
-                  {r.examDate ? `Interro ${whenLabel(r.examDate)}` : r.subject}
-                </T>
-                <ProgressBar value={r.progress} tint={color.white} track="rgba(255,255,255,0.3)" height={8} />
-                <T v="bodyBold" style={{ color: color.white, fontSize: size.sm }}>
-                  {r.progress} %
-                </T>
-              </Pressable>
-            ))}
-          </ScrollView>
-        ) : (
-          <Card style={{ alignItems: "center", gap: space.md }}>
-            <T v="body" style={{ textAlign: "center" }}>
-              Prends ta leçon en photo : Cervelle prépare des fiches et des quiz en une minute.
-            </T>
-            <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid } })} />
-          </Card>
-        )}
 
         {revisions.length ? (
           <>

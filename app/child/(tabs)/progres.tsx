@@ -3,13 +3,65 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { errorMessage } from "../../../src/api/client";
-import { useHome, useStats } from "../../../src/api/hooks";
+import { useBadges, useHome, useStats } from "../../../src/api/hooks";
+import { Medal, tierMetal, windowMetal } from "../../../src/components/Medal";
 import { Button, Card, ErrorBox, Loading, T } from "../../../src/components/ui";
 import { WEEKDAYS_LETTER, weekdayOf } from "../../../src/lib/dates";
 import { duration } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
 import { PROFILES, type ProfileId } from "../../../src/lib/profile";
 import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../../src/theme/tokens";
+
+/** The latest badges, with the red dots, and a way to the full page. */
+function BadgesPreview({ lid }: { lid: string }) {
+  const badges = useBadges(lid);
+  const b = badges.data;
+  if (!b) return null;
+  const earned = [
+    ...b.windows.filter((w) => w.earned).map((w) => ({ key: w.key, shape: w.shape, icon: w.icon, metal: windowMetal(w), dot: w.isNew })),
+    ...b.successes.filter((x) => x.tier > 0).sort((x, y) => Number(y.isNew) - Number(x.isNew) || y.tier - x.tier).map((x) => ({ key: x.id, shape: x.shape, icon: x.icon, metal: tierMetal(x.tier), dot: x.isNew })),
+  ];
+  const shown = [...earned.filter((e) => e.dot), ...earned.filter((e) => !e.dot)].slice(0, 4);
+  return (
+    <Card onPress={() => router.push({ pathname: "/badges", params: { lid } })} style={{ gap: space.md }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+        <T v="h3" style={{ flex: 1 }}>
+          Mes badges
+        </T>
+        {b.newCount > 0 ? (
+          <View style={{ backgroundColor: color.brandFill, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 2 }}>
+            <T v="small" style={{ color: color.white, fontFamily: font.textBold }}>
+              {b.newCount} nouveau{b.newCount > 1 ? "x" : ""}
+            </T>
+          </View>
+        ) : null}
+        <Ionicons name="chevron-forward" size={22} color={color.muted} />
+      </View>
+      {shown.length ? (
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          {shown.map((e) => (
+            <Medal key={e.key} shape={e.shape} metal={e.metal} icon={e.icon} size={68} dot={e.dot} />
+          ))}
+          {Array.from({ length: 4 - shown.length }, (_, i) => (
+            <View key={i} style={{ width: 68 }} />
+          ))}
+        </View>
+      ) : (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: space.md }}>
+          <Medal shape="star" metal="locked" icon="camera" size={60} />
+          <T v="body" style={{ flex: 1 }}>
+            Prends un cours en photo pour gagner ton premier badge.
+          </T>
+        </View>
+      )}
+      {b.coinsEarned > 0 ? (
+        <T v="bodyBold" style={{ color: color.sunDark }}>
+          +{b.coinsEarned} pièces gagnées avec tes badges !
+        </T>
+      ) : null}
+    </Card>
+  );
+}
 
 /** Darker squares for more minutes, like a garden that grows. */
 function heatColor(minutes: number, main: string, soft: string) {
@@ -58,6 +110,8 @@ export default function ProgressTab() {
     <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={["top", "left", "right"]}>
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 40 }}>
         <T v="h2">Mes progrès</T>
+
+        <BadgesPreview lid={lid} />
 
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.md }}>
           <Tile icon="time" tint={tint.main} value={duration(s.totals.weekMinutes * 60)} label="cette semaine" />

@@ -62,6 +62,8 @@ const light = {
   /** The yellow fill keeps its colour: dark text on it, and its own edge. */
   sunEdge: "#C98F0E",
   onSun: "#1F1A3D",
+  /** A dark card that stands out (white text on it), in both themes. */
+  inverse: "#1F1A3D",
   /** Text and icons on a coloured fill (buttons, selected chips). */
   white: "#FFFFFF",
   /** Neon halo around the main buttons (dark theme only). */
@@ -114,6 +116,8 @@ const dark: Palette = {
   greenFill: "#027C3E",
   sunEdge: "#A87A12",
   onSun: "#1F1A3D",
+  // Lighter than the cards and violet-tinted, so it still stands out at night.
+  inverse: "#2B2560",
   white: "#FFFFFF",
   glow: "rgba(255,111,152,0.45)",
   backdrop: "rgba(2,3,10,0.7)",

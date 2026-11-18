@@ -256,7 +256,7 @@ export default function ChildHome() {
           </>
         ) : null}
 
-        <Card style={{ flexDirection: "row", gap: space.md, alignItems: "center", backgroundColor: color.ink, borderColor: color.ink }}>
+        <Card style={{ flexDirection: "row", gap: space.md, alignItems: "center", backgroundColor: color.inverse, borderColor: color.inverse }}>
           <View style={{ flex: 1, gap: space.sm }}>
             <T v="h3" style={{ color: color.white }}>
               Tu as ton interro corrigée ?

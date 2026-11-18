@@ -24,7 +24,7 @@ function Step({ done, label, detail, onPress }: { done: boolean; label: string; 
         <T v="bodyBold">{label}</T>
         <T v="small">{detail}</T>
       </View>
-      <Ionicons name="play-circle" size={32} color={color.brand} />
+      <Ionicons name="play-circle" size={40} color={color.brand} />
     </Pressable>
   );
 }

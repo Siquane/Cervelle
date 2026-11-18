@@ -17,7 +17,7 @@ import { color, radius, space } from "../src/theme/tokens";
 
 // The to-do list, sorted like the Eisenhower matrix but in a child's words.
 const BOXES = [
-  { key: "ui", urgent: true, important: true, title: "À faire tout de suite", hint: "Urgent et important", fg: color.red, bg: color.redSoft, icon: "flame" },
+  { key: "ui", urgent: true, important: true, title: "Tout de suite", hint: "Urgent et important", fg: color.red, bg: color.redSoft, icon: "flame" },
   { key: "i", urgent: false, important: true, title: "À prévoir", hint: "Important, pas urgent", fg: color.violet, bg: color.violetSoft, icon: "calendar" },
   { key: "u", urgent: true, important: false, title: "Vite fait", hint: "Urgent, pas important", fg: color.skyDark, bg: color.skySoft, icon: "flash" },
   { key: "n", urgent: false, important: false, title: "Plus tard", hint: "Ni urgent ni important", fg: color.green, bg: color.greenSoft, icon: "leaf" },
@@ -109,8 +109,8 @@ export default function Todos() {
                     <T v="bodyBold" style={{ color: b.fg, flex: 1 }} numberOfLines={2}>
                       {b.title}
                     </T>
-                    <Pressable accessibilityRole="button" accessibilityLabel={`Ajouter dans ${b.title}`} hitSlop={8} onPress={() => open("new", b)}>
-                      <Ionicons name="add-circle" size={26} color={b.fg} />
+                    <Pressable accessibilityRole="button" accessibilityLabel={`Ajouter dans ${b.title}`} onPress={() => open("new", b)} style={{ width: 44, height: 44, marginVertical: -10, marginRight: -8, alignItems: "center", justifyContent: "center" }}>
+                      <Ionicons name="add-circle" size={30} color={b.fg} />
                     </Pressable>
                   </View>
                   <T v="small" style={{ fontSize: 12 }}>

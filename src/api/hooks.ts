@@ -63,6 +63,8 @@ export const useRevision = (lid: string, id: string) =>
   useQuery({
     queryKey: keys.revision(lid, id),
     queryFn: () => api.get<{ revision: RevisionDetail }>(`${L(lid)}/revisions/${id}`).then((r) => r.revision),
+    // « Aide-moi à… » without a course asks for nothing (it used to request revision "").
+    enabled: !!id,
     refetchInterval: (q) => (q.state.data?.status === "processing" ? 3000 : false),
   });
 

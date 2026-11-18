@@ -8,7 +8,7 @@ import { BottomSheet } from "../src/components/bits";
 import { Field } from "../src/components/Field";
 import { DayPicker, celebrate } from "../src/components/organize";
 import { Button, Card, ErrorBox, Loading, Page, T, TopBar } from "../src/components/ui";
-import { WEEKDAYS_LETTER, addDays, weekOf, weekdayOf } from "../src/lib/dates";
+import { WEEKDAYS, WEEKDAYS_LETTER, addDays, weekOf, weekdayOf } from "../src/lib/dates";
 import { HABIT_EMOJIS, HABIT_IDEAS, habitRate, habitStreak } from "../src/lib/habits";
 import { useLid } from "../src/lib/lid";
 import { color, learnerColor, learnerColorOf, radius, size, space } from "../src/theme/tokens";
@@ -108,7 +108,7 @@ export default function Habits() {
                     key={d}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: on, disabled: !tickable }}
-                    accessibilityLabel={`${h.title}, ${WEEKDAYS_LETTER[i]}`}
+                    accessibilityLabel={`${h.title}, ${WEEKDAYS[i]}`}
                     disabled={!tickable}
                     onPress={() => tick.mutate({ id: h.id, day: d, on })}
                     style={{ alignItems: "center", gap: 4 }}

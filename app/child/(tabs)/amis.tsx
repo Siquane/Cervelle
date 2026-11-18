@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, TextInput, View } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useFriends, useQueryClient } from "../../../src/api/hooks";
-import type { BoardRow } from "../../../src/api/types";
+import { keys, learnerPath, useDuels, useFriends, useQueryClient, useRevisions } from "../../../src/api/hooks";
+import type { BoardRow, Duel } from "../../../src/api/types";
 import { BottomSheet } from "../../../src/components/bits";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { duration } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
-import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../../src/theme/tokens";
+import { color, font, GUTTER, learnerColorOf, onColor, radius, size, space } from "../../../src/theme/tokens";
 
 const PODIUM = [
   { place: 2, height: 70, tint: "#C9CFDB" },
@@ -26,6 +26,19 @@ export default function FriendsTab() {
   const qc = useQueryClient();
   const [code, setCode] = useState("");
   const [picked, setPicked] = useState<BoardRow | null>(null);
+  const [duelFor, setDuelFor] = useState<BoardRow | null>(null);
+  const duels = useDuels(lid);
+  const revisions = useRevisions(lid);
+  const startDuel = useMutation({
+    mutationFn: ({ friendId, revisionId }: { friendId: string; revisionId: string }) => api.post<{ duel: { id: string } }>(`${learnerPath(lid)}/duels`, { friendId, revisionId }),
+    onSuccess: (r) => {
+      setDuelFor(null);
+      qc.invalidateQueries({ queryKey: keys.duels(lid) });
+      // The challenger plays first; the friend sees it in their list.
+      router.push({ pathname: "/duel/[id]", params: { id: r.duel.id, lid } });
+    },
+    onError: (e) => Alert.alert("Défi impossible", errorMessage(e)),
+  });
   const refresh = () => qc.invalidateQueries({ queryKey: keys.friends(lid) });
 
   const add = useMutation({
@@ -120,6 +133,8 @@ export default function FriendsTab() {
           </Card>
         ))}
 
+        {duels.data?.length ? <DuelsCard duels={duels.data} lid={lid} canPlay={!asParent} /> : null}
+
         <Card style={{ gap: space.md }}>
           <T v="h3">Classement de la semaine</T>
           {f.board.length > 1 ? (
@@ -132,7 +147,7 @@ export default function FriendsTab() {
                   </T>
                   <T v="small">{duration(row!.weekMinutes * 60)}</T>
                   <View style={{ width: "100%", height, borderTopLeftRadius: radius.md, borderTopRightRadius: radius.md, backgroundColor: tint, alignItems: "center", paddingTop: 6 }}>
-                    <T style={{ fontFamily: font.title, fontSize: size.xl, color: color.white }}>{place}</T>
+                    <T style={{ fontFamily: font.title, fontSize: size.xl, color: onColor(tint) }}>{place}</T>
                   </View>
                 </Pressable>
               ))}
@@ -242,6 +257,29 @@ export default function FriendsTab() {
         </Card>
       </ScrollView>
 
+      <BottomSheet open={!!duelFor} onClose={() => setDuelFor(null)} title={`Défi quiz avec ${duelFor?.name ?? ""}`}>
+        <T v="body">Choisis un de tes cours : vous aurez les mêmes 10 questions. Le meilleur score gagne 20 pièces.</T>
+        <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={{ gap: space.sm }}>
+          {(revisions.data ?? [])
+            .filter((r) => r.status === "ready")
+            .map((r) => (
+              <Pressable
+                key={r.id}
+                accessibilityRole="button"
+                disabled={startDuel.isPending}
+                onPress={() => duelFor && startDuel.mutate({ friendId: duelFor.id, revisionId: r.id })}
+                style={({ pressed }) => ({ minHeight: 52, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, paddingHorizontal: space.md, justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+              >
+                <T v="bodyBold" numberOfLines={1}>
+                  {r.title}
+                </T>
+                <T v="small">{r.subject}</T>
+              </Pressable>
+            ))}
+          {revisions.data && !revisions.data.some((r) => r.status === "ready") ? <T v="small">Prends d'abord un cours en photo : le défi se fait sur ses questions.</T> : null}
+        </ScrollView>
+      </BottomSheet>
+
       <BottomSheet open={!!picked} onClose={() => setPicked(null)} title={picked?.name ?? ""}>
         <T v="bodyBold">Envoyer un encouragement</T>
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
@@ -257,9 +295,54 @@ export default function FriendsTab() {
             </Pressable>
           ))}
         </View>
+        {!asParent ? (
+          <Button icon="flash" label="Défi quiz sur un de mes cours" onPress={() => { setDuelFor(picked); setPicked(null); }} />
+        ) : null}
         <Button tone="sun" icon="trophy" label="Lancer un défi pour la semaine" loading={challenge.isPending} onPress={() => picked && challenge.mutate(picked.id)} />
         {picked?.friendshipId ? <Button tone="ghost" icon="person-remove" label="Retirer de mes amis" onPress={() => unfriend.mutate(picked.friendshipId!)} /> : null}
       </BottomSheet>
     </SafeAreaView>
+  );
+}
+
+/** Quiz duels: to play first, then waiting, then finished. */
+function DuelsCard({ duels, lid, canPlay }: { duels: Duel[]; lid: string; canPlay: boolean }) {
+  const toPlay = duels.filter((d) => d.status === "open" && d.myScore === null);
+  const rest = duels.filter((d) => !toPlay.includes(d)).slice(0, 5);
+  return (
+    <Card style={{ gap: space.md }}>
+      <T v="h3">Défis quiz</T>
+      {toPlay.map((d) => (
+        <View key={d.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm, backgroundColor: color.sunSoft, borderRadius: radius.md, padding: space.md }}>
+          <Ionicons name="flash" size={24} color={color.sunDark} />
+          <View style={{ flex: 1 }}>
+            <T v="bodyBold" numberOfLines={2}>
+              {d.sentByMe ? `Ton défi « ${d.title} »` : `${d.friend.name} te défie : « ${d.title} »`}
+            </T>
+            <T v="small">{d.theyPlayed ? `${d.friend.name} a déjà joué` : "10 questions"}</T>
+          </View>
+          {canPlay ? <Button small tone="sun" label="Jouer" onPress={() => router.push({ pathname: "/duel/[id]", params: { id: d.id, lid } })} /> : null}
+        </View>
+      ))}
+      {rest.map((d) => (
+        <View key={d.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+          <T v="body" style={{ width: 28, textAlign: "center" }}>
+            {d.result === "won" ? "🏆" : d.result === "draw" ? "🤝" : d.result === "lost" ? "💪" : d.status === "expired" ? "⌛" : "⏳"}
+          </T>
+          <View style={{ flex: 1 }}>
+            <T v="bodyBold" numberOfLines={1}>
+              {d.title} · avec {d.friend.name}
+            </T>
+            <T v="small">
+              {d.status === "open"
+                ? `Toi : ${d.myScore}/${d.total} · en attente de ${d.friend.name}`
+                : d.status === "expired"
+                  ? "Terminé sans gagnant"
+                  : `Toi : ${d.myScore}/${d.total} · ${d.friend.name} : ${d.theirScore}/${d.total}${d.result === "won" ? " · +20 pièces" : d.result === "draw" ? " · +10 pièces" : ""}`}
+            </T>
+          </View>
+        </View>
+      ))}
+    </Card>
   );
 }

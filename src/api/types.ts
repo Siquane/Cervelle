@@ -398,3 +398,33 @@ export interface WeeklyReport {
   badges: { key: string; label: string }[];
   streak: number;
 }
+
+export interface Duel {
+  id: string;
+  title: string;
+  friend: { name: string; color: string; equipped: string[] };
+  sentByMe: boolean;
+  status: "open" | "done" | "expired";
+  myScore: number | null;
+  theirScore: number | null;
+  theyPlayed: boolean;
+  result: "won" | "lost" | "draw" | null;
+  total: number;
+  createdAt: string;
+}
+
+export interface DuelQuestion {
+  id: string;
+  type: "qcm" | "vrai_faux";
+  prompt: string;
+  choices: string[];
+}
+
+export interface DuelResult {
+  score: number;
+  total: number;
+  theirScore: number | null;
+  result: "won" | "lost" | "draw" | null;
+  coins: number;
+  corrections: { questionId: string; correct: boolean; expected: string }[];
+}

@@ -47,7 +47,7 @@ export default function ParentHome() {
         <T v="title" style={{ flex: 1 }}>
           Espace parent
         </T>
-        <Pressable accessibilityRole="button" accessibilityLabel="Menu" onPress={() => setMenu(true)} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: color.brand, alignItems: "center", justifyContent: "center" }}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Menu" onPress={() => setMenu(true)} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: color.brandFill, alignItems: "center", justifyContent: "center" }}>
           <T v="h3" style={{ color: color.white }}>
             {(session?.kind === "parent" ? session.name : "")?.slice(0, 1).toUpperCase() || "P"}
           </T>
@@ -95,7 +95,7 @@ export default function ParentHome() {
       {selected ? (
         <>
           {learners.data!.length > 1 ? (
-            <Segmented options={learners.data!.map((l) => ({ key: l.id, label: l.name }))} value={selected.id} onChange={setLearner} tint={tint.main} />
+            <Segmented options={learners.data!.map((l) => ({ key: l.id, label: l.name }))} value={selected.id} onChange={setLearner} tint={tint.fill} />
           ) : null}
 
           <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid: selected.id } })} style={{ minHeight: 72 }} />
@@ -106,7 +106,7 @@ export default function ParentHome() {
           {o ? (
             <>
               <T v="h2">Utilisation</T>
-              <Segmented options={[{ key: "total", label: "Total" }, { key: "30", label: "30 derniers jours" }]} value={range} onChange={setRange} tint={tint.main} />
+              <Segmented options={[{ key: "total", label: "Total" }, { key: "30", label: "30 derniers jours" }]} value={range} onChange={setRange} tint={tint.fill} />
               <Card style={{ alignItems: "center", gap: 4, paddingVertical: space.xl }}>
                 <T v="small">Temps passé à réviser</T>
                 <T style={{ fontFamily: font.title, fontSize: 48, lineHeight: 58, color: color.ink }}>{duration(range === "30" ? o.time.last30Seconds : o.time.totalSeconds)}</T>
@@ -147,7 +147,7 @@ export default function ParentHome() {
                 o.upcoming.map((r) => (
                   <Card key={r.id} onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid: selected.id } })} style={{ flexDirection: "row", alignItems: "center", gap: space.md }}>
                     <View style={{ width: 56, alignItems: "center" }}>
-                      <T v="h3" style={{ color: tint.main }}>
+                      <T v="h3" style={{ color: tint.dark }}>
                         {shortDate(r.examDate!)}
                       </T>
                     </View>

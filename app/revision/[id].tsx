@@ -17,7 +17,7 @@ import { color, radius, space } from "../../src/theme/tokens";
 function Step({ done, label, detail, onPress }: { done: boolean; label: string; detail: string; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={{ flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 52 }}>
-      <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: done ? color.green : color.line, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: done ? color.greenFill : color.line, alignItems: "center", justifyContent: "center" }}>
         {done ? <Ionicons name="checkmark" size={22} color={color.white} /> : null}
       </View>
       <View style={{ flex: 1 }}>
@@ -157,17 +157,37 @@ export default function RevisionScreen() {
       ) : null}
       {r?.status === "ready" ? (
         <>
-          <View style={{ flexDirection: "row", gap: space.lg, alignItems: "center" }}>
-            <RevisionIcon icon={r.icon} seed={r.id} size={84} />
-            <View style={{ flex: 1, gap: space.sm }}>
-              <T v="h2">{r.title}</T>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
-                <Pill icon="calendar" text={r.examDate ? `Interro ${whenLabel(r.examDate)}` : shortDate(r.createdAt)} />
-                <Pill icon="camera" text={`${r.photoCount} ${r.photoCount > 1 ? "pages" : "page"}`} />
-                {r.subject ? <Pill icon="bookmark" text={r.subject} /> : null}
-                {r.programme ? <Pill icon="school" text={`Programme : ${r.programme.chapter}`} /> : null}
+          {/* En-tête : icône + matière et infos sur une ligne, titre sur toute la largeur, programme à part. */}
+          <View style={{ gap: space.md }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: space.md }}>
+              <RevisionIcon icon={r.icon} seed={r.id} size={60} />
+              <View style={{ flex: 1, gap: 2 }}>
+                {r.subject ? (
+                  <T v="label" style={{ color: color.brand }}>
+                    {r.subject}
+                  </T>
+                ) : null}
+                <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", columnGap: space.md, rowGap: 2 }}>
+                  <Meta icon="calendar-outline" text={r.examDate ? `Interro ${whenLabel(r.examDate)}` : shortDate(r.createdAt)} />
+                  <Meta icon="camera-outline" text={`${r.photoCount} ${r.photoCount > 1 ? "pages" : "page"}`} />
+                </View>
               </View>
             </View>
+            <T v="h2">{r.title}</T>
+            {r.programme ? (
+              <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: "/programme", params: { lid } })} style={{ flexDirection: "row", alignItems: "center", gap: space.sm, backgroundColor: color.tealSoft, borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: space.sm }}>
+                <Ionicons name="school" size={20} color={color.teal} />
+                <View style={{ flex: 1 }}>
+                  <T v="small" style={{ color: color.teal }}>
+                    Au programme
+                  </T>
+                  <T v="bodyBold" style={{ color: color.ink }}>
+                    {r.programme.chapter}
+                  </T>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={color.teal} />
+              </Pressable>
+            ) : null}
           </View>
           <Segmented options={[{ key: "progress", label: "Progression" }, { key: "sheets", label: "Fiches" }]} value={tab} onChange={setTab} />
           {tab === "progress" ? <Progression r={r} lid={lid} /> : <SheetList r={r} lid={lid} />}
@@ -195,13 +215,11 @@ export default function RevisionScreen() {
   );
 }
 
-function Pill({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: string }) {
+function Meta({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: string }) {
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: color.brandSoft, borderRadius: radius.sm, paddingHorizontal: 10, paddingVertical: 5 }}>
-      <Ionicons name={icon} size={15} color={color.brandDark} />
-      <T v="small" style={{ color: color.brandDark }}>
-        {text}
-      </T>
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+      <Ionicons name={icon} size={16} color={color.muted} />
+      <T v="small">{text}</T>
     </View>
   );
 }

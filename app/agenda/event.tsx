@@ -15,7 +15,7 @@ import { EVENT_KIND, minutesBetween } from "../../src/lib/agenda";
 import { weekdayOf } from "../../src/lib/dates";
 import { todayIso } from "../../src/lib/format";
 import { useLid } from "../../src/lib/lid";
-import { space } from "../../src/theme/tokens";
+import { color, space } from "../../src/theme/tokens";
 
 export default function EventForm() {
   const { lid } = useLid();
@@ -94,7 +94,7 @@ export default function EventForm() {
         <TimeField label="Fin" value={end} onChange={setEnd} />
       </View>
       {tooShort ? (
-        <T v="small" style={{ color: "#B42A2F" }}>
+        <T v="small" style={{ color: color.redDark }}>
           La fin doit être après le début.
         </T>
       ) : null}

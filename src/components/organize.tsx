@@ -92,7 +92,7 @@ export function DayPicker({ value, onChange, multi = true }: { value: number[]; 
             accessibilityState={multi ? { checked: on } : { selected: on }}
             accessibilityLabel={names[i]}
             onPress={() => onChange(multi ? (on ? value.filter((d) => d !== i) : [...value, i].sort()) : [i])}
-            style={{ width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center", backgroundColor: on ? color.brand : color.card, borderWidth: 2, borderColor: on ? color.brandDark : color.line }}
+            style={{ width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center", backgroundColor: on ? color.brandFill : color.card, borderWidth: 2, borderColor: on ? color.brandEdge : color.line }}
           >
             <T v="bodyBold" style={{ color: on ? color.white : color.ink }}>
               {l}

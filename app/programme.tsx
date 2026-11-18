@@ -12,7 +12,7 @@ import { useLid } from "../src/lib/lid";
 import { color, radius, space } from "../src/theme/tokens";
 
 const STATUS: Record<ProgrammeChapter["status"], { label: string; fg: string; bg: string; icon: keyof typeof Ionicons.glyphMap }> = {
-  todo: { label: "Pas encore révisé", fg: color.muted, bg: "#E8EBF3", icon: "ellipse-outline" },
+  todo: { label: "Pas encore révisé", fg: color.muted, bg: color.chip, icon: "ellipse-outline" },
   started: { label: "Commencé", fg: color.skyDark, bg: color.skySoft, icon: "sync" },
   mastered: { label: "Bien révisé", fg: color.green, bg: color.greenSoft, icon: "checkmark-circle" },
 };

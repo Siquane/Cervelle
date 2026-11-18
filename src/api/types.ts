@@ -119,13 +119,29 @@ export interface Overview {
   recentSessions: { id: string; mode: string; seconds: number; correct: number; total: number; revisionTitle: string | null; createdAt: string }[];
 }
 
+export type ShopSlot = "tete" | "visage" | "cou" | "tenue" | "main" | "couleur" | "decor";
+
 export interface ShopItem {
   id: string;
   name: string;
-  slot: "tete" | "visage" | "cou";
+  slot: ShopSlot;
   price: number;
+  /** saison: on sale only part of the year; legendaire: very expensive; badge: won with a badge. */
+  kind: "normal" | "saison" | "legendaire" | "badge";
+  /** saison: « MM-DD » first and last day. */
+  season: [string, string] | null;
+  /** badge: the badge's name. */
+  badge: string | null;
+  onSale: boolean;
   owned: boolean;
   equipped: boolean;
+}
+
+export interface Shop {
+  coins: number;
+  items: ShopItem[];
+  /** 3 saved outfits (item ids), null when empty. */
+  outfits: (string[] | null)[];
 }
 
 export interface ExamAnalysis {
@@ -318,4 +334,48 @@ export interface FriendRequest {
   outgoing: boolean;
   otherApproved: boolean;
   createdAt: string;
+}
+
+export type BadgeShape = "star" | "shield" | "hexagon" | "round" | "flower" | "diamond";
+
+export interface BadgeSuccess {
+  id: string;
+  label: string;
+  icon: string;
+  shape: BadgeShape;
+  /** 0 (pas encore) à 3 (or). */
+  tier: number;
+  tiers: number[];
+  value: number;
+  next: { target: number; left: string; describe: string } | null;
+  describe: string;
+  coins: number[];
+  isNew: boolean;
+}
+
+export interface BadgeWindow {
+  key: string;
+  family: "saison" | "fete";
+  label: string;
+  icon: string;
+  shape: BadgeShape;
+  earned: boolean;
+  when: "now" | "soon" | "past";
+  days: number;
+  needs: number;
+  from: string;
+  to: string;
+  hint: string;
+  coins: number;
+  isNew: boolean;
+}
+
+export interface Badges {
+  records: { id: string; label: string; icon: string; value: number; unit: string }[];
+  successes: BadgeSuccess[];
+  windows: BadgeWindow[];
+  newCount: number;
+  earnedCount: number;
+  coinsEarned: number;
+  added: string[];
 }

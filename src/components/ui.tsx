@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { color, font, GUTTER, radius, reading, size, space } from "../theme/tokens";
+import { color, font, GUTTER, onColor, radius, reading, size, space } from "../theme/tokens";
 import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
 
@@ -37,17 +37,20 @@ export function T({ v = "body", style, ...rest }: TextProps & { v?: Variant; sty
 
 /** A page: safe area, scroll, side gutter. */
 export function Page({ children, scroll = true, header, footer, bg = color.bg }: { children: ReactNode; scroll?: boolean; header?: ReactNode; footer?: ReactNode; bg?: string }) {
+  // Android draws the app under the phone's navigation buttons (edge to edge):
+  // whatever sits at the bottom (footer, or the end of the page) gets that height too.
+  const bottom = useSafeAreaInsets().bottom;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bg }} edges={["top", "left", "right"]}>
       {header}
       {scroll ? (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40, gap: space.lg }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40 + (footer ? 0 : bottom), gap: space.lg }} keyboardShouldPersistTaps="handled">
           {children}
         </ScrollView>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: GUTTER }}>{children}</View>
+        <View style={{ flex: 1, paddingHorizontal: GUTTER, paddingBottom: footer ? 0 : bottom }}>{children}</View>
       )}
-      {footer}
+      {footer ? <View style={{ paddingBottom: bottom }}>{footer}</View> : null}
     </SafeAreaView>
   );
 }
@@ -74,12 +77,13 @@ export function TopBar({ title, right, onBack }: { title?: string; right?: React
 
 type BtnTone = "brand" | "teal" | "sun" | "sky" | "ghost" | "danger" | "white";
 const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = {
-  brand: { bg: color.brand, edge: color.brandDark, fg: color.white },
-  teal: { bg: color.teal, edge: color.tealDark, fg: color.white },
-  sun: { bg: color.sun, edge: color.sunDark, fg: color.ink },
-  sky: { bg: color.sky, edge: color.skyDark, fg: color.white },
-  danger: { bg: color.red, edge: "#B42A2F", fg: color.white },
-  white: { bg: color.white, edge: color.line, fg: color.ink },
+  brand: { bg: color.brandFill, edge: color.brandEdge, fg: color.white },
+  teal: { bg: color.tealFill, edge: color.tealEdge, fg: color.white },
+  sun: { bg: color.sun, edge: color.sunEdge, fg: color.onSun },
+  sky: { bg: color.skyFill, edge: color.skyEdge, fg: color.white },
+  // Outline: a destructive action should not shout like the main button.
+  danger: { bg: color.card, edge: color.red, fg: color.red },
+  white: { bg: color.card, edge: color.line, fg: color.ink },
   ghost: { bg: "transparent", edge: "transparent", fg: color.ink },
 };
 
@@ -115,6 +119,8 @@ export function Button({
         styles.btn,
         small && styles.btnSmall,
         { backgroundColor: t.bg, borderColor: t.edge, borderBottomWidth: tone === "ghost" ? 0 : pressed && !off ? 2 : 5, opacity: off && !loading ? 0.5 : 1, marginTop: pressed && !off && tone !== "ghost" ? 3 : 0 },
+        // Dark theme: the pink button glows a little, like Passerelle's neon.
+        tone === "brand" && !off ? { boxShadow: `0 0 16px ${color.glow}` } : null,
         style,
       ]}
     >
@@ -151,7 +157,7 @@ export function ProgressBar({ value, tint = color.brand, track = color.line, hei
 }
 
 /** Two or more choices side by side (a child's name, a time range…). */
-export function Segmented<K extends string>({ options, value, onChange, tint = color.brand }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
+export function Segmented<K extends string>({ options, value, onChange, tint = color.brandFill }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
   useFontRefresh();
   return (
     <View style={styles.segment} accessibilityRole="tablist">
@@ -159,7 +165,7 @@ export function Segmented<K extends string>({ options, value, onChange, tint = c
         const on = o.key === value;
         return (
           <Pressable key={o.key} onPress={() => onChange(o.key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={[styles.segmentItem, on && { backgroundColor: tint }]}>
-            <RNText numberOfLines={1} style={[styles.segmentText, { fontFamily: font.textBlack, color: on ? color.white : color.muted }]}>
+            <RNText numberOfLines={1} style={[styles.segmentText, { fontFamily: font.textBlack, color: on ? onColor(tint) : color.muted }]}>
               {o.label}
             </RNText>
           </Pressable>
@@ -204,7 +210,7 @@ export const styles = StyleSheet.create({
   btnSmall: { minHeight: 44, paddingHorizontal: space.lg, borderRadius: radius.sm },
   btnText: { fontSize: size.md },
   card: { backgroundColor: color.card, borderRadius: radius.lg, padding: space.lg, borderWidth: 2, borderColor: color.line },
-  segment: { flexDirection: "row", backgroundColor: "#E8EBF3", borderRadius: radius.lg, padding: 5, gap: 5 },
+  segment: { flexDirection: "row", backgroundColor: color.chip, borderRadius: radius.lg, padding: 5, gap: 5 },
   segmentItem: { flex: 1, minHeight: 46, borderRadius: radius.md, alignItems: "center", justifyContent: "center", paddingHorizontal: space.sm },
   segmentText: { fontSize: size.md },
 });

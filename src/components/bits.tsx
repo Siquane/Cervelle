@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -44,10 +45,12 @@ export function MasteryHelp() {
 }
 
 export function BottomSheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+  // Above the phone's navigation buttons.
+  const insets = useSafeAreaInsets();
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={s.backdrop} onPress={onClose} accessibilityLabel="Fermer" />
-      <View style={s.sheet}>
+      <View style={[s.sheet, { paddingBottom: 34 + insets.bottom }]}>
         <View style={s.grabber} />
         <T v="h2">{title}</T>
         {children}
@@ -60,7 +63,7 @@ const ICON: Record<string, string> = {
   livre: "📘", plante: "🌱", planete: "🪐", couronne: "👑", globe: "🌍", calcul: "🔢", fiole: "🧪", atome: "⚛️", palette: "🎨",
   musique: "🎵", langue: "💬", plume: "🪶", sablier: "⏳", corps: "🫀", ballon: "⚽", ordinateur: "💻", carte: "🗺️", balance: "⚖️",
 };
-const TILE = [color.brandSoft, color.tealSoft, color.sunSoft, color.skySoft, "#EDE5FE", "#FFE7E0"];
+const TILE = [color.brandSoft, color.tealSoft, color.sunSoft, color.skySoft, color.violetSoft, color.corailSoft];
 
 export function RevisionIcon({ icon, size: px = 56, seed = "" }: { icon: string; size?: number; seed?: string }) {
   const bg = TILE[[...seed].reduce((n, c) => n + c.charCodeAt(0), 0) % TILE.length];
@@ -84,7 +87,7 @@ export function Stat({ icon, value, tint, label }: { icon: keyof typeof Ionicons
 const s = StyleSheet.create({
   tag: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill },
   tagText: { fontSize: size.sm },
-  backdrop: { flex: 1, backgroundColor: "rgba(31,26,61,0.45)" },
+  backdrop: { flex: 1, backgroundColor: color.backdrop },
   sheet: { backgroundColor: color.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 22, paddingBottom: 34, gap: space.lg },
   grabber: { alignSelf: "center", width: 44, height: 5, borderRadius: 3, backgroundColor: color.line },
   stat: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: color.card, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 2, borderColor: color.line },

@@ -6,6 +6,12 @@
 - Parent : jeton d'accès Passerelle (+ renouvellement). Enfant : jeton
   d'appareil `cv_…` ; ses routes utilisent `/cervelle/learners/me/…`
   (`src/lib/lid.ts`).
+- **Principe : l'apprentissage et le travail avant les notes.** Cervelle
+  valorise l'effort, la régularité et ce que l'enfant a compris (notions
+  maîtrisées, jours de révision, progrès), pas la note obtenue. Pas de
+  classement ni de récompense fondés sur une note ; une note sert à repérer
+  ce qu'il reste à apprendre. Formulations : « tu as appris », « tu as
+  travaillé », plutôt que « tu as eu 18/20 ».
 - Identité visuelle : fond `#F3F6FB`, rose cerveau `#FF5C8A`, encre
   `#1F1A3D`, turquoise `#10B5A5`, soleil `#FFC23D`, ciel `#3D8BFD` ; polices
   Outfit (titres) et Atkinson Hyperlegible (texte), option OpenDyslexic

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useTodos } from "../../../src/api/hooks";
+import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos } from "../../../src/api/hooks";
 import type { Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
 import { EVENT_KIND, itemsForDay } from "../../../src/lib/agenda";
@@ -13,6 +13,7 @@ import { planSessions } from "../../../src/lib/plan";
 import { weekdayOf } from "../../../src/lib/dates";
 import { todayIso } from "../../../src/lib/format";
 import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
+import { GoalRow } from "../../../src/components/GoalCard";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
@@ -25,6 +26,7 @@ import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../
 export default function ChildHome() {
   const { lid, asParent } = useLid();
   const stars = useStars(lid);
+  const goals = useGoals(lid);
   const home = useHome(lid);
   const refresh = useRefreshLearner(lid);
   const signOut = useSession((s) => s.signOut);
@@ -120,6 +122,15 @@ export default function ChildHome() {
             <T v="small">Touche pour habiller Cervelle</T>
           </View>
         </Card>
+
+        {goals.data?.length ? (
+          <Card style={{ gap: space.sm }}>
+            <T v="h3">Mes objectifs</T>
+            {goals.data.map((g) => (
+              <GoalRow key={g.id} g={g} child />
+            ))}
+          </Card>
+        ) : null}
 
         {urgentExam || dueReview > 0 ? (
           <Card style={{ gap: space.md, borderColor: color.brand }}>

@@ -441,3 +441,15 @@ export interface StarPath {
   steps: { at: number; reward: StarReward; reached: boolean; result: { coins: number; item: string | null; itemName: string | null } | null }[];
   fresh: { at: number; coins: number; item: string | null; itemName: string | null }[];
 }
+
+export interface Goal {
+  id: string;
+  kind: "jours" | "etoiles";
+  target: number;
+  reward: string;
+  current: number;
+  label: string;
+  until: string | null;
+  reached: boolean;
+  wins: number;
+}

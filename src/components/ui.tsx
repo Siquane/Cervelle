@@ -208,9 +208,10 @@ export const styles = StyleSheet.create({
     gap: space.sm,
   },
   btnSmall: { minHeight: 44, paddingHorizontal: space.lg, borderRadius: radius.sm },
-  btnText: { fontSize: size.md },
+  // includeFontPadding: false — Android otherwise sizes the line from the font's bounding box.
+  btnText: { fontSize: size.md, includeFontPadding: false },
   card: { backgroundColor: color.card, borderRadius: radius.lg, padding: space.lg, borderWidth: 2, borderColor: color.line },
   segment: { flexDirection: "row", backgroundColor: color.chip, borderRadius: radius.lg, padding: 5, gap: 5 },
   segmentItem: { flex: 1, minHeight: 46, borderRadius: radius.md, alignItems: "center", justifyContent: "center", paddingHorizontal: space.sm },
-  segmentText: { fontSize: size.md },
+  segmentText: { fontSize: size.md, includeFontPadding: false },
 });

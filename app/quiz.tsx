@@ -117,7 +117,7 @@ export default function Quiz() {
             <T v="bodyBold" style={{ color: color.sunDark }}>
               +{score.coins + (summary?.session.coins ?? 0)} pièces
             </T>
-            {summary?.streakIncreased ? <T v="bodyBold" style={{ color: "#FF7A1A" }}>🔥 {summary.learner.streak} jour{summary.learner.streak > 1 ? "s" : ""} d'affilée</T> : null}
+            {summary?.streakIncreased ? <T v="bodyBold" style={{ color: color.sunDark }}>🔥 {summary.learner.streak} jour{summary.learner.streak > 1 ? "s" : ""} d'affilée</T> : null}
           </View>
           {finish.isPending ? <T v="small">Enregistrement…</T> : null}
           {finish.error ? <ErrorBox message={errorMessage(finish.error)} onRetry={() => finish.mutate()} /> : null}

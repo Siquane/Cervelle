@@ -7,7 +7,7 @@ export const EVENT_KIND: Record<EventKind, { label: string; main: string; soft: 
   interro: { label: "Interro", main: color.brand, soft: color.brandSoft, icon: "alert-circle" },
   devoir: { label: "Devoir", main: color.sunDark, soft: color.sunSoft, icon: "create" },
   revision: { label: "Révision", main: color.teal, soft: color.tealSoft, icon: "book" },
-  activite: { label: "Activité", main: "#8B5CF6", soft: "#EDE5FE", icon: "football" },
+  activite: { label: "Activité", main: color.violet, soft: color.violetSoft, icon: "football" },
 };
 
 export type AgendaItem =

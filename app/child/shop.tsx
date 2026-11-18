@@ -24,12 +24,13 @@ const RAYONS: { slot: ShopSlot; label: string }[] = [
   { slot: "decor", label: "Décors" },
 ];
 
-const KIND_ORDER = { normal: 0, saison: 1, legendaire: 2, badge: 3 } as const;
+const KIND_ORDER = { normal: 0, saison: 1, legendaire: 2, badge: 3, chemin: 4 } as const;
 
 const KIND_TAG: Record<Exclude<ShopItem["kind"], "normal">, { label: string; fg: string; bg: string }> = {
   saison: { label: "De saison", fg: color.sunDark, bg: color.sunSoft },
   legendaire: { label: "Légendaire", fg: color.violet, bg: color.violetSoft },
   badge: { label: "Badge", fg: color.teal, bg: color.tealSoft },
+  chemin: { label: "Chemin d'étoiles", fg: color.sky, bg: color.skySoft },
 };
 
 /** What Cervelle wears with `item` tried on (it takes its slot's place). */
@@ -60,6 +61,15 @@ function ItemCard({ item, tried, onTry, coins, busy, onBuy, onWear }: { item: Sh
         <Ionicons name="lock-closed" size={14} color={color.muted} />
         <T v="small" numberOfLines={2} style={{ flexShrink: 1, textAlign: "center", fontSize: 12 }}>
           Badge « {item.badge} »
+        </T>
+      </View>
+    );
+  } else if (item.kind === "chemin") {
+    action = (
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4, minHeight: 40 }}>
+        <Ionicons name="star" size={14} color={color.sunDark} />
+        <T v="small" numberOfLines={2} style={{ flexShrink: 1, textAlign: "center", fontSize: 12 }}>
+          Au bout du chemin d'étoiles
         </T>
       </View>
     );
@@ -158,7 +168,7 @@ export default function Shop() {
                     <Button small tone="white" icon="close" label="Enlever" onPress={() => setTrying(null)} style={{ flex: 1 }} />
                     {tried.owned ? (
                       <Button small icon="shirt" label="Garder" loading={act.isPending} onPress={() => act.mutate({ item: tried, action: "on" })} style={{ flex: 1.3 }} />
-                    ) : tried.kind !== "badge" && tried.onSale ? (
+                    ) : tried.kind !== "badge" && tried.kind !== "chemin" && tried.onSale ? (
                       <Button small tone="sun" icon="coin" label={`Acheter · ${tried.price}`} disabled={data.coins < tried.price} loading={act.isPending} onPress={() => act.mutate({ item: tried, action: "buy" })} style={{ flex: 1.3 }} />
                     ) : null}
                   </View>

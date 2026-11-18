@@ -3,9 +3,9 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { errorMessage } from "../../../src/api/client";
-import { useBadges, useHome, useStats } from "../../../src/api/hooks";
+import { useBadges, useHome, useStars, useStats } from "../../../src/api/hooks";
 import { Medal, tierMetal, windowMetal } from "../../../src/components/Medal";
-import { Button, Card, ErrorBox, Loading, T } from "../../../src/components/ui";
+import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { WEEKDAYS_LETTER, weekdayOf } from "../../../src/lib/dates";
 import { duration } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
@@ -63,6 +63,29 @@ function BadgesPreview({ lid }: { lid: string }) {
   );
 }
 
+/** This month's star path: count, next reward, a way to the full path. */
+function StarsPreview({ lid }: { lid: string }) {
+  const stars = useStars(lid);
+  const p = stars.data;
+  if (!p) return null;
+  const next = p.steps.find((s) => !s.reached);
+  const prev = [...p.steps].reverse().find((s) => s.reached)?.at ?? 0;
+  return (
+    <Card onPress={() => router.push({ pathname: "/etoiles", params: { lid } })} style={{ gap: space.sm }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+        <Ionicons name="star" size={22} color="#E0A100" />
+        <T v="h3" style={{ flex: 1 }}>
+          Chemin d'étoiles
+        </T>
+        <T v="bodyBold">{p.stars}</T>
+        <Ionicons name="chevron-forward" size={22} color={color.muted} />
+      </View>
+      <ProgressBar value={next ? ((p.stars - prev) / (next.at - prev)) * 100 : 100} tint={color.sun} />
+      <T v="small">{next ? `Encore ${next.at - p.stars} étoile${next.at - p.stars > 1 ? "s" : ""} pour le palier ${next.at}` : `Chemin terminé : ${p.theme.itemName} gagné !`}</T>
+    </Card>
+  );
+}
+
 /** Darker squares for more minutes, like a garden that grows. */
 function heatColor(minutes: number, main: string, soft: string) {
   if (minutes <= 0) return color.line;
@@ -112,6 +135,7 @@ export default function ProgressTab() {
         <T v="h2">Mes progrès</T>
 
         <BadgesPreview lid={lid} />
+        <StarsPreview lid={lid} />
 
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.md }}>
           <Tile icon="time" tint={tint.main} value={duration(s.totals.weekMinutes * 60)} label="cette semaine" />

@@ -86,7 +86,7 @@ export default function Duo() {
           <View style={{ alignItems: "center" }}>
             <Mascot size={110} mood="wow" />
           </View>
-          <T v="body">Révisez à deux sur ce téléphone : chacun répond à son tour, le meilleur score gagne. {total} questions en tout.</T>
+          <T v="body">Révisez à deux sur ce téléphone : chacun répond à son tour et on s'explique les réponses. {total} questions en tout.</T>
           {[0, 1].map((p) => (
             <TextInput
               key={p}
@@ -151,7 +151,7 @@ export default function Duo() {
         <Card style={{ alignItems: "center", gap: space.md, paddingVertical: space.xl }}>
           <Mascot size={130} mood="wow" accessories={["couronne"]} />
           <T v="title" style={{ textAlign: "center" }}>
-            {scores[0] === scores[1] ? "Égalité !" : `${who[scores[0] > scores[1] ? 0 : 1]} gagne !`}
+            Bien révisé à deux !
           </T>
           <T v="h3">
             {who[0]} {scores[0]} – {scores[1]} {who[1]}

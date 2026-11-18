@@ -258,7 +258,7 @@ export default function FriendsTab() {
       </ScrollView>
 
       <BottomSheet open={!!duelFor} onClose={() => setDuelFor(null)} title={`Défi quiz avec ${duelFor?.name ?? ""}`}>
-        <T v="body">Choisis un de tes cours : vous aurez les mêmes 10 questions. Le meilleur score gagne 20 pièces.</T>
+        <T v="body">Choisis un de tes cours : vous aurez les mêmes 10 questions. 10 pièces chacun pour le finir, et 10 de plus si tu progresses depuis ton dernier défi.</T>
         <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={{ gap: space.sm }}>
           {(revisions.data ?? [])
             .filter((r) => r.status === "ready")
@@ -327,7 +327,7 @@ function DuelsCard({ duels, lid, canPlay }: { duels: Duel[]; lid: string; canPla
       {rest.map((d) => (
         <View key={d.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
           <T v="body" style={{ width: 28, textAlign: "center" }}>
-            {d.result === "won" ? "🏆" : d.result === "draw" ? "🤝" : d.result === "lost" ? "💪" : d.status === "expired" ? "⌛" : "⏳"}
+            {d.result === "progress" ? "📈" : d.result === "finished" ? "🤝" : d.status === "expired" ? "⌛" : "⏳"}
           </T>
           <View style={{ flex: 1 }}>
             <T v="bodyBold" numberOfLines={1}>
@@ -338,7 +338,7 @@ function DuelsCard({ duels, lid, canPlay }: { duels: Duel[]; lid: string; canPla
                 ? `Toi : ${d.myScore}/${d.total} · en attente de ${d.friend.name}`
                 : d.status === "expired"
                   ? "Terminé sans gagnant"
-                  : `Toi : ${d.myScore}/${d.total} · ${d.friend.name} : ${d.theirScore}/${d.total}${d.result === "won" ? " · +20 pièces" : d.result === "draw" ? " · +10 pièces" : ""}`}
+                  : `Fini tous les deux · +10 pièces${d.result === "progress" ? " · +10 pour ton progrès" : ""}`}
             </T>
           </View>
         </View>

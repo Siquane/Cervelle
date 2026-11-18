@@ -118,7 +118,7 @@ export default function Bilan() {
                       {e.title}
                     </T>
                     <T v="small">
-                      {whenLabel(e.day)} · {e.examBest !== null ? `meilleure interro de Cervelle : ${e.examBest}/20` : e.quizBest !== null ? `meilleur QCM : ${e.quizBest} %` : "pas encore entraîné"}
+                      {whenLabel(e.day)} · {e.examBest !== null ? "interro de Cervelle déjà faite" : e.quizBest !== null ? "déjà entraîné en QCM" : "pas encore entraîné"}
                     </T>
                   </View>
                   <Ionicons name="chevron-forward" size={20} color={color.muted} />

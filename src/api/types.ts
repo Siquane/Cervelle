@@ -379,3 +379,22 @@ export interface Badges {
   coinsEarned: number;
   added: string[];
 }
+
+export interface WeeklyReport {
+  name: string;
+  from: string;
+  to: string;
+  minutes: number;
+  minutesBefore: number;
+  activeDays: number;
+  perDay: { day: string; minutes: number }[];
+  quizzes: number;
+  quizAverage: number | null;
+  answers: number;
+  mastered: number;
+  toReview: { title: string; revisionId: string; revision: string; subject: string }[];
+  exams: { id: string; title: string; subject: string; day: string; examBest: number | null; quizBest: number | null }[];
+  subjects: { subject: string; minutes: number }[];
+  badges: { key: string; label: string }[];
+  streak: number;
+}

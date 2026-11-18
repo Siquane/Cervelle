@@ -185,3 +185,36 @@ export function useChildNotifications(lid: string) {
     };
   }, [child, lid]);
 }
+
+// ── Parent : « Le bilan de la semaine est prêt », chaque dimanche à 18 h ──
+
+const WEEKLY_ID = "cervelle-weekly-report";
+
+/** Dans l'espace parent : programme le rappel hebdo (une seule fois, répété par le système) et ouvre le bilan au toucher. */
+export function useParentWeeklyReminder() {
+  const parent = useSession((s) => s.session?.kind === "parent");
+  useEffect(() => {
+    if (!parent || Platform.OS === "web") return;
+    (async () => {
+      if (!(await askPermission())) return;
+      await setupChannel().catch(() => {});
+      const planned = await Notifications.getAllScheduledNotificationsAsync().catch(() => []);
+      if (planned.some((n) => n.identifier === WEEKLY_ID)) return;
+      await Notifications.scheduleNotificationAsync({
+        identifier: WEEKLY_ID,
+        content: { title: "Le bilan de la semaine est prêt", body: "Temps de révision, notions à revoir, interros à venir : jette un œil.", data: { url: "/parent/bilan" }, sound: "default" },
+        // weekday : 1 = dimanche (calendrier du système).
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: 1, hour: 18, minute: 0, channelId: CHANNEL },
+      });
+    })().catch(() => {});
+    const open = (r: Notifications.NotificationResponse | null) => {
+      const url = (r?.notification.request.content.data as { url?: unknown } | undefined)?.url;
+      if (url !== "/parent/bilan") return;
+      router.push("/parent/bilan");
+      Notifications.clearLastNotificationResponse();
+    };
+    open(Notifications.getLastNotificationResponse());
+    const tap = Notifications.addNotificationResponseReceivedListener(open);
+    return () => tap.remove();
+  }, [parent]);
+}

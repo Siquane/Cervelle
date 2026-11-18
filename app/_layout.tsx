@@ -14,7 +14,7 @@ import { useReading } from "../src/state/reading";
 import { queryClient } from "../src/api/hooks";
 import { clearNotifications } from "../src/lib/notifications";
 import { API_URL, useSession } from "../src/state/session";
-import { color } from "../src/theme/tokens";
+import { color, scheme } from "../src/theme/tokens";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 SystemUI.setBackgroundColorAsync(color.bg).catch(() => {});
@@ -62,7 +62,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: color.bg }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <StatusBar style="dark" />
+          <StatusBar style={scheme === "dark" ? "light" : "dark"} />
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg }, animation: "slide_from_right" }} />
         </QueryClientProvider>
       </SafeAreaProvider>

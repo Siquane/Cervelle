@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-import type { Agenda, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, ShopItem, Stats, Todo } from "./types";
+import type { Agenda, Badges, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -26,12 +26,16 @@ export const keys = {
   stats: (lid: string) => ["stats", lid] as const,
   friends: (lid: string) => ["friends", lid] as const,
   friendRequests: ["friendRequests"] as const,
+  badges: (lid: string) => ["badges", lid] as const,
 };
 
 export const useAgenda = (lid: string) => useQuery({ queryKey: keys.agenda(lid), queryFn: () => api.get<Agenda>(`${L(lid)}/agenda`) });
 export const useTodos = (lid: string) => useQuery({ queryKey: keys.todos(lid), queryFn: () => api.get<{ todos: Todo[] }>(`${L(lid)}/todos`).then((r) => r.todos) });
 export const useHabits = (lid: string) => useQuery({ queryKey: keys.habits(lid), queryFn: () => api.get<{ today: string; habits: Habit[] }>(`${L(lid)}/habits`) });
 export const useJournal = (lid: string) => useQuery({ queryKey: keys.journal(lid), queryFn: () => api.get<{ today: string; entries: JournalEntry[] }>(`${L(lid)}/journal`) });
+/** Asking also saves the new badges and pays their coins (server side). */
+export const useBadges = (lid: string) => useQuery({ queryKey: keys.badges(lid), queryFn: () => api.get<Badges>(`${L(lid)}/badges`) });
+
 export const useStats = (lid: string) => useQuery({ queryKey: keys.stats(lid), queryFn: () => api.get<Stats>(`${L(lid)}/stats`) });
 export const useFriends = (lid: string) => useQuery({ queryKey: keys.friends(lid), queryFn: () => api.get<Friends>(`${L(lid)}/friends`), refetchInterval: 60_000 });
 export const useFriendRequests = (enabled = true) =>
@@ -62,7 +66,7 @@ export const useRevision = (lid: string, id: string) =>
     refetchInterval: (q) => (q.state.data?.status === "processing" ? 3000 : false),
   });
 
-export const useShop = (lid: string) => useQuery({ queryKey: keys.shop(lid), queryFn: () => api.get<{ coins: number; items: ShopItem[] }>(`${L(lid)}/shop`) });
+export const useShop = (lid: string) => useQuery({ queryKey: keys.shop(lid), queryFn: () => api.get<Shop>(`${L(lid)}/shop`) });
 
 export const useExams = (lid: string) =>
   useQuery({
@@ -85,7 +89,7 @@ export const useDevices = (lid: string) =>
 export function useRefreshLearner(lid: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid)]) {
+    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid)]) {
       qc.invalidateQueries({ queryKey: k });
     }
   };

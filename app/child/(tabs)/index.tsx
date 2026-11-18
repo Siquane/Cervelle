@@ -13,6 +13,7 @@ import { weekdayOf } from "../../../src/lib/dates";
 import { todayIso } from "../../../src/lib/format";
 import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
 import { Mascot } from "../../../src/components/mascot/Mascot";
+import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
 import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { whenLabel } from "../../../src/lib/format";
@@ -97,13 +98,15 @@ export default function ChildHome() {
 
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 120 }}>
         <Card onPress={() => router.push({ pathname: "/child/shop", params: { lid } })} style={{ flexDirection: "row", alignItems: "center", gap: space.lg, backgroundColor: tint.soft, borderColor: tint.soft }}>
-          <Mascot size={104} accessories={learner.equipped} mood={learner.streak ? "happy" : "wow"} />
+          <Scene equipped={learner.equipped} width={112} height={112} radius={18}>
+            <Mascot size={104} accessories={learner.equipped} mood={learner.streak ? "happy" : "wow"} />
+          </Scene>
           <View style={{ flex: 1, gap: 6 }}>
             <T v="h3">Salut {learner.name} !</T>
             <T v="small" style={{ color: tint.dark }}>
               Niveau {m.level} · {m.name}
             </T>
-            <ProgressBar value={levelPct} tint={tint.main} track={color.white} />
+            <ProgressBar value={levelPct} tint={tint.main} track={color.line} />
             <T v="small">Touche pour habiller Cervelle</T>
           </View>
         </Card>
@@ -220,7 +223,7 @@ export default function ChildHome() {
         {featured.length ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
             {featured.map((r) => (
-              <Pressable key={r.id} accessibilityRole="button" onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={({ pressed }) => [{ width: 170, borderRadius: radius.lg, backgroundColor: tint.main, borderBottomWidth: 5, borderColor: tint.dark, padding: space.lg, gap: space.sm, opacity: pressed ? 0.9 : 1 }]}>
+              <Pressable key={r.id} accessibilityRole="button" onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={({ pressed }) => [{ width: 170, borderRadius: radius.lg, backgroundColor: tint.fill, borderBottomWidth: 5, borderColor: tint.edge, padding: space.lg, gap: space.sm, opacity: pressed ? 0.9 : 1 }]}>
                 <RevisionIcon icon={r.icon} seed={r.id} size={64} />
                 <T v="bodyBold" numberOfLines={2} style={{ color: color.white, minHeight: 48 }}>
                   {r.title}
@@ -253,7 +256,7 @@ export default function ChildHome() {
           </>
         ) : null}
 
-        <Card style={{ flexDirection: "row", gap: space.md, alignItems: "center", backgroundColor: color.ink, borderColor: color.ink }}>
+        <Card style={{ flexDirection: "row", gap: space.md, alignItems: "center", backgroundColor: color.inverse, borderColor: color.inverse }}>
           <View style={{ flex: 1, gap: space.sm }}>
             <T v="h3" style={{ color: color.white }}>
               Tu as ton interro corrigée ?
@@ -283,7 +286,7 @@ export default function ChildHome() {
           }}
           style={{ flex: 1, minHeight: 52, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, backgroundColor: color.card, paddingHorizontal: 16, fontFamily: font.textSemi, fontSize: size.md, color: color.ink }}
         />
-        <Pressable accessibilityRole="button" accessibilityLabel="Ajouter une révision" onPress={() => router.push({ pathname: "/revision/new", params: { lid } })} style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.brand, borderBottomWidth: 4, borderColor: color.brandDark, alignItems: "center", justifyContent: "center" }}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Ajouter une révision" onPress={() => router.push({ pathname: "/revision/new", params: { lid } })} style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.brandFill, borderBottomWidth: 4, borderColor: color.brandEdge, alignItems: "center", justifyContent: "center" }}>
           <Ionicons name="add" size={32} color={color.white} />
         </Pressable>
       </View>

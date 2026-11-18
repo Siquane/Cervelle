@@ -123,9 +123,9 @@ export default function Habits() {
                         borderRadius: 18,
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: on ? c.main : planned ? color.card : color.bg,
+                        backgroundColor: on ? c.fill : planned ? color.card : color.bg,
                         borderWidth: 2,
-                        borderColor: on ? c.dark : planned ? (tickable ? c.main : color.line) : "transparent",
+                        borderColor: on ? c.edge : planned ? (tickable ? c.main : color.line) : "transparent",
                       }}
                     >
                       {on ? <T style={{ color: color.white, fontSize: size.md }}>✓</T> : null}

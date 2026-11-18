@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect, useRef } from "react";
 import { Alert, AppState } from "react-native";
 import { Tabs } from "expo-router";
@@ -75,6 +76,7 @@ function useTimerWatcher(lid: string) {
 
 export default function ChildTabs() {
   const { lid } = useLid();
+  const insets = useSafeAreaInsets();
   useTimerWatcher(lid);
   useChildNotifications(lid);
   const friends = useFriends(lid);
@@ -87,7 +89,8 @@ export default function ChildTabs() {
         tabBarActiveTintColor: color.brand,
         tabBarInactiveTintColor: color.muted,
         tabBarLabelStyle: { fontFamily: font.textBold, fontSize: 12 },
-        tabBarStyle: { backgroundColor: color.card, borderTopColor: color.line, borderTopWidth: 2, height: 64, paddingTop: 6 },
+        // The fixed height must include the phone's navigation buttons, or the tabs slide under them.
+        tabBarStyle: { backgroundColor: color.card, borderTopColor: color.line, borderTopWidth: 2, height: 64 + insets.bottom, paddingTop: 6, paddingBottom: insets.bottom + 4 },
         sceneStyle: { backgroundColor: color.bg },
       }}
     >
@@ -99,7 +102,7 @@ export default function ChildTabs() {
             title: t.title,
             tabBarIcon: ({ focused, color: c }) => <Ionicons name={focused ? t.on : t.icon} size={26} color={c as string} />,
             tabBarBadge: t.name === "amis" && news > 0 ? news : undefined,
-            tabBarBadgeStyle: { backgroundColor: color.brand, fontFamily: font.textBlack },
+            tabBarBadgeStyle: { backgroundColor: color.brandFill, color: color.white, fontFamily: font.textBlack },
           }}
         />
       ))}

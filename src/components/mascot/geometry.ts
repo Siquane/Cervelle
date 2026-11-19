@@ -52,11 +52,14 @@ const INK = "#1F1A3D";
 export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[] }> = {
   casquette: {
     shapes: [
-      { kind: "path", d: "M 60 66 C 62 28 144 28 146 66 Z", fill: "#10B5A5", stroke: INK, strokeWidth: 4 },
-      { kind: "path", d: "M 132 60 C 152 56 176 60 182 70 C 164 74 144 72 128 68 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 103, cy: 35, r: 5, fill: "#FFC23D", stroke: INK, strokeWidth: 3 },
+      { kind: "path", d: "M 50 62 C 46 10 160 6 158 62 C 126 54 82 54 50 62 Z", fill: "#10B5A5", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 104 18 C 100 30 100 44 102 56", fill: "none", stroke: "#0B8A7E", strokeWidth: 3 },
+      { kind: "path", d: "M 146 54 C 170 42 200 50 204 68 C 186 80 156 74 136 64 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 152 60 C 170 56 188 60 196 66", fill: "none", stroke: "#08665C", strokeWidth: 3 },
+      { kind: "circle", cx: 104, cy: 12, r: 6, fill: "#FFC23D", stroke: INK, strokeWidth: 3 },
     ],
   },
+
   couronne: {
     shapes: [{ kind: "path", d: "M 70 54 L 74 20 L 90 38 L 103 12 L 116 38 L 132 20 L 136 54 Z", fill: "#FFC23D", stroke: INK, strokeWidth: 4 }],
   },

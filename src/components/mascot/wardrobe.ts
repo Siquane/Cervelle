@@ -92,10 +92,13 @@ export const WARDROBE: Record<string, Item> = {
   couronne_or: {
     shapes: [
       { kind: "path", d: "M 66 56 L 70 16 L 88 36 L 103 4 L 118 36 L 136 16 L 140 56 Z", fill: "#FFC23D", ...st },
+      { kind: "path", d: "M 68 46 C 92 52 114 52 138 46 L 140 56 C 114 62 92 62 66 56 Z", fill: "#E0A21E", ...st },
       { kind: "circle", cx: 70, cy: 14, r: 6, fill: "#FFE58A", ...st },
       { kind: "circle", cx: 103, cy: 2, r: 6, fill: "#FFE58A", ...st },
       { kind: "circle", cx: 136, cy: 14, r: 6, fill: "#FFE58A", ...st },
-      { kind: "circle", cx: 103, cy: 42, r: 6, fill: "#E5484D", ...st },
+      { kind: "circle", cx: 103, cy: 51, r: 5, fill: "#E5484D", ...st },
+      { kind: "circle", cx: 83, cy: 51, r: 3.5, fill: "#3D8BFD", ...st },
+      { kind: "circle", cx: 123, cy: 51, r: 3.5, fill: "#3D8BFD", ...st },
     ],
   },
   explorateur: {
@@ -158,11 +161,13 @@ export const WARDROBE: Record<string, Item> = {
 
   tuba: {
     shapes: [
-      { kind: "rect", x: 56, y: 86, width: 94, height: 38, rx: 18, fill: "#8EC5FF", ...st },
-      { kind: "rect", x: 56, y: 98, width: 94, height: 8, rx: 4, fill: "#FF8A3D" },
-      // The snorkel: a thick ink line, then the yellow inside it.
-      { kind: "path", d: "M 150 140 L 176 140 L 176 40", fill: "none", stroke: INK, strokeWidth: 13 },
-      { kind: "path", d: "M 150 140 L 176 140 L 176 40", fill: "none", stroke: "#FFC23D", strokeWidth: 7 },
+      { kind: "path", d: "M 40 102 C 60 92 146 92 166 102", fill: "none", stroke: "#FF8A3D", strokeWidth: 8 },
+      { kind: "rect", x: 56, y: 84, width: 94, height: 40, rx: 18, fill: "#8EC5FF", ...st },
+      { kind: "rect", x: 64, y: 90, width: 78, height: 28, rx: 13, fill: "#C9E6FF", stroke: "#3D8BFD", strokeWidth: 3 },
+      // The snorkel: a thick ink line, then the yellow inside it, with an orange tip.
+      { kind: "path", d: "M 150 128 C 168 132 176 124 176 108 L 176 46", fill: "none", stroke: INK, strokeWidth: 14 },
+      { kind: "path", d: "M 150 128 C 168 132 176 124 176 108 L 176 46", fill: "none", stroke: "#FFC23D", strokeWidth: 7 },
+      { kind: "rect", x: 168, y: 32, width: 16, height: 16, rx: 5, fill: "#FF8A3D", ...st },
     ],
   },
 
@@ -201,13 +206,16 @@ export const WARDROBE: Record<string, Item> = {
   // ── Tenue (derrière Cervelle) ──
   cape: {
     layer: "behind",
-    shapes: [{ kind: "path", d: "M 40 120 C 20 150 4 176 -2 186 L 208 186 C 202 176 186 150 166 120 Z", fill: "#E5484D", ...st }],
+    shapes: [
+      { kind: "path", d: "M 44 112 C 22 138 6 166 -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184 C 200 166 184 138 162 112 Z", fill: "#E5484D", ...st },
+      { kind: "path", d: "M 30 160 C 46 170 60 170 70 178 M 176 160 C 160 170 146 170 136 178", fill: "none", stroke: "#B42A2F", strokeWidth: 4 },
+    ],
   },
   cape_etoiles: {
     layer: "behind",
     shapes: [
-      { kind: "path", d: "M 40 120 C 20 150 4 176 -2 186 L 208 186 C 202 176 186 150 166 120 Z", fill: "#2B2560", ...st },
-      ...[[30, 170], [70, 160], [120, 172], [170, 164], [100, 150]].map(([x, y]) => ({ kind: "circle" as const, cx: x, cy: y, r: 3, fill: "#FFC23D" })),
+      { kind: "path", d: "M 44 112 C 22 138 6 166 -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184 C 200 166 184 138 162 112 Z", fill: "#2B2560", ...st },
+      ...[[24, 168], [62, 176], [120, 180], [168, 172], [196, 178], [92, 166]].map(([x, y]) => ({ kind: "circle" as const, cx: x, cy: y, r: 3, fill: "#FFC23D" })),
     ],
   },
   ailes_papillon: {
@@ -232,9 +240,15 @@ export const WARDROBE: Record<string, Item> = {
   bouee: {
     layer: "behind",
     shapes: [
-      { kind: "ellipse", cx: 103, cy: 160, rx: 92, ry: 24, fill: "#FFC23D", ...st },
-      { kind: "path", d: "M 176 150 C 190 132 208 136 206 150 C 204 158 196 160 190 158", fill: "#FFC23D", ...st },
-      { kind: "path", d: "M 204 146 L 212 148 L 205 152", fill: "#FF8A3D", ...st },
+      // A thick ring: outer edge, then the darker inner side just under the brain.
+      { kind: "ellipse", cx: 103, cy: 156, rx: 100, ry: 32, fill: "#FFC23D", ...st },
+      { kind: "ellipse", cx: 103, cy: 150, rx: 64, ry: 12, fill: "#E0A21E", ...st },
+      { kind: "path", d: "M 27.1 166.3 A 86 22 0 0 1 17.8 159.1", fill: "none", stroke: "#FF5C8A", strokeWidth: 20 },
+      { kind: "path", d: "M 117.9 177.7 A 86 22 0 0 1 88.1 177.7", fill: "none", stroke: "#FF5C8A", strokeWidth: 20 },
+      { kind: "path", d: "M 188.2 159.1 A 86 22 0 0 1 178.9 166.3", fill: "none", stroke: "#FF5C8A", strokeWidth: 20 },
+      { kind: "circle", cx: 198, cy: 130, r: 15, fill: "#FFC23D", ...st },
+      { kind: "circle", cx: 202, cy: 125, r: 2.8, fill: INK },
+      { kind: "path", d: "M 210 130 L 222 133 L 210 137 Z", fill: "#FF8A3D", ...st },
     ],
   },
 
@@ -245,6 +259,7 @@ export const WARDROBE: Record<string, Item> = {
       { kind: "path", d: "M 178 158 L 185 176 L 192 158 Z", fill: "#F7DC94", ...st },
       { kind: "path", d: "M 183 170 L 185 176 L 187 170 Z", fill: INK },
       { kind: "rect", x: 178, y: 88, width: 14, height: 10, rx: 3, fill: "#FF8FB1", ...st },
+      { kind: "path", d: "M 185 98 L 185 156", fill: "none", stroke: "#E0A21E", strokeWidth: 3 },
     ],
   },
   livre: {

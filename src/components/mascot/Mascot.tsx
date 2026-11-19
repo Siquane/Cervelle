@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { memo, useId } from "react";
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 import { ACCESSORIES, BRAIN, EYES, eyeShapes, FOLDS, INK_COLOR, VIEWBOX, type Shape } from "./geometry";
 import { BRAIN_COLORS, WARDROBE, type Item } from "./wardrobe";
@@ -25,8 +25,16 @@ function ShapeView({ s }: { s: Shape }) {
   }
 }
 
-/** Cervelle, the mascot, with the accessories the child bought. */
-export function Mascot({ size = 120, accessories = [], mood = "happy" }: { size?: number; accessories?: string[]; mood?: Mood }) {
+type MascotProps = { size?: number; accessories?: string[]; mood?: Mood };
+
+/**
+ * Cervelle, the mascot, with the accessories the child bought. Memoised on the
+ * accessories' content (callers often pass a fresh array): the shop, the podium
+ * and the badges page draw many of them and re-render on every tap.
+ */
+export const Mascot = memo(MascotArt, (a, b) => a.size === b.size && a.mood === b.mood && (a.accessories ?? []).join("|") === (b.accessories ?? []).join("|"));
+
+function MascotArt({ size = 120, accessories = [], mood = "happy" }: MascotProps) {
   const gid = `brain${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const items = accessories.map((id) => ITEMS[id]).filter(Boolean);
   const tint = BRAIN_COLORS[accessories.find((id) => BRAIN_COLORS[id]) ?? "rose"];

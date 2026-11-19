@@ -121,4 +121,3 @@ export function Scene({ equipped, width, height, radius = 22, children }: { equi
   );
 }
 
-export const decorOf = (equipped: string[]) => equipped.find((id) => (DECORS as readonly string[]).includes(id)) ?? null;

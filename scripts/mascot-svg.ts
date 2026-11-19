@@ -3,7 +3,9 @@ import { ACCESSORIES, BRAIN, EYES, eyeShapes, FOLDS, INK_COLOR, VIEWBOX, type Sh
 // The mascot as a plain SVG string (for the icon and splash generator).
 
 function shape(s: Shape): string {
-  const stroke = s.stroke ? ` stroke="${s.stroke}" stroke-width="${s.strokeWidth ?? 4}" stroke-linejoin="round" stroke-linecap="round"` : "";
+  const stroke =
+    (s.stroke ? ` stroke="${s.stroke}" stroke-width="${s.strokeWidth ?? 4}" stroke-linejoin="round" stroke-linecap="round"` : "") +
+    (s.opacity != null ? ` opacity="${s.opacity}"` : "");
   switch (s.kind) {
     case "path":
       return `<path d="${s.d}" fill="${s.fill}"${stroke}/>`;

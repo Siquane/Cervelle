@@ -57,3 +57,8 @@ export function todayIso(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
+
+/** « de Léo », mais « d'Anaïs » / « d'Élise » devant un prénom qui commence par une voyelle. */
+export function de(name: string): string {
+  return /^[aeiouyàâäéèêëîïôöùûüœæ]/i.test(name.trim()) ? `d'${name.trim()}` : `de ${name.trim()}`;
+}

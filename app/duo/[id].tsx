@@ -8,6 +8,7 @@ import { Mascot } from "../../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, Page, T, TopBar } from "../../src/components/ui";
 import { useLid } from "../../src/lib/lid";
 import { color, font, radius, size, space } from "../../src/theme/tokens";
+import { de } from "../../src/lib/format";
 
 // « Révision à deux » on one phone: two players answer in turn, the phone
 // checks each answer and shows the explanation, the best score wins. Nothing
@@ -141,7 +142,7 @@ export default function Duo() {
                 {right ? "Bravo, +1 point !" : `Raté. La bonne réponse : ${expected}`}
               </T>
               {q.explanation ? <T v="body">{q.explanation}</T> : null}
-              <Button icon="arrow-forward" label={index + 1 >= total ? "Voir le résultat" : `Au tour de ${who[1 - player]}`} onPress={next} />
+              <Button icon="arrow-forward" label={index + 1 >= total ? "Voir le résultat" : `Au tour ${de(who[1 - player])}`} onPress={next} />
             </View>
           ) : null}
         </Card>

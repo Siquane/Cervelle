@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../src/api/client";
 import { keys, useFriendRequests, useLearners, useOverview, useQueryClient } from "../../src/api/hooks";
-import { LEVEL_LABEL } from "../../src/lib/format";
+import { LEVEL_LABEL, de } from "../../src/lib/format";
 import { errorMessage } from "../../src/api/client";
 import { MasteryTag } from "../../src/components/bits";
 import { BottomSheet } from "../../src/components/bits";
@@ -101,7 +101,7 @@ export default function ParentHome() {
           ) : null}
 
           <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid: selected.id } })} style={{ minHeight: 72 }} />
-          <Button tone="white" icon="stats-chart" label={`Bilan de la semaine de ${selected.name}`} onPress={() => router.push("/parent/bilan")} />
+          <Button tone="white" icon="stats-chart" label={`Bilan de la semaine ${de(selected.name)}`} onPress={() => router.push("/parent/bilan")} />
 
           {overview.isLoading ? <Loading /> : null}
           {overview.error ? <ErrorBox message={errorMessage(overview.error)} onRetry={() => overview.refetch()} /> : null}
@@ -200,11 +200,11 @@ export default function ParentHome() {
               <View style={{ gap: space.md }}>
                 <Button tone="white" icon="school" label={`Programme de ${selected.grade || "l'année"}`} onPress={() => router.push({ pathname: "/programme", params: { lid: selected.id } })} />
                 <Button tone="white" icon="document-text" label="Interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid: selected.id } })} />
-                <Button tone="white" icon="calendar" label={`Agenda de ${selected.name}`} onPress={() => router.push({ pathname: "/child/agenda", params: { lid: selected.id } })} />
+                <Button tone="white" icon="calendar" label={`Agenda ${de(selected.name)}`} onPress={() => router.push({ pathname: "/child/agenda", params: { lid: selected.id } })} />
                 <Button tone="white" icon="checkbox" label="Tâches" onPress={() => router.push({ pathname: "/todos", params: { lid: selected.id } })} />
                 <Button tone="white" icon="repeat" label="Habitudes" onPress={() => router.push({ pathname: "/habits", params: { lid: selected.id } })} />
                 <Button tone="white" icon="journal" label="Journal de bord" onPress={() => router.push({ pathname: "/journal", params: { lid: selected.id } })} />
-                <Button tone="white" icon="game-controller" label={`Ouvrir l'espace de ${selected.name}`} onPress={() => router.push({ pathname: "/child", params: { lid: selected.id } })} />
+                <Button tone="white" icon="game-controller" label={`Ouvrir l'espace ${de(selected.name)}`} onPress={() => router.push({ pathname: "/child", params: { lid: selected.id } })} />
               </View>
             </>
           ) : null}

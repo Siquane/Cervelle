@@ -54,8 +54,8 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
     shapes: [
       { kind: "path", d: "M 50 62 C 46 10 160 6 158 62 C 126 54 82 54 50 62 Z", fill: "#10B5A5", stroke: INK, strokeWidth: 4 },
       { kind: "path", d: "M 104 18 C 100 30 100 44 102 56", fill: "none", stroke: "#0B8A7E", strokeWidth: 3 },
-      { kind: "path", d: "M 146 54 C 170 42 200 50 204 68 C 186 80 156 74 136 64 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
-      { kind: "path", d: "M 152 60 C 170 56 188 60 196 66", fill: "none", stroke: "#08665C", strokeWidth: 3 },
+      { kind: "path", d: "M 146 50 C 170 40 200 50 204 68 C 186 78 158 68 140 57 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 152 56 C 170 54 188 59 196 66", fill: "none", stroke: "#08665C", strokeWidth: 3 },
       { kind: "circle", cx: 104, cy: 12, r: 6, fill: "#FFC23D", stroke: INK, strokeWidth: 3 },
     ],
   },
@@ -64,17 +64,22 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
     shapes: [{ kind: "path", d: "M 70 54 L 74 20 L 90 38 L 103 12 L 116 38 L 132 20 L 136 54 Z", fill: "#FFC23D", stroke: INK, strokeWidth: 4 }],
   },
   toque: {
+    // Toque de chef : un haut gonflé en nuage avec des plis, posé derrière un
+    // bandeau arrondi.
     shapes: [
-      { kind: "circle", cx: 84, cy: 34, r: 18, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 122, cy: 34, r: 18, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 103, cy: 24, r: 20, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      { kind: "rect", x: 72, y: 42, width: 62, height: 22, rx: 5, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 78 56 L 78 46 C 66 42 56 32 62 20 C 64 8 76 2 86 8 C 90 -6 116 -6 120 6 C 132 0 148 10 144 22 C 150 34 140 42 128 46 L 128 56 Z", fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 84 24 C 82 32 83 40 86 47 M 103 18 L 103 49 M 122 24 C 124 32 123 40 120 47", fill: "none", stroke: INK, strokeWidth: 3 },
+      { kind: "path", d: "M 74 44 C 92 52 114 52 132 44 L 132 62 C 114 72 92 72 74 62 Z", fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
     ],
   },
   sorcier: {
     shapes: [
-      { kind: "path", d: "M 66 56 L 116 -18 L 140 56 Z", fill: "#8B5CF6", stroke: INK, strokeWidth: 4 },
+      // Bord du chapeau d'abord (l'arrière passe derrière le cône), puis le cône,
+      // puis la moitié avant du bord par-dessus le pied du cône.
       { kind: "ellipse", cx: 103, cy: 56, rx: 54, ry: 9, fill: "#6D3FD9", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 66 56 L 116 -18 L 140 56 Z", fill: "#8B5CF6", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 49 56 A 54 9 0 0 0 157 56 Z", fill: "#6D3FD9" },
+      { kind: "path", d: "M 49 56 A 54 9 0 0 0 157 56", fill: "none", stroke: INK, strokeWidth: 4 },
       { kind: "circle", cx: 112, cy: 22, r: 4, fill: "#FFC23D" },
       { kind: "circle", cx: 98, cy: 40, r: 3, fill: "#FFC23D" },
     ],

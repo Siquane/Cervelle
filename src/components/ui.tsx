@@ -11,7 +11,7 @@ type Variant = "title" | "h2" | "h3" | "body" | "bodyBold" | "small" | "label";
 
 /** Calculé à l'affichage : la police peut changer (Réglages → Police pour la dyslexie). */
 function textStyle(v: Variant): TextStyle {
-  const k = reading.lineScale;
+  const k = 1;
   switch (v) {
     case "title":
       return { fontFamily: font.title, fontSize: size.xxl, lineHeight: 40, color: color.ink };
@@ -30,9 +30,22 @@ function textStyle(v: Variant): TextStyle {
   }
 }
 
-export function T({ v = "body", style, ...rest }: TextProps & { v?: Variant; style?: StyleProp<TextStyle> }) {
+/** A text to READ (sheet, question, answer, explanation): the dyslexia font when the option is on. */
+function readStyle(v: Variant): TextStyle | null {
+  if (!reading.dyslexia) return null;
+  const base = textStyle(v);
+  const bold = v !== "body" && v !== "small";
+  return {
+    fontFamily: bold ? font.readBold : font.read,
+    fontSize: Math.round((base.fontSize ?? size.md) * reading.sizeScale),
+    lineHeight: Math.round((base.lineHeight ?? 24) * reading.lineScale),
+    letterSpacing: 0,
+  };
+}
+
+export function T({ v = "body", read = false, style, ...rest }: TextProps & { v?: Variant; read?: boolean; style?: StyleProp<TextStyle> }) {
   useFontRefresh();
-  return <RNText {...rest} style={[textStyle(v), style]} />;
+  return <RNText {...rest} style={[textStyle(v), read ? readStyle(v) : null, style]} />;
 }
 
 /** A page: safe area, scroll, side gutter. */

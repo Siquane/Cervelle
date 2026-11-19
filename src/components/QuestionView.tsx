@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { Question } from "../api/types";
-import { color, font, radius, size, space } from "../theme/tokens";
+import { color, font, radius, size, space, readSize } from "../theme/tokens";
 import { Button, T } from "./ui";
 
 // One question, whatever its type. `onAnswer` sends what the child chose;
@@ -20,7 +20,7 @@ function Choice({ label, state, onPress, letter }: { label: string; letter?: str
           <T v="bodyBold">{letter}</T>
         </View>
       ) : null}
-      <T v="bodyBold" style={{ flex: 1 }}>
+      <T read v="bodyBold" style={{ flex: 1 }}>
         {label}
       </T>
       {state === "right" ? <Ionicons name="checkmark-circle" size={26} color={color.green} /> : state === "wrong" ? <Ionicons name="close-circle" size={26} color={color.red} /> : null}
@@ -60,7 +60,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
       <View style={{ gap: space.lg }}>
         <Pressable accessibilityRole="button" accessibilityLabel={flipped ? "Réponse" : "Retourner la carte"} onPress={() => setFlipped(true)} style={{ minHeight: 220, borderRadius: radius.lg, backgroundColor: flipped ? color.tealSoft : color.card, borderWidth: 2, borderBottomWidth: 6, borderColor: flipped ? color.teal : color.line, alignItems: "center", justifyContent: "center", padding: space.xl, gap: space.md }}>
           <T v="label">{flipped ? "Réponse" : "Question"}</T>
-          <T v="h3" style={{ textAlign: "center" }}>
+          <T read v="h3" style={{ textAlign: "center" }}>
             {flipped ? back ?? "Dis la réponse à voix haute, puis vérifie avec la correction." : q.prompt}
           </T>
           {!flipped ? <T v="small">Touche pour retourner</T> : null}
@@ -79,7 +79,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
     case "qcm":
       return (
         <View style={{ gap: space.md }}>
-          <T v="h3">{q.prompt}</T>
+          <T read v="h3">{q.prompt}</T>
           {q.choices!.map((c, i) => (
             <Choice key={i} letter={"ABCDE"[i]} label={c} state={stateOf(String(i))} onPress={locked ? undefined : () => pick(String(i))} />
           ))}
@@ -88,7 +88,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
     case "vrai_faux":
       return (
         <View style={{ gap: space.md }}>
-          <T v="h3">{q.prompt}</T>
+          <T read v="h3">{q.prompt}</T>
           <View style={{ flexDirection: "row", gap: space.md }}>
             <View style={{ flex: 1 }}>
               <Choice label="Vrai" state={stateOf("vrai")} onPress={locked ? undefined : () => pick("vrai")} />
@@ -103,7 +103,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
       const remaining = q.items!.filter((it) => !order.includes(it));
       return (
         <View style={{ gap: space.md }}>
-          <T v="h3">{q.prompt}</T>
+          <T read v="h3">{q.prompt}</T>
           <T v="small">Touche les éléments dans le bon ordre.</T>
           <View style={{ gap: space.sm, minHeight: 40 }}>
             {order.map((it, i) => (
@@ -111,7 +111,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
                 <T v="bodyBold" style={{ color: color.skyDark, width: 22 }}>
                   {i + 1}.
                 </T>
-                <T v="bodyBold" style={{ flex: 1 }}>
+                <T read v="bodyBold" style={{ flex: 1 }}>
                   {it}
                 </T>
               </Pressable>
@@ -120,7 +120,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
             {remaining.map((it) => (
               <Pressable key={it} disabled={locked} onPress={() => setOrder([...order, it])} accessibilityRole="button" style={{ borderRadius: radius.md, borderWidth: 2, borderBottomWidth: 4, borderColor: color.line, backgroundColor: color.card, paddingHorizontal: space.lg, paddingVertical: space.md }}>
-                <T v="bodyBold">{it}</T>
+                <T read v="bodyBold">{it}</T>
               </Pressable>
             ))}
           </View>
@@ -134,15 +134,15 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
       return (
         <View style={{ gap: space.md }}>
           {q.type === "trous" ? (
-            <T v="h3">
+            <T read v="h3">
               {before}
-              <T v="h3" style={{ color: color.brand }}>
+              <T read v="h3" style={{ color: color.brand }}>
                 {" ____ "}
               </T>
               {after}
             </T>
           ) : (
-            <T v="h3">{q.prompt}</T>
+            <T read v="h3">{q.prompt}</T>
           )}
           <TextInput
             value={text}
@@ -154,7 +154,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
             autoCorrect={false}
             returnKeyType="done"
             onSubmitEditing={() => text.trim() && !locked && onAnswer(text.trim())}
-            style={{ minHeight: 56, borderRadius: radius.md, borderWidth: 2, borderColor: verdict ? (verdict.correct ? color.green : color.red) : color.line, backgroundColor: color.card, paddingHorizontal: 16, fontFamily: font.textBold, fontSize: size.lg, color: color.ink }}
+            style={{ minHeight: 56, borderRadius: radius.md, borderWidth: 2, borderColor: verdict ? (verdict.correct ? color.green : color.red) : color.line, backgroundColor: color.card, paddingHorizontal: 16, fontFamily: font.readBold, fontSize: readSize(size.lg), color: color.ink }}
           />
           {!locked ? <Button label="Valider" icon="checkmark" disabled={!text.trim()} onPress={() => onAnswer(text.trim())} /> : null}
         </View>

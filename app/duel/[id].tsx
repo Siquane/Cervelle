@@ -71,7 +71,7 @@ export default function DuelScreen() {
             Question {index + 1} sur {qs.length} · les corrections arrivent à la fin
           </T>
           <Card style={{ gap: space.lg }}>
-            <T v="h3">{q.prompt}</T>
+            <T read v="h3">{q.prompt}</T>
             <View style={{ gap: space.sm }}>
               {(q.type === "qcm" ? q.choices.map((c, i) => ({ key: String(i), label: c })) : VF).map((c) => {
                 const on = answers[q.id] === c.key;
@@ -83,7 +83,7 @@ export default function DuelScreen() {
                     onPress={() => pick(c.key)}
                     style={({ pressed }) => ({ minHeight: 56, borderRadius: radius.md, borderWidth: 2, borderColor: on ? color.brand : color.line, backgroundColor: on ? color.brandSoft : color.card, paddingHorizontal: space.lg, justifyContent: "center", opacity: pressed ? 0.8 : 1 })}
                   >
-                    <T v="bodyBold">{c.label}</T>
+                    <T read v="bodyBold">{c.label}</T>
                   </Pressable>
                 );
               })}

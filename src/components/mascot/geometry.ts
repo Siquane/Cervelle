@@ -64,11 +64,12 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
     shapes: [{ kind: "path", d: "M 70 54 L 74 20 L 90 38 L 103 12 L 116 38 L 132 20 L 136 54 Z", fill: "#FFC23D", stroke: INK, strokeWidth: 4 }],
   },
   toque: {
+    // Toque de chef : un haut gonflé en nuage avec des plis, posé derrière un
+    // bandeau arrondi.
     shapes: [
-      { kind: "circle", cx: 84, cy: 34, r: 18, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 122, cy: 34, r: 18, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      { kind: "circle", cx: 103, cy: 24, r: 20, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      { kind: "rect", x: 72, y: 42, width: 62, height: 22, rx: 5, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 78 56 L 78 46 C 66 42 56 32 62 20 C 64 8 76 2 86 8 C 90 -6 116 -6 120 6 C 132 0 148 10 144 22 C 150 34 140 42 128 46 L 128 56 Z", fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 84 24 C 82 32 83 40 86 47 M 103 18 L 103 49 M 122 24 C 124 32 123 40 120 47", fill: "none", stroke: INK, strokeWidth: 3 },
+      { kind: "path", d: "M 74 44 C 92 52 114 52 132 44 L 132 62 C 114 72 92 72 74 62 Z", fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
     ],
   },
   sorcier: {

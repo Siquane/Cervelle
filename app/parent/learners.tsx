@@ -7,7 +7,7 @@ import { useDevices, useLearners, useQueryClient, keys } from "../../src/api/hoo
 import type { Learner } from "../../src/api/types";
 import { Mascot } from "../../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, Page, T, TopBar } from "../../src/components/ui";
-import { LEVEL_LABEL, shortDate } from "../../src/lib/format";
+import { LEVEL_LABEL, shortDate, de } from "../../src/lib/format";
 import { color, font, learnerColorOf, radius, space } from "../../src/theme/tokens";
 
 function Devices({ lid }: { lid: string }) {
@@ -57,7 +57,7 @@ function LearnerCard({ l }: { l: Learner }) {
       </View>
       {code ? (
         <View style={{ backgroundColor: tint.soft, borderRadius: radius.md, padding: space.lg, gap: 4, alignItems: "center" }}>
-          <T v="small">Sur le téléphone de {l.name} : « Je suis élève », puis ce code</T>
+          <T v="small">Sur le téléphone {de(l.name)} : « Je suis élève », puis ce code</T>
           <T style={{ fontFamily: font.title, fontSize: 40, lineHeight: 48, letterSpacing: 6, color: tint.dark }} selectable>
             {code.code}
           </T>

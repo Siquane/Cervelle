@@ -1,10 +1,17 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AppState, Platform } from "react-native";
 import { api } from "./client";
 import type { Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
 });
+
+// React Query only knows about the browser's focus: tell it when the phone app
+// goes to the background (polls pause) and comes back (stale screens refresh).
+if (Platform.OS !== "web") {
+  AppState.addEventListener("change", (s) => focusManager.setFocused(s === "active"));
+}
 
 const L = (lid: string) => `/cervelle/learners/${lid}`;
 

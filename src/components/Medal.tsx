@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { memo, useId } from "react";
 import { View } from "react-native";
 import Svg, { Circle, Defs, G, LinearGradient, Path, Polygon, Stop } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
@@ -85,7 +85,7 @@ function ShapeArt({ shape, fill, stroke, strokeWidth = 0 }: { shape: BadgeShape;
   }
 }
 
-export function Medal({ shape, metal, icon, size = 96, dot = false }: { shape: BadgeShape; metal: Metal; icon: string; size?: number; dot?: boolean }) {
+export const Medal = memo(function Medal({ shape, metal, icon, size = 96, dot = false }: { shape: BadgeShape; metal: Metal; icon: string; size?: number; dot?: boolean }) {
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [light, mid, dark] = metal === "locked" ? LOCKED : METALS[metal];
   const locked = metal === "locked";
@@ -137,4 +137,4 @@ export function Medal({ shape, metal, icon, size = 96, dot = false }: { shape: B
       {dot ? <View style={{ position: "absolute", top: 0, right: 0, width: size * 0.2, height: size * 0.2, borderRadius: size * 0.1, backgroundColor: color.red, borderWidth: 2, borderColor: color.bg }} /> : null}
     </View>
   );
-}
+});

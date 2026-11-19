@@ -54,8 +54,8 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
     shapes: [
       { kind: "path", d: "M 50 62 C 46 10 160 6 158 62 C 126 54 82 54 50 62 Z", fill: "#10B5A5", stroke: INK, strokeWidth: 4 },
       { kind: "path", d: "M 104 18 C 100 30 100 44 102 56", fill: "none", stroke: "#0B8A7E", strokeWidth: 3 },
-      { kind: "path", d: "M 146 54 C 170 42 200 50 204 68 C 186 80 156 74 136 64 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
-      { kind: "path", d: "M 152 60 C 170 56 188 60 196 66", fill: "none", stroke: "#08665C", strokeWidth: 3 },
+      { kind: "path", d: "M 146 50 C 170 40 200 50 204 68 C 186 78 158 68 140 57 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 152 56 C 170 54 188 59 196 66", fill: "none", stroke: "#08665C", strokeWidth: 3 },
       { kind: "circle", cx: 104, cy: 12, r: 6, fill: "#FFC23D", stroke: INK, strokeWidth: 3 },
     ],
   },
@@ -73,8 +73,12 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
   },
   sorcier: {
     shapes: [
-      { kind: "path", d: "M 66 56 L 116 -18 L 140 56 Z", fill: "#8B5CF6", stroke: INK, strokeWidth: 4 },
+      // Bord du chapeau d'abord (l'arrière passe derrière le cône), puis le cône,
+      // puis la moitié avant du bord par-dessus le pied du cône.
       { kind: "ellipse", cx: 103, cy: 56, rx: 54, ry: 9, fill: "#6D3FD9", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 66 56 L 116 -18 L 140 56 Z", fill: "#8B5CF6", stroke: INK, strokeWidth: 4 },
+      { kind: "path", d: "M 49 56 A 54 9 0 0 0 157 56 Z", fill: "#6D3FD9" },
+      { kind: "path", d: "M 49 56 A 54 9 0 0 0 157 56", fill: "none", stroke: INK, strokeWidth: 4 },
       { kind: "circle", cx: 112, cy: 22, r: 4, fill: "#FFC23D" },
       { kind: "circle", cx: 98, cy: 40, r: 3, fill: "#FFC23D" },
     ],

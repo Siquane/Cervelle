@@ -29,6 +29,12 @@ const INK = "#1F1A3D";
 /** A season's own colours, a holiday's violet; grey until earned. */
 export const windowMetal = (w: BadgeWindow): Metal => (!w.earned ? "locked" : w.family === "fete" ? "fete" : w.family === "chemin" ? "or" : (w.key.split(":")[1] as Metal));
 
+/**
+ * In the mascot's viewBox (-24 to 190, 214 high, drawn 214/220 of its width),
+ * the brain spans y 35–167: its middle (101) is 18 below the box's (83).
+ */
+const BRAIN_LIFT = (18 / 214) * (214 / 220);
+
 export const tierMetal = (tier: number): Metal => (["locked", "bronze", "argent", "or"] as const)[Math.max(0, Math.min(3, tier))];
 
 function star(): string {
@@ -106,7 +112,10 @@ export function Medal({ shape, metal, icon, size = 96, dot = false }: { shape: B
         </G>
       </Svg>
       <View style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", opacity: locked ? 0.55 : 1 }}>
-        <Mascot size={size * 0.52} mood={locked ? "sleep" : metal === "or" ? "wow" : "happy"} />
+        {/* The mascot's drawing keeps room above the brain for hats: lift it so the brain itself is centred. */}
+        <View style={{ transform: [{ translateY: -BRAIN_LIFT * size * 0.52 }] }}>
+          <Mascot size={size * 0.52} mood={locked ? "sleep" : metal === "or" ? "wow" : "happy"} />
+        </View>
       </View>
       <View
         style={{

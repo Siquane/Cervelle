@@ -34,7 +34,9 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
     if (s?.kind === "parent" && retry && (await useSession.getState().refresh())) return request<T>(path, init, false);
     const body = await res.json().catch(() => ({}));
     await useSession.getState().signOut();
-    throw new ApiError(401, body.error ?? "Tu as été déconnecté. Reconnecte-toi pour continuer.", body.code);
+    // The shared auth middleware answers in English ("Invalid or expired token"): never show that.
+    const msg = typeof body.error === "string" && !/token/i.test(body.error) ? body.error : "Tu as été déconnecté. Reconnecte-toi pour continuer.";
+    throw new ApiError(401, msg, body.code);
   }
   if (res.status === 204) return undefined as T;
   const body = await res.json().catch(() => ({}));

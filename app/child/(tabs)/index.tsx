@@ -59,7 +59,7 @@ export default function ChildHome() {
       refresh();
       Alert.alert("Coffre ouvert !", `+${r.coins} pièces. Bravo pour tes missions !`);
     },
-    onError: (e) => Alert.alert("Coffre fermé", errorMessage(e)),
+    onError: (e) => Alert.alert("Coffre pas encore ouvert", errorMessage(e)),
   });
 
   if (home.isLoading) return <Loading />;
@@ -163,7 +163,7 @@ export default function ChildHome() {
           </Card>
         ) : null}
 
-        <T v="h2">{nextExams.length ? "Révise pour ton prochain contrôle" : "Mes révisions"}</T>
+        <T v="h2">{nextExams.length ? "Révise pour ta prochaine interro" : "Mes révisions"}</T>
         {featured.length ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
             {featured.map((r) => (

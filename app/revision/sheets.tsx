@@ -50,7 +50,7 @@ export default function Sheets() {
       <ProgressBar value={((index + 1) / sheets.length) * 100} tint={color.teal} height={8} />
       <View style={{ gap: 2 }}>
         <T v="label">{s.parentTitle}</T>
-        <T v="h2">{s.title}</T>
+        <T read v="h2">{s.title}</T>
       </View>
       {s.fromProgramme ? (
         <View style={{ flexDirection: "row", gap: space.sm, alignItems: "center", backgroundColor: color.tealSoft, borderRadius: radius.md, padding: space.md }}>
@@ -61,14 +61,14 @@ export default function Sheets() {
         </View>
       ) : null}
       <Card style={{ backgroundColor: color.skySoft, borderColor: color.skySoft }}>
-        <T v="bodyBold">{s.essentiel}</T>
+        <T read v="bodyBold">{s.essentiel}</T>
       </Card>
       {s.points.length ? (
         <View style={{ gap: space.sm }}>
           {s.points.map((p, i) => (
             <View key={i} style={{ flexDirection: "row", gap: space.sm }}>
               <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color.brand, marginTop: 9 }} />
-              <T v="body" style={{ flex: 1 }}>
+              <T read v="body" style={{ flex: 1 }}>
                 {p}
               </T>
             </View>
@@ -80,10 +80,10 @@ export default function Sheets() {
           <T v="label">Vocabulaire</T>
           {s.vocabulaire.map((v) => (
             <View key={v.terme} style={{ gap: 2 }}>
-              <T v="bodyBold" style={{ color: color.brandDark }}>
+              <T read v="bodyBold" style={{ color: color.brandDark }}>
                 {v.terme}
               </T>
-              <T v="body">{v.definition}</T>
+              <T read v="body">{v.definition}</T>
             </View>
           ))}
         </Card>
@@ -91,7 +91,7 @@ export default function Sheets() {
       {s.exemple ? (
         <View style={{ gap: 4 }}>
           <T v="label">Exemple</T>
-          <T v="body">{s.exemple}</T>
+          <T read v="body">{s.exemple}</T>
         </View>
       ) : null}
       {s.retenir ? (
@@ -99,7 +99,7 @@ export default function Sheets() {
           <T v="label" style={{ color: color.sunDark }}>
             À retenir
           </T>
-          <T v="h3">{s.retenir}</T>
+          <T read v="h3">{s.retenir}</T>
         </View>
       ) : null}
     </Page>

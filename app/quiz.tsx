@@ -26,9 +26,9 @@ function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
         </T>
         {r.coins ? <T v="bodyBold" style={{ color: color.sunDark }}>+{r.coins} 🪙</T> : null}
       </View>
-      {!r.correct && !selfGraded ? <T v="bodyBold">Réponse : {r.expected}</T> : null}
-      {r.comment ? <T v="body">{r.comment}</T> : null}
-      {r.explanation ? <T v="body">{r.explanation}</T> : null}
+      {!r.correct && !selfGraded ? <T read v="bodyBold">Réponse : {r.expected}</T> : null}
+      {r.comment ? <T read v="body">{r.comment}</T> : null}
+      {r.explanation ? <T read v="body">{r.explanation}</T> : null}
       <MasteryTag value={r.mastery} compact />
     </Card>
   );

@@ -95,14 +95,14 @@ function SheetList({ r, lid }: { r: RevisionDetail; lid: string }) {
     <>
       {r.summary ? (
         <Card style={{ backgroundColor: color.skySoft, borderColor: color.skySoft }}>
-          <T v="body">{r.summary}</T>
+          <T read v="body">{r.summary}</T>
         </Card>
       ) : null}
       {r.sheets.map((s, i) => (
         <Card key={s.notionId} onPress={() => router.push({ pathname: "/revision/sheets", params: { lid, id: r.id, start: String(i) } })} style={{ gap: 4 }}>
           <T v="label">{s.parentTitle}</T>
-          <T v="h3">{s.title}</T>
-          <T v="body" numberOfLines={3} style={{ color: color.muted }}>
+          <T read v="h3">{s.title}</T>
+          <T read v="body" numberOfLines={3} style={{ color: color.muted }}>
             {s.essentiel}
           </T>
         </Card>

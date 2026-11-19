@@ -49,12 +49,12 @@ export default function DuelScreen() {
 
       {r ? (
         <Card style={{ alignItems: "center", gap: space.md, paddingVertical: space.xl }}>
-          <Mascot size={130} mood={r.result === "lost" ? "sad" : "wow"} />
+          <Mascot size={130} mood="wow" />
           <T v="title" style={{ textAlign: "center" }}>
             {r.score}/{r.total}
           </T>
           <T v="h3" style={{ textAlign: "center" }}>
-            {r.result === null ? "Bien joué ! Ton ami n'a pas encore joué." : r.result === "won" ? `Tu as gagné ! (${r.theirScore}/${r.total} pour ton ami)` : r.result === "draw" ? "Égalité !" : `Perdu de peu : ${r.theirScore}/${r.total} pour ton ami.`}
+            {r.result === "progress" ? "Bravo, tu as progressé depuis ton dernier défi !" : r.result === "finished" ? "Défi fini tous les deux, bien joué !" : "Bien joué ! Ton ami n'a pas encore joué."}
           </T>
           {r.coins ? (
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>

@@ -145,7 +145,7 @@ export default function StarsScreen() {
       <BottomSheet open={info} onClose={() => setInfo(false)} title="Gagner des étoiles">
         {p ? (
           <View style={{ gap: space.sm }}>
-            <T v="body">⭐ {p.rules.quiz} par quiz fini, +{p.rules.goodQuiz} si tu as 80 % ou plus</T>
+            <T v="body">⭐ {p.rules.quiz} par quiz fini, +{p.rules.effort} si tu revois tes erreurs ou fais 10 questions et plus</T>
             <T v="body">⭐ {p.rules.interro} par interro de Cervelle</T>
             <T v="body">⭐ {p.rules.day} par jour de révision, +{p.rules.week} pour 7 jours d'affilée</T>
             <T v="body">⭐ {p.rules.chest} quand tu ouvres le coffre des missions</T>

@@ -12,20 +12,16 @@ const STARS = [
 export type Mood = "happy" | "wow" | "sad" | "sleep";
 
 function ShapeView({ s }: { s: Shape }) {
-  const paint = {
-    fill: s.fill,
-    opacity: s.opacity,
-    ...(s.stroke ? { stroke: s.stroke, strokeWidth: s.strokeWidth ?? 4, strokeLinejoin: "round" as const, strokeLinecap: "round" as const } : {}),
-  };
+  const stroke = s.stroke ? { stroke: s.stroke, strokeWidth: s.strokeWidth ?? 4, strokeLinejoin: "round" as const, strokeLinecap: "round" as const } : {};
   switch (s.kind) {
     case "path":
-      return <Path d={s.d} {...paint} />;
+      return <Path d={s.d} fill={s.fill} {...stroke} />;
     case "circle":
-      return <Circle cx={s.cx} cy={s.cy} r={s.r} {...paint} />;
+      return <Circle cx={s.cx} cy={s.cy} r={s.r} fill={s.fill} {...stroke} />;
     case "ellipse":
-      return <Ellipse cx={s.cx} cy={s.cy} rx={s.rx} ry={s.ry} {...paint} />;
+      return <Ellipse cx={s.cx} cy={s.cy} rx={s.rx} ry={s.ry} fill={s.fill} {...stroke} />;
     case "rect":
-      return <Rect x={s.x} y={s.y} width={s.width} height={s.height} rx={s.rx} {...paint} />;
+      return <Rect x={s.x} y={s.y} width={s.width} height={s.height} rx={s.rx} fill={s.fill} {...stroke} />;
   }
 }
 

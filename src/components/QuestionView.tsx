@@ -1,8 +1,9 @@
+import { MicButton, SpeakButton } from "./VoiceButtons";
 import { useEffect, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { Question } from "../api/types";
-import { color, font, radius, size, space, readSize } from "../theme/tokens";
+import { color, font, radius, readSize, size, space } from "../theme/tokens";
 import { Button, T } from "./ui";
 
 // One question, whatever its type. `onAnswer` sends what the child chose;
@@ -65,6 +66,9 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
           </T>
           {!flipped ? <T v="small">Touche pour retourner</T> : null}
         </Pressable>
+        <View style={{ alignItems: "center" }}>
+          <SpeakButton id={`c-${q.id}-${flipped ? "b" : "f"}`} text={flipped ? back ?? "" : q.prompt} />
+        </View>
         {flipped && !locked ? (
           <View style={{ flexDirection: "row", gap: space.md }}>
             <Button tone="sun" icon="refresh" label="À revoir" onPress={() => pick("pas_su")} style={{ flex: 1 }} />
@@ -79,7 +83,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
     case "qcm":
       return (
         <View style={{ gap: space.md }}>
-          <T read v="h3">{q.prompt}</T>
+          <Prompt q={q} extra={q.choices!.map((c, i) => `${"ABCDE"[i]} : ${c}`)} />
           {q.choices!.map((c, i) => (
             <Choice key={i} letter={"ABCDE"[i]} label={c} state={stateOf(String(i))} onPress={locked ? undefined : () => pick(String(i))} />
           ))}
@@ -88,7 +92,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
     case "vrai_faux":
       return (
         <View style={{ gap: space.md }}>
-          <T read v="h3">{q.prompt}</T>
+          <Prompt q={q} extra={["Vrai ou faux ?"]} />
           <View style={{ flexDirection: "row", gap: space.md }}>
             <View style={{ flex: 1 }}>
               <Choice label="Vrai" state={stateOf("vrai")} onPress={locked ? undefined : () => pick("vrai")} />
@@ -103,7 +107,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
       const remaining = q.items!.filter((it) => !order.includes(it));
       return (
         <View style={{ gap: space.md }}>
-          <T read v="h3">{q.prompt}</T>
+          <Prompt q={q} extra={q.items!} />
           <T v="small">Touche les éléments dans le bon ordre.</T>
           <View style={{ gap: space.sm, minHeight: 40 }}>
             {order.map((it, i) => (
@@ -129,21 +133,11 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
       );
     }
     default: {
-      // courte / trous
-      const [before, after] = q.type === "trous" ? splitBlank(q.prompt) : [q.prompt, ""];
+      // courte / trous: type the answer, or say it (🎤).
       return (
         <View style={{ gap: space.md }}>
-          {q.type === "trous" ? (
-            <T read v="h3">
-              {before}
-              <T read v="h3" style={{ color: color.brand }}>
-                {" ____ "}
-              </T>
-              {after}
-            </T>
-          ) : (
-            <T read v="h3">{q.prompt}</T>
-          )}
+          <Prompt q={q} />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
           <TextInput
             value={text}
             onChangeText={setText}
@@ -154,13 +148,39 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
             autoCorrect={false}
             returnKeyType="done"
             onSubmitEditing={() => text.trim() && !locked && onAnswer(text.trim())}
-            style={{ minHeight: 56, borderRadius: radius.md, borderWidth: 2, borderColor: verdict ? (verdict.correct ? color.green : color.red) : color.line, backgroundColor: color.card, paddingHorizontal: 16, fontFamily: font.readBold, fontSize: readSize(size.lg), color: color.ink }}
+            style={{ flex: 1, minHeight: 56, borderRadius: radius.md, borderWidth: 2, borderColor: verdict ? (verdict.correct ? color.green : color.red) : color.line, backgroundColor: color.card, paddingHorizontal: 16, fontFamily: font.readBold, fontSize: readSize(size.lg), color: color.ink }}
           />
+          <MicButton onText={setText} disabled={locked} />
+          </View>
           {!locked ? <Button label="Valider" icon="checkmark" disabled={!text.trim()} onPress={() => onAnswer(text.trim())} /> : null}
         </View>
       );
     }
   }
+}
+
+/** The question, with a 🔊 button that reads it (and the choices) aloud. */
+function Prompt({ q, extra = [] }: { q: Question; extra?: string[] }) {
+  const said = q.type === "trous" ? q.prompt.replace(/_{3,}/g, " … ") : q.prompt;
+  return (
+    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: space.sm }}>
+      <View style={{ flex: 1 }}>{q.type === "trous" ? <BlankPrompt prompt={q.prompt} /> : <T read v="h3">{q.prompt}</T>}</View>
+      <SpeakButton id={`q-${q.id}`} text={[said, ...extra].join(". ")} />
+    </View>
+  );
+}
+
+function BlankPrompt({ prompt }: { prompt: string }) {
+  const [before, after] = splitBlank(prompt);
+  return (
+    <T read v="h3">
+      {before}
+      <T read v="h3" style={{ color: color.brand }}>
+        {" ____ "}
+      </T>
+      {after}
+    </T>
+  );
 }
 
 function splitBlank(prompt: string): [string, string] {

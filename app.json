@@ -52,9 +52,19 @@
           "photosPermission": "Cervelle a besoin de tes photos pour lire tes cours.",
           "cameraPermission": "Cervelle a besoin de l'appareil photo pour photographier tes cours."
         }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Cervelle utilise le micro seulement quand tu touches le bouton pour répondre à voix haute.",
+          "speechRecognitionPermission": "Cervelle transforme ta réponse dite à voix haute en texte.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
       ]
     ],
-    "runtimeVersion": "2",
+    "runtimeVersion": "3",
     "updates": {
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0

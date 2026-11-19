@@ -31,6 +31,10 @@
   emplacements tête / visage / cou / tenue / main / couleur / décor) ; dessins
   dans `src/components/mascot/wardrobe.ts` (mêmes id), décors dans
   `src/components/mascot/Scene.tsx`.
+- Voix : lecture à voix haute avec la voix du téléphone (`expo-speech`,
+  `src/lib/voice.ts`, bouton 🔊 `SpeakButton`) ; réponse à l'oral pour les
+  questions courtes et à trous (`expo-speech-recognition`, `MicButton`,
+  caché là où le téléphone ne sait pas faire).
 - Étiquettes : new = « En cours » (ciel), review = « À revoir » (soleil),
   mastered = « Maîtrisé » (vert).
 - Textes en français, tutoiement, phrases courtes lisibles par un enfant de 8 ans.

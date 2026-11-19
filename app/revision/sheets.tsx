@@ -1,3 +1,5 @@
+import { SpeakButton } from "../../src/components/VoiceButtons";
+import { useStopSpeakingOnLeave } from "../../src/lib/voice";
 import { useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -11,6 +13,7 @@ import { useLid } from "../../src/lib/lid";
 import { color, radius, space } from "../../src/theme/tokens";
 
 export default function Sheets() {
+  useStopSpeakingOnLeave();
   const { id, start } = useLocalSearchParams<{ id: string; start?: string }>();
   const { lid } = useLid();
   const revision = useRevision(lid, id);
@@ -48,9 +51,13 @@ export default function Sheets() {
       }
     >
       <ProgressBar value={((index + 1) / sheets.length) * 100} tint={color.teal} height={8} />
-      <View style={{ gap: 2 }}>
-        <T v="label">{s.parentTitle}</T>
-        <T read v="h2">{s.title}</T>
+      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: space.sm }}>
+        <View style={{ flex: 1, gap: 2 }}>
+          <T v="label">{s.parentTitle}</T>
+          <T read v="h2">{s.title}</T>
+        </View>
+        {/* Reads the whole sheet: title, the essential, the points, the example, what to remember. */}
+        <SpeakButton id={`sheet-${s.notionId}`} text={[s.title, s.essentiel, ...s.points, s.exemple ? `Exemple : ${s.exemple}` : "", s.retenir ? `À retenir : ${s.retenir}` : ""].filter(Boolean).join(". ")} size={30} />
       </View>
       {s.fromProgramme ? (
         <View style={{ flexDirection: "row", gap: space.sm, alignItems: "center", backgroundColor: color.tealSoft, borderRadius: radius.md, padding: space.md }}>

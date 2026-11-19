@@ -6,8 +6,6 @@ import { saveScheme, scheme, type Scheme } from "../theme/tokens";
 // lu au démarrage par theme/tokens.ts ; on recharge l'appli pour l'appliquer
 // partout d'un coup.
 
-export const currentScheme = (): Scheme => scheme;
-
 export async function setScheme(next: Scheme) {
   if (next === scheme) return;
   saveScheme(next);

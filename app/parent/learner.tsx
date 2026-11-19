@@ -8,7 +8,7 @@ import type { Learner, Level } from "../../src/api/types";
 import { BottomSheet } from "../../src/components/bits";
 import { Field } from "../../src/components/Field";
 import { Button, ErrorBox, Page, T, TopBar } from "../../src/components/ui";
-import { LEVEL_LABEL } from "../../src/lib/format";
+import { LEVEL_LABEL, de } from "../../src/lib/format";
 import { useParentPrefs } from "../../src/state/parentPrefs";
 import { color, learnerColor, radius, space } from "../../src/theme/tokens";
 import { Chip } from "../../src/components/Chip";
@@ -111,7 +111,7 @@ export default function LearnerForm() {
       {save.error ? <ErrorBox message={errorMessage(save.error)} /> : null}
       <Button label="Enregistrer" icon="checkmark" loading={save.isPending} disabled={!name.trim()} onPress={() => save.mutate()} />
       {id ? <Button tone="ghost" label="Supprimer ce profil" icon="trash" onPress={() => setConfirm(true)} /> : null}
-      <BottomSheet open={confirm} onClose={() => setConfirm(false)} title={`Supprimer le profil de ${name} ?`}>
+      <BottomSheet open={confirm} onClose={() => setConfirm(false)} title={`Supprimer le profil ${de(name)} ?`}>
         <T v="body">Ses révisions, ses progrès et ses pièces seront effacés, et ses téléphones déliés. C'est définitif.</T>
         {remove.error ? <ErrorBox message={errorMessage(remove.error)} /> : null}
         <Button tone="danger" label="Supprimer le profil" icon="trash" loading={remove.isPending} onPress={() => remove.mutate()} />

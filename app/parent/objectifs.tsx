@@ -1,3 +1,4 @@
+import { de } from "../../src/lib/format";
 import { useState } from "react";
 import { Alert, Pressable, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -48,7 +49,7 @@ export default function Objectifs() {
   const full = (goals.data?.length ?? 0) >= 3;
 
   return (
-    <Page header={<TopBar title={selected ? `Objectifs de ${selected.name}` : "Objectifs"} />}>
+    <Page header={<TopBar title={selected ? `Objectifs ${de(selected.name)}` : "Objectifs"} />}>
       {learners.data && learners.data.length > 1 && selected ? (
         <Segmented options={learners.data.map((l) => ({ key: l.id, label: l.name }))} value={selected.id} onChange={setLearner} tint={tint.fill} />
       ) : null}

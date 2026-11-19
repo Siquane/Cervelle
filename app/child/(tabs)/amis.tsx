@@ -10,7 +10,7 @@ import type { BoardRow, Duel } from "../../../src/api/types";
 import { BottomSheet } from "../../../src/components/bits";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
-import { duration } from "../../../src/lib/format";
+import { duration, de } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
 import { color, font, GUTTER, learnerColorOf, onColor, radius, size, space } from "../../../src/theme/tokens";
 
@@ -46,7 +46,7 @@ export default function FriendsTab() {
     onSuccess: (r) => {
       setCode("");
       refresh();
-      Alert.alert("Demande envoyée", `Quand tes parents et ceux de ${r.friendship.name} auront dit oui, vous serez amis.`);
+      Alert.alert("Demande envoyée", `Quand tes parents et ceux ${de(r.friendship.name)} auront dit oui, vous serez amis.`);
     },
     onError: (e) => Alert.alert("Demande non envoyée", errorMessage(e)),
   });
@@ -195,7 +195,7 @@ export default function FriendsTab() {
                 <View key={c.id} style={{ gap: 6 }}>
                   <T v="bodyBold">
                     {c.status === "pending"
-                      ? `En attente de ${c.other.name}`
+                      ? `En attente ${de(c.other.name)}`
                       : c.status === "active"
                         ? `Moi contre ${c.other.name}`
                         : c.result === "won"
@@ -335,7 +335,7 @@ function DuelsCard({ duels, lid, canPlay }: { duels: Duel[]; lid: string; canPla
             </T>
             <T v="small">
               {d.status === "open"
-                ? `Toi : ${d.myScore}/${d.total} · en attente de ${d.friend.name}`
+                ? `Toi : ${d.myScore}/${d.total} · en attente ${de(d.friend.name)}`
                 : d.status === "expired"
                   ? "Terminé sans gagnant"
                   : `Fini tous les deux · +10 pièces${d.result === "progress" ? " · +10 pour ton progrès" : ""}`}

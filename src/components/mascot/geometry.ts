@@ -63,14 +63,14 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
       { kind: "path", d: "M 104 18 C 100 30 100 44 102 56", fill: "none", stroke: "#0B8A7E", strokeWidth: 3 },
       { kind: "path", d: "M 146 54 C 170 42 200 50 204 68 C 186 80 156 74 136 64 Z", fill: "#0B8A7E", stroke: INK, strokeWidth: 4 },
       { kind: "path", d: "M 152 60 C 170 56 188 60 196 66", fill: "none", stroke: "#08665C", strokeWidth: 3 },
-      shine("M 64 42 C 66 30 78 20 92 17"),
-      shine("M 160 50 C 174 47 186 48 194 54", 4),
+      shine("M 69.9 50 C 71.6 39.8 81.8 31.3 93.7 28.7"),
+      shine("M 153.9 64.8 C 167.9 61.8 179.9 62.8 187.9 68.8", 4),
       { kind: "circle", cx: 104, cy: 12, r: 6, fill: "#FFC23D", stroke: INK, strokeWidth: 3 },
     ],
   },
 
   couronne: {
-    shapes: [{ kind: "path", d: "M 70 54 L 74 20 L 90 38 L 103 12 L 116 38 L 132 20 L 136 54 Z", fill: "#FFC23D", stroke: INK, strokeWidth: 4 }, shine("M 80 48 L 80 32"), shine("M 101 36 L 103 24", 5)],
+    shapes: [{ kind: "path", d: "M 70 54 L 74 20 L 90 38 L 103 12 L 116 38 L 132 20 L 136 54 Z", fill: "#FFC23D", stroke: INK, strokeWidth: 4 }, shine("M 79.3 46.3 L 79.3 35.1"), shine("M 101 37 L 103 25", 5)],
   },
   toque: {
     shapes: [
@@ -78,8 +78,8 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
       { kind: "circle", cx: 122, cy: 34, r: 18, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
       { kind: "circle", cx: 103, cy: 24, r: 20, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
       { kind: "rect", x: 72, y: 42, width: 62, height: 22, rx: 5, fill: "#FFFFFF", stroke: INK, strokeWidth: 4 },
-      shine("M 76 30 C 76 24 80 20 86 19", 5),
-      shine("M 96 18 C 98 13 104 10 110 11", 5),
+      shine("M 90 30 C 90 24 94 20 100 19", 5),
+      shine("M 96.7 18.7 C 98.7 13.7 104.7 10.7 110.7 11.7", 5),
     ],
   },
   sorcier: {
@@ -111,22 +111,22 @@ export const ACCESSORIES: Record<string, { behindFace?: boolean; shapes: Shape[]
   },
   masque: {
     behindFace: true,
-    shapes: [{ kind: "path", d: "M 50 94 C 72 84 134 84 156 94 L 152 120 C 132 112 74 112 54 120 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 }, shine("M 62 96 C 80 90 100 88 120 88", 5)],
+    shapes: [{ kind: "path", d: "M 50 94 C 72 84 134 84 156 94 L 152 120 C 132 112 74 112 54 120 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 }, shine("M 63.9 100.6 C 81.9 94.6 101.9 92.6 121.9 92.6", 5)],
   },
   noeud: {
     shapes: [
       { kind: "path", d: "M 103 163 L 80 150 L 80 176 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 },
       { kind: "path", d: "M 103 163 L 126 150 L 126 176 Z", fill: "#E5484D", stroke: INK, strokeWidth: 4 },
       { kind: "circle", cx: 103, cy: 163, r: 6, fill: "#B42A55", stroke: INK, strokeWidth: 3 },
-      shine("M 86 156 L 86 168", 4),
-      shine("M 120 156 L 120 168", 4),
+      shine("M 86.4 159.6 L 86.4 166.2", 4),
+      shine("M 120.9 159.1 L 120.9 165.7", 4),
     ],
   },
   echarpe: {
     shapes: [
       { kind: "path", d: "M 46 148 C 80 166 126 166 160 148 L 162 162 C 126 180 80 180 44 162 Z", fill: "#FFC23D", stroke: INK, strokeWidth: 4 },
       { kind: "rect", x: 128, y: 162, width: 16, height: 26, rx: 4, fill: "#FFC23D", stroke: INK, strokeWidth: 4 },
-      shine("M 58 154 C 76 162 96 166 114 166", 5),
+      shine("M 50.6 157.1 C 68.6 165.1 88.6 169.1 106.6 169.1", 5),
     ],
   },
 };

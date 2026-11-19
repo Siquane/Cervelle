@@ -69,7 +69,7 @@ export default function Assistant() {
           ) : null}
           {turns.map((t, i) => (
             <View key={i} style={{ alignSelf: t.role === "user" ? "flex-end" : "flex-start", maxWidth: "88%", backgroundColor: t.role === "user" ? color.brandFill : color.card, borderRadius: radius.lg, borderWidth: t.role === "user" ? 0 : 2, borderColor: color.line, padding: space.md }}>
-              <T v="body" style={{ color: t.role === "user" ? color.white : color.ink }} selectable>
+              <T read v="body" style={{ color: t.role === "user" ? color.white : color.ink }} selectable>
                 {t.text}
               </T>
             </View>

@@ -408,7 +408,8 @@ export interface Duel {
   myScore: number | null;
   theirScore: number | null;
   theyPlayed: boolean;
-  result: "won" | "lost" | "draw" | null;
+  /** « progress »: bonus for progressing since my last duel; « finished »: both played. */
+  result: "progress" | "finished" | null;
   total: number;
   createdAt: string;
 }
@@ -424,7 +425,7 @@ export interface DuelResult {
   score: number;
   total: number;
   theirScore: number | null;
-  result: "won" | "lost" | "draw" | null;
+  result: "progress" | "finished" | null;
   coins: number;
   corrections: { questionId: string; correct: boolean; expected: string }[];
 }
@@ -437,7 +438,19 @@ export interface StarPath {
   stars: number;
   end: number;
   breakdown: { revision: number; regularite: number; missions: number; defis: number };
-  rules: { quiz: number; goodQuiz: number; interro: number; day: number; week: number; chest: number; win: number; badge: number };
+  rules: { quiz: number; effort: number; interro: number; day: number; week: number; chest: number; win: number; badge: number };
   steps: { at: number; reward: StarReward; reached: boolean; result: { coins: number; item: string | null; itemName: string | null } | null }[];
   fresh: { at: number; coins: number; item: string | null; itemName: string | null }[];
+}
+
+export interface Goal {
+  id: string;
+  kind: "jours" | "etoiles";
+  target: number;
+  reward: string;
+  current: number;
+  label: string;
+  until: string | null;
+  reached: boolean;
+  wins: number;
 }

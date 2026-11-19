@@ -194,8 +194,10 @@ export function onColor(bg: string): string {
 export const learnerColorOf = (c: string) => learnerColor[c] ?? learnerColor.violet;
 
 // Titres : Outfit. Texte : Atkinson Hyperlegible (lettres qu'on ne confond pas : l, I, 1).
-// Option « Police pour la dyslexie » (Réglages) : le texte passe en OpenDyslexic,
-// les titres restent en Outfit.
+// Option « Police pour la dyslexie » (Réglages) : seulement ce qu'on LIT (fiches,
+// questions, réponses, explications : `font.read`, `<T read>`) passe en
+// OpenDyslexic, 10 % plus petite (ses lettres sont plus grandes et très
+// espacées). Boutons, menus et titres restent en Atkinson et Outfit.
 const STANDARD = {
   title: "Outfit_700Bold",
   titleBold: "Outfit_600SemiBold",
@@ -203,21 +205,31 @@ const STANDARD = {
   textSemi: "AtkinsonHyperlegible_400Regular",
   textBold: "AtkinsonHyperlegible_700Bold",
   textBlack: "AtkinsonHyperlegible_700Bold",
+  /** Texte à lire (fiches, questions…) : Atkinson, ou OpenDyslexic avec l'option. */
+  read: "AtkinsonHyperlegible_400Regular",
+  readBold: "AtkinsonHyperlegible_700Bold",
 };
 
-const DYSLEXIA = { ...STANDARD, text: "OpenDyslexic", textSemi: "OpenDyslexic", textBold: "OpenDyslexic_Bold", textBlack: "OpenDyslexic_Bold" };
+const DYSLEXIA = { ...STANDARD, read: "OpenDyslexic", readBold: "OpenDyslexic_Bold" };
 
 /** Modifié sur place par applyReading : toujours lire `font.x` au moment de l'affichage. */
 export const font: Record<keyof typeof STANDARD, string> = { ...STANDARD };
 
-/** OpenDyslexic est haute : les lignes de texte ont besoin de plus de place. */
-export const reading = { dyslexia: false, lineScale: 1 };
+/**
+ * Texte à lire avec l'option dyslexie : OpenDyslexic, 10 % plus petite (même
+ * taille à l'œil), lignes un peu plus hautes (ses lettres montent plus haut).
+ */
+export const reading = { dyslexia: false, sizeScale: 1, lineScale: 1 };
 
 export function applyReading(dyslexia: boolean) {
   Object.assign(font, dyslexia ? DYSLEXIA : STANDARD);
   reading.dyslexia = dyslexia;
-  reading.lineScale = dyslexia ? 1.3 : 1;
+  reading.sizeScale = dyslexia ? 0.9 : 1;
+  reading.lineScale = dyslexia ? 1.15 : 1;
 }
+
+/** Taille d'un texte à lire (champ de réponse, choix…) : réduite avec l'option dyslexie. */
+export const readSize = (n: number) => Math.round(n * reading.sizeScale);
 
 export const size = { xs: 13, sm: 15, md: 17, lg: 20, xl: 26, xxl: 32 } as const;
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 22, xxl: 32 } as const;

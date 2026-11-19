@@ -87,7 +87,7 @@ export default function Duo() {
           <View style={{ alignItems: "center" }}>
             <Mascot size={110} mood="wow" />
           </View>
-          <T v="body">Révisez à deux sur ce téléphone : chacun répond à son tour, le meilleur score gagne. {total} questions en tout.</T>
+          <T v="body">Révisez à deux sur ce téléphone : chacun répond à son tour et on s'explique les réponses. {total} questions en tout.</T>
           {[0, 1].map((p) => (
             <TextInput
               key={p}
@@ -109,7 +109,7 @@ export default function Duo() {
             Question {index + 1} sur {total}
           </T>
           <T v="h2" style={{ textAlign: "center" }}>
-            Au tour de {who[player]} !
+            Au tour {de(who[player])} !
           </T>
           <T v="body" style={{ textAlign: "center" }}>
             Passe-lui le téléphone.
@@ -123,7 +123,7 @@ export default function Duo() {
           <T v="label" style={{ color: color.brand }}>
             {who[player]}
           </T>
-          <T v="h3">{q.prompt}</T>
+          <T read v="h3">{q.prompt}</T>
           <View style={{ gap: space.sm }}>
             {(q.type === "qcm" ? q.choices.map((c, i) => ({ key: String(i), label: c })) : VF).map((c) => {
               const isAnswer = c.key === q.answer.trim().toLowerCase();
@@ -131,7 +131,7 @@ export default function Duo() {
               const border = phase === "feedback" ? (isAnswer ? color.green : isPicked ? color.red : color.line) : color.line;
               return (
                 <Pressable key={c.key} accessibilityRole="button" disabled={phase === "feedback"} onPress={() => answer(c.key)} style={({ pressed }) => ({ minHeight: 56, borderRadius: radius.md, borderWidth: 2, borderColor: border, backgroundColor: phase === "feedback" && isAnswer ? color.greenSoft : color.card, paddingHorizontal: space.lg, justifyContent: "center", opacity: pressed ? 0.8 : 1 })}>
-                  <T v="bodyBold">{c.label}</T>
+                  <T read v="bodyBold">{c.label}</T>
                 </Pressable>
               );
             })}
@@ -141,7 +141,7 @@ export default function Duo() {
               <T v="h3" style={{ color: right ? color.green : color.red }}>
                 {right ? "Bravo, +1 point !" : `Raté. La bonne réponse : ${expected}`}
               </T>
-              {q.explanation ? <T v="body">{q.explanation}</T> : null}
+              {q.explanation ? <T read v="body">{q.explanation}</T> : null}
               <Button icon="arrow-forward" label={index + 1 >= total ? "Voir le résultat" : `Au tour ${de(who[1 - player])}`} onPress={next} />
             </View>
           ) : null}
@@ -152,7 +152,7 @@ export default function Duo() {
         <Card style={{ alignItems: "center", gap: space.md, paddingVertical: space.xl }}>
           <Mascot size={130} mood="wow" accessories={["couronne"]} />
           <T v="title" style={{ textAlign: "center" }}>
-            {scores[0] === scores[1] ? "Égalité !" : `${who[scores[0] > scores[1] ? 0 : 1]} gagne !`}
+            Bien révisé à deux !
           </T>
           <T v="h3">
             {who[0]} {scores[0]} – {scores[1]} {who[1]}

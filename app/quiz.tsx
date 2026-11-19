@@ -1,3 +1,4 @@
+import { useStopSpeakingOnLeave } from "../src/lib/voice";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -26,15 +27,16 @@ function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
         </T>
         {r.coins ? <T v="bodyBold" style={{ color: color.sunDark }}>+{r.coins} 🪙</T> : null}
       </View>
-      {!r.correct && !selfGraded ? <T v="bodyBold">Réponse : {r.expected}</T> : null}
-      {r.comment ? <T v="body">{r.comment}</T> : null}
-      {r.explanation ? <T v="body">{r.explanation}</T> : null}
+      {!r.correct && !selfGraded ? <T read v="bodyBold">Réponse : {r.expected}</T> : null}
+      {r.comment ? <T read v="body">{r.comment}</T> : null}
+      {r.explanation ? <T read v="body">{r.explanation}</T> : null}
       <MasteryTag value={r.mastery} compact />
     </Card>
   );
 }
 
 export default function Quiz() {
+  useStopSpeakingOnLeave();
   const { mode = "qcm", revisionId } = useLocalSearchParams<{ mode?: QuizMode; revisionId?: string }>();
   const { lid } = useLid();
   const refresh = useRefreshLearner(lid);
@@ -102,16 +104,23 @@ export default function Quiz() {
 
   if (done) {
     const pct = score.total ? Math.round((score.correct / score.total) * 100) : 0;
-    const great = pct >= 80;
+    // Learning first: what is understood and what is left to review; the mark comes second, small.
+    const left = score.total - score.correct;
+    const great = left === 0;
     return (
       <Page header={<TopBar title={title} />}>
         <Card style={{ alignItems: "center", gap: space.md, paddingVertical: space.xl }}>
-          <Mascot size={160} mood={great ? "happy" : pct >= 50 ? "wow" : "sad"} accessories={summary?.learner.equipped ?? []} />
+          <Mascot size={160} mood={great ? "wow" : "happy"} accessories={summary?.learner.equipped ?? []} />
           <T v="h2" style={{ textAlign: "center" }}>
-            {great ? "Bravo, c'est presque parfait !" : pct >= 50 ? "Bien joué, continue !" : "On s'entraîne encore un peu ?"}
+            {great ? "Tout est compris, bravo !" : "Bien travaillé !"}
           </T>
-          <T style={{ fontFamily: font.title, fontSize: 56, lineHeight: 66, color: great ? color.green : color.ink }}>
-            {mode === "interro" ? `${Math.round(pct / 5)}/20` : `${score.correct}/${score.total}`}
+          <T v="body" style={{ textAlign: "center" }}>
+            Tu as travaillé {score.total} question{score.total > 1 ? "s" : ""}.{" "}
+            {great ? "Tu sais tout ce qui était demandé." : `Il te reste ${left} point${left > 1 ? "s" : ""} à revoir : c'est comme ça qu'on apprend.`}
+          </T>
+          <T v="small">
+            {score.correct} réponse{score.correct > 1 ? "s" : ""} juste{score.correct > 1 ? "s" : ""} sur {score.total}
+            {mode === "interro" ? ` · ${Math.round(pct / 5)}/20` : ""}
           </T>
           <View style={{ flexDirection: "row", gap: space.lg }}>
             <T v="bodyBold" style={{ color: color.sunDark }}>

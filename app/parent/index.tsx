@@ -102,6 +102,7 @@ export default function ParentHome() {
 
           <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid: selected.id } })} style={{ minHeight: 72 }} />
           <Button tone="white" icon="stats-chart" label={`Bilan de la semaine ${de(selected.name)}`} onPress={() => router.push("/parent/bilan")} />
+          <Button tone="white" icon="flag" label={`Objectifs ${de(selected.name)}`} onPress={() => router.push("/parent/objectifs")} />
 
           {overview.isLoading ? <Loading /> : null}
           {overview.error ? <ErrorBox message={errorMessage(overview.error)} onRetry={() => overview.refetch()} /> : null}

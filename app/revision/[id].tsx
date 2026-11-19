@@ -31,6 +31,9 @@ function Step({ done, label, detail, onPress }: { done: boolean; label: string; 
 
 function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
   const [open, setOpen] = useState<string | null>(r.notions[0]?.id ?? null);
+  // What is left to learn, rather than a mark.
+  const toReview = r.notions.flatMap((n): { mastery: string }[] => (n.children.length ? n.children : [n])).filter((n) => n.mastery !== "mastered").length;
+  const toReviewLabel = toReview ? `${toReview} notion${toReview > 1 ? "s" : ""} à revoir` : "tout est compris";
   const play = (mode: QuizMode) => router.push({ pathname: "/quiz", params: { lid, revisionId: r.id, mode } });
   return (
     <>
@@ -42,8 +45,8 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
           <T v="h3">{r.progress} %</T>
         </View>
         <Step done={r.steps.sheets} label="Fiches de révision" detail={r.steps.sheets ? "Lues" : `${r.sheets.length} fiches à lire`} onPress={() => router.push({ pathname: "/revision/sheets", params: { lid, id: r.id } })} />
-        <Step done={r.steps.quizBest !== null} label="QCM" detail={r.steps.quizBest !== null ? `Meilleur score : ${r.steps.quizBest} %` : "10 questions rapides"} onPress={() => play("qcm")} />
-        <Step done={r.steps.examBest !== null} label="Interro" detail={r.steps.examBest !== null ? `Meilleure note : ${Math.round(r.steps.examBest / 5)}/20` : "15 questions de tous types, notée sur 20"} onPress={() => play("interro")} />
+        <Step done={r.steps.quizBest !== null} label="QCM" detail={r.steps.quizBest !== null ? `Fait · ${toReviewLabel}` : "10 questions rapides"} onPress={() => play("qcm")} />
+        <Step done={r.steps.examBest !== null} label="Interro" detail={r.steps.examBest !== null ? `Faite · ${toReviewLabel}` : "15 questions de tous types"} onPress={() => play("interro")} />
         <Button tone="white" small icon="albums" label="Cartes mémoire" onPress={() => play("cartes")} style={{ marginTop: space.sm }} />
         <Button tone="white" small icon="flash" label="Révision express · 6 questions" onPress={() => play("express")} />
         <Button tone="white" small icon="people" label="Réviser à deux" onPress={() => router.push({ pathname: "/duo/[id]", params: { id: r.id, lid } })} />
@@ -92,14 +95,14 @@ function SheetList({ r, lid }: { r: RevisionDetail; lid: string }) {
     <>
       {r.summary ? (
         <Card style={{ backgroundColor: color.skySoft, borderColor: color.skySoft }}>
-          <T v="body">{r.summary}</T>
+          <T read v="body">{r.summary}</T>
         </Card>
       ) : null}
       {r.sheets.map((s, i) => (
         <Card key={s.notionId} onPress={() => router.push({ pathname: "/revision/sheets", params: { lid, id: r.id, start: String(i) } })} style={{ gap: 4 }}>
           <T v="label">{s.parentTitle}</T>
-          <T v="h3">{s.title}</T>
-          <T v="body" numberOfLines={3} style={{ color: color.muted }}>
+          <T read v="h3">{s.title}</T>
+          <T read v="body" numberOfLines={3} style={{ color: color.muted }}>
             {s.essentiel}
           </T>
         </Card>

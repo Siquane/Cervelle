@@ -37,7 +37,7 @@ export default function FriendsTab() {
       // The challenger plays first; the friend sees it in their list.
       router.push({ pathname: "/duel/[id]", params: { id: r.duel.id, lid } });
     },
-    onError: (e) => Alert.alert("Défi impossible", errorMessage(e)),
+    onError: (e) => Alert.alert("Défi non lancé", errorMessage(e)),
   });
   const refresh = () => qc.invalidateQueries({ queryKey: keys.friends(lid) });
 

@@ -37,9 +37,9 @@ export default function Objectifs() {
       setReward("");
       refresh();
     },
-    onError: (e) => Alert.alert("Objectif", errorMessage(e)),
+    onError: (e) => Alert.alert("Objectif non enregistré", errorMessage(e)),
   });
-  const remove = useMutation({ mutationFn: (id: string) => api.delete(`/cervelle/learners/${lid}/goals/${id}`), onSuccess: refresh, onError: (e) => Alert.alert("Objectif", errorMessage(e)) });
+  const remove = useMutation({ mutationFn: (id: string) => api.delete(`/cervelle/learners/${lid}/goals/${id}`), onSuccess: refresh, onError: (e) => Alert.alert("Objectif non supprimé", errorMessage(e)) });
 
   const pickKind = (k: "jours" | "etoiles") => {
     setKind(k);

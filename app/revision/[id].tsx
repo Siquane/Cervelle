@@ -209,8 +209,8 @@ export default function RevisionScreen() {
           loading={remove.isPending}
           onPress={() =>
             Alert.alert("Supprimer la révision ?", "Les fiches, les questions et les progrès de cette révision seront effacés.", [
-              { text: "Annuler", style: "cancel" },
-              { text: "Supprimer", style: "destructive", onPress: () => { setMenu(false); remove.mutate(); } },
+              { text: "Garder", style: "cancel" },
+              { text: "Supprimer la révision", style: "destructive", onPress: () => { setMenu(false); remove.mutate(); } },
             ])
           }
         />

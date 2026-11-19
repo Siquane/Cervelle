@@ -114,8 +114,8 @@ export default function LearnerForm() {
       <BottomSheet open={confirm} onClose={() => setConfirm(false)} title={`Supprimer le profil de ${name} ?`}>
         <T v="body">Ses révisions, ses progrès et ses pièces seront effacés, et ses téléphones déliés. C'est définitif.</T>
         {remove.error ? <ErrorBox message={errorMessage(remove.error)} /> : null}
-        <Button tone="danger" label="Supprimer" icon="trash" loading={remove.isPending} onPress={() => remove.mutate()} />
-        <Button tone="white" label="Annuler" onPress={() => setConfirm(false)} />
+        <Button tone="danger" label="Supprimer le profil" icon="trash" loading={remove.isPending} onPress={() => remove.mutate()} />
+        <Button tone="white" label="Garder le profil" onPress={() => setConfirm(false)} />
       </BottomSheet>
     </Page>
   );

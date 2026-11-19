@@ -117,7 +117,7 @@ export default function Shop() {
   const [trying, setTrying] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
 
-  const onError = (e: unknown) => Alert.alert("Boutique", errorMessage(e));
+  const onError = (e: unknown) => Alert.alert("Pas possible pour l'instant", errorMessage(e));
   const act = useMutation({
     mutationFn: ({ item, action }: { item: ShopItem; action: "buy" | "on" | "off" }) =>
       action === "buy" ? api.post(`${learnerPath(lid)}/shop/${item.id}/buy`) : api.post(`${learnerPath(lid)}/shop/${item.id}/equip`, { on: action === "on" }),

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +20,8 @@ import { RevisionRow } from "../../../src/components/RevisionRow";
 import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { daysUntil, whenLabel } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
+import { flushOutbox, useOffline } from "../../../src/lib/offline";
+import { keepOffline } from "../../../src/lib/keepOffline";
 import { useSession } from "../../../src/state/session";
 import { color, font, GUTTER, learnerColorOf, radius, size, space } from "../../../src/theme/tokens";
 
@@ -28,6 +30,13 @@ export default function ChildHome() {
   const stars = useStars(lid);
   const goals = useGoals(lid);
   const home = useHome(lid);
+  const offline = useOffline((st) => st.offline);
+  // Back online: send what was done offline, then keep every ready revision on the phone.
+  useEffect(() => {
+    if (!home.data || offline) return;
+    const ids = home.data.revisions.filter((r) => r.status === "ready").map((r) => r.id);
+    void flushOutbox((path, body) => api.post(path, body)).then(() => keepOffline(lid, ids));
+  }, [home.data, offline, lid]);
   const refresh = useRefreshLearner(lid);
   const signOut = useSession((s) => s.signOut);
   const [ask, setAsk] = useState("");
@@ -109,6 +118,14 @@ export default function ChildHome() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 120 }}>
+        {offline ? (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, backgroundColor: color.skySoft, borderRadius: radius.md, padding: space.md }}>
+            <Ionicons name="cloud-offline" size={22} color={color.sky} />
+            <T v="small" style={{ flex: 1, color: color.ink }}>
+              Pas de réseau : tu revois les fiches et les cartes gardées sur ton téléphone.
+            </T>
+          </View>
+        ) : null}
         <Card onPress={() => router.push({ pathname: "/child/shop", params: { lid } })} style={{ flexDirection: "row", alignItems: "center", gap: space.lg, backgroundColor: tint.soft, borderColor: tint.soft }}>
           <Scene equipped={learner.equipped} width={112} height={112} radius={18}>
             <Mascot size={104} accessories={learner.equipped} mood={learner.streak ? "happy" : "wow"} />
@@ -309,6 +326,8 @@ export default function ChildHome() {
           <Mascot size={86} accessories={["lunettes"]} />
         </Card>
         <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />
+        <Button tone="white" icon="bulb" label="Aide aux devoirs" onPress={() => router.push({ pathname: "/devoirs", params: { lid } })} />
+        {/^(3|troisi)/i.test(learner.grade.trim()) ? <Button tone="white" icon="ribbon" label="Mode Brevet" onPress={() => router.push({ pathname: "/brevet", params: { lid } })} /> : null}
         <Button tone="white" icon="document-text" label="Mes interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid } })} />
       </ScrollView>
 

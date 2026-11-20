@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { api, errorMessage } from "../src/api/client";
-import { learnerPath, useRefreshLearner } from "../src/api/hooks";
+import { cardsKey, learnerPath, useRefreshLearner } from "../src/api/hooks";
 import type { AnswerResult, Question, QuizMode, SessionResult } from "../src/api/types";
 import { MasteryTag } from "../src/components/bits";
 import { Mascot } from "../src/components/mascot/Mascot";
@@ -13,6 +13,7 @@ import { QuestionView, type Answer } from "../src/components/QuestionView";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { MODE_LABEL } from "../src/lib/format";
 import { useLid } from "../src/lib/lid";
+import { isNetworkError, queueOffline, withOffline } from "../src/lib/offline";
 import { syncNotifications } from "../src/lib/notifications";
 import { color, font, space } from "../src/theme/tokens";
 
@@ -42,7 +43,11 @@ export default function Quiz() {
   const refresh = useRefreshLearner(lid);
   const quiz = useQuery({
     queryKey: ["quiz", lid, revisionId ?? "", mode],
-    queryFn: () => api.get<{ questions: Question[] }>(`${learnerPath(lid)}/quiz?mode=${mode}${revisionId ? `&revisionId=${revisionId}` : ""}`).then((r) => r.questions),
+    queryFn: () => {
+      const get = () => api.get<{ questions: Question[] }>(`${learnerPath(lid)}/quiz?mode=${mode}${revisionId ? `&revisionId=${revisionId}` : ""}`).then((r) => r.questions);
+      // Memory cards of a revision also work offline (kept by the home screen).
+      return mode === "cartes" && revisionId ? withOffline(cardsKey(lid, revisionId), get) : get();
+    },
     staleTime: Infinity,
     gcTime: 0,
   });
@@ -53,21 +58,41 @@ export default function Quiz() {
   const startedAt = useRef(Date.now());
 
   const answer = useMutation({
-    mutationFn: ({ q, a }: { q: Question; a: Answer }) => api.post<AnswerResult>(`${learnerPath(lid)}/answers`, { questionId: q.id, mode, answer: a }),
+    mutationFn: async ({ q, a }: { q: Question; a: Answer }): Promise<AnswerResult> => {
+      const body = { questionId: q.id, mode, answer: a };
+      try {
+        return await api.post<AnswerResult>(`${learnerPath(lid)}/answers`, body);
+      } catch (e) {
+        // Offline, a memory card is graded by the child: keep the answer for later.
+        if (mode !== "cartes" || !isNetworkError(e)) throw e;
+        queueOffline(`${learnerPath(lid)}/answers`, body);
+        const correct = a === "su";
+        return { correct, expected: "", explanation: "", comment: "", mastery: correct ? "mastered" : "review", coins: 0, xp: 0, levelUp: null };
+      }
+    },
     onSuccess: (r) => {
       setResult(r);
       setScore((s) => ({ correct: s.correct + (r.correct ? 1 : 0), total: s.total + 1, coins: s.coins + r.coins }));
     },
   });
   const finish = useMutation({
-    mutationFn: () =>
-      api.post<SessionResult>(`${learnerPath(lid)}/sessions`, {
+    mutationFn: async (): Promise<SessionResult | null> => {
+      const body = {
         revisionId: revisionId ?? null,
         mode,
         seconds: Math.min(4 * 3600, Math.round((Date.now() - startedAt.current) / 1000)),
         correct: score.correct,
         total: score.total,
-      }),
+      };
+      try {
+        return await api.post<SessionResult>(`${learnerPath(lid)}/sessions`, body);
+      } catch (e) {
+        if (!isNetworkError(e)) throw e;
+        // Offline: the session counts when the network is back.
+        queueOffline(`${learnerPath(lid)}/sessions`, body);
+        return null;
+      }
+    },
     onSuccess: (r) => {
       setSummary(r);
       refresh();

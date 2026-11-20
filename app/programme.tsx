@@ -78,7 +78,7 @@ export default function ProgrammeScreen() {
         <Card style={{ alignItems: "center", gap: space.md }}>
           <Mascot size={110} mood="wow" />
           <T v="body" style={{ textAlign: "center" }}>
-            Le programme de {p.grade || "cette classe"} n'est pas encore dans Cervelle. Pour l'instant : CM2 et 5e. Les révisions restent calées sur le programme quand même.
+            Le programme de {p.grade || "cette classe"} n'est pas encore dans Cervelle. Pour l'instant : du CM2 à la 3e. Les révisions restent calées sur le programme quand même.
           </T>
         </Card>
       ) : null}

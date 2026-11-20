@@ -55,8 +55,15 @@ npm run assets       # régénère icônes et splash depuis la mascotte (Playwri
 
 ## Compiler l'APK
 
-1. Ajouter le secret `EXPO_TOKEN` au dépôt (Settings → Secrets and variables
-   → Actions), le même jeton Expo que pour Passerelle.
+1. Ajouter trois secrets au dépôt (Settings → Secrets and variables → Actions) :
+   - `EXPO_TOKEN` : le même jeton Expo que pour Passerelle ;
+   - `API_URL` : l'adresse du serveur Passerelle (sans `/` final) ;
+   - `GOOGLE_SERVICES_JSON` : le contenu complet du fichier `google-services.json`
+     de Firebase (notifications Android).
+
+   L'adresse du serveur et ce fichier ne sont pas dans le dépôt : la CI les
+   remet en place (`scripts/inject-private.js`). Pour compiler sur sa machine,
+   poser `google-services.json` à la racine (il est ignoré par git).
 2. Actions → « EAS Build (Android APK) » → Run workflow. Le lien de
    l'APK s'affiche à la fin, sur expo.dev (projet `cervelle`).
 3. Ensuite, chaque fusion sur `main` envoie les changements JavaScript aux

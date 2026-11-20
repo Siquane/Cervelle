@@ -7,3 +7,6 @@ web-build/
 .env.local
 android/
 ios/
+
+# Private, written in CI from GitHub secrets (scripts/inject-private.js)
+google-services.json

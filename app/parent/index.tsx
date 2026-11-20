@@ -214,6 +214,7 @@ export default function ParentHome() {
 
       <BottomSheet open={menu} onClose={() => setMenu(false)} title={session?.kind === "parent" && session.name ? session.name : "Menu"}>
         <Button tone="white" icon="people" label="Mes enfants" onPress={() => { setMenu(false); router.push("/parent/learners"); }} />
+        <Button tone="white" icon="pulse" label="Ce que coûte l'IA" onPress={() => { setMenu(false); router.push("/parent/cout"); }} />
         <Button tone="white" icon="settings" label="Réglages" onPress={() => { setMenu(false); router.push("/reglages"); }} />
         <Button tone="white" icon="log-out" label="Se déconnecter" onPress={async () => { setMenu(false); await signOut(); router.replace("/auth"); }} />
       </BottomSheet>

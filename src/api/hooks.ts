@@ -1,7 +1,7 @@
 import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
-import type { Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
+import type { AiUsageReport, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -45,6 +45,8 @@ export const useHabits = (lid: string) => useQuery({ queryKey: keys.habits(lid),
 export const useJournal = (lid: string) => useQuery({ queryKey: keys.journal(lid), queryFn: () => api.get<{ today: string; entries: JournalEntry[] }>(`${L(lid)}/journal`) });
 /** Asking also saves the new badges and pays their coins (server side). */
 export const useBadges = (lid: string) => useQuery({ queryKey: keys.badges(lid), queryFn: () => api.get<Badges>(`${L(lid)}/badges`) });
+
+export const useAiUsage = (month: string) => useQuery({ queryKey: ["aiUsage", month], queryFn: () => api.get<AiUsageReport>(`/cervelle/usage?month=${month}`) });
 
 export const useWeekly = (lid: string, week: string) =>
   useQuery({ queryKey: ["weekly", lid, week], enabled: !!lid, queryFn: () => api.get<WeeklyReport>(`${L(lid)}/weekly?week=${week}`) });

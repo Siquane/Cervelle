@@ -454,3 +454,22 @@ export interface Goal {
   reached: boolean;
   wins: number;
 }
+
+export type BrevetKey = "francais" | "maths" | "histoire" | "sciences";
+export interface BrevetSujet {
+  id: string;
+  subject: BrevetKey;
+  label: string;
+  status: "processing" | "ready" | "failed";
+  error: string | null;
+  title: string;
+  minutes: number;
+  createdAt: string;
+  exercises: { title: string; points: number; documents: string; questions: { prompt: string; points: number; correction: string; advice: string }[] }[];
+}
+export interface BrevetHome {
+  date: string;
+  daysLeft: number;
+  subjects: { key: BrevetKey; label: string; revisions: number }[];
+  sujets: BrevetSujet[];
+}

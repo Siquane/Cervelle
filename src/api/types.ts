@@ -454,3 +454,12 @@ export interface Goal {
   reached: boolean;
   wins: number;
 }
+
+export type UsageKind = "revision" | "exam" | "assistant" | "grading" | "timetable" | "homework" | "brevet";
+export interface AiUsageReport {
+  month: string;
+  /** Dollars. */
+  total: number;
+  byKind: { kind: UsageKind; calls: number; measured: number; cost: number; average: number | null; outputTokens: number }[];
+  byLearner: { id: string; name: string; calls: number; cost: number }[];
+}

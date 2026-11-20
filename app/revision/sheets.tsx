@@ -10,6 +10,7 @@ import { learnerPath, useRefreshLearner, useRevision } from "../../src/api/hooks
 import type { SessionResult } from "../../src/api/types";
 import { Button, Card, Loading, Page, ProgressBar, T, TopBar } from "../../src/components/ui";
 import { useLid } from "../../src/lib/lid";
+import { isNetworkError, queueOffline } from "../../src/lib/offline";
 import { color, radius, space } from "../../src/theme/tokens";
 
 export default function Sheets() {
@@ -21,11 +22,21 @@ export default function Sheets() {
   const [index, setIndex] = useState(Number(start ?? 0) || 0);
   const startedAt = useRef(Date.now());
   const finish = useMutation({
-    mutationFn: () => api.post<SessionResult>(`${learnerPath(lid)}/sessions`, { revisionId: id, mode: "fiches", seconds: Math.round((Date.now() - startedAt.current) / 1000) }),
+    mutationFn: async (): Promise<SessionResult | null> => {
+      const body = { revisionId: id, mode: "fiches", seconds: Math.round((Date.now() - startedAt.current) / 1000) };
+      try {
+        return await api.post<SessionResult>(`${learnerPath(lid)}/sessions`, body);
+      } catch (e) {
+        if (!isNetworkError(e)) throw e;
+        // Read offline: the session counts when the network is back.
+        queueOffline(`${learnerPath(lid)}/sessions`, body);
+        return null;
+      }
+    },
     onSuccess: (r) => {
       refresh();
       router.back();
-      if (r.session.coins) Alert.alert("Fiches lues !", `+${r.session.coins} pièces. Maintenant, teste-toi avec le QCM.`);
+      if (r?.session.coins) Alert.alert("Fiches lues !", `+${r.session.coins} pièces. Maintenant, teste-toi avec le QCM.`);
     },
     onError: () => router.back(),
   });

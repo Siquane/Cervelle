@@ -1,6 +1,7 @@
 import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
+import { withOffline } from "../lib/offline";
 import type { AiUsageReport, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework } from "./types";
 
 export const queryClient = new QueryClient({
@@ -68,23 +69,27 @@ export const useProgramme = (lid: string) => useQuery({ queryKey: keys.programme
 export const useLearners = (enabled = true) =>
   useQuery({ queryKey: keys.learners, enabled, queryFn: () => api.get<{ learners: Learner[] }>("/cervelle/learners").then((r) => r.learners) });
 
-export const useHome = (lid: string) => useQuery({ queryKey: keys.home(lid), queryFn: () => api.get<Home>(`${L(lid)}/home`) });
+export const useHome = (lid: string) => useQuery({ queryKey: keys.home(lid), queryFn: () => withOffline(`home-${lid}`, () => api.get<Home>(`${L(lid)}/home`)) });
 
 export const useOverview = (lid: string | null) =>
   useQuery({ queryKey: keys.overview(lid ?? ""), enabled: !!lid, queryFn: () => api.get<Overview>(`${L(lid!)}/overview`) });
+
+/** File names of the copies kept for offline revision. */
+export const revisionKey = (lid: string, id: string) => `revision-${lid}-${id}`;
+export const cardsKey = (lid: string, id: string) => `cartes-${lid}-${id}`;
 
 /** Revisions; polls while one is still being prepared. */
 export const useRevisions = (lid: string) =>
   useQuery({
     queryKey: keys.revisions(lid),
-    queryFn: () => api.get<{ revisions: RevisionCard[] }>(`${L(lid)}/revisions`).then((r) => r.revisions),
+    queryFn: () => withOffline(`revisions-${lid}`, () => api.get<{ revisions: RevisionCard[] }>(`${L(lid)}/revisions`).then((r) => r.revisions)),
     refetchInterval: (q) => (q.state.data?.some((r) => r.status === "processing") ? 4000 : false),
   });
 
 export const useRevision = (lid: string, id: string) =>
   useQuery({
     queryKey: keys.revision(lid, id),
-    queryFn: () => api.get<{ revision: RevisionDetail }>(`${L(lid)}/revisions/${id}`).then((r) => r.revision),
+    queryFn: () => withOffline(revisionKey(lid, id), () => api.get<{ revision: RevisionDetail }>(`${L(lid)}/revisions/${id}`).then((r) => r.revision)),
     // « Aide-moi à… » without a course asks for nothing (it used to request revision "").
     enabled: !!id,
     refetchInterval: (q) => (q.state.data?.status === "processing" ? 3000 : false),

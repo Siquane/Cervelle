@@ -1,7 +1,7 @@
 import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
-import type { Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
+import type { Homework, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -118,4 +118,8 @@ export function useRefreshLearner(lid: string) {
 }
 
 export const learnerPath = L;
+
+export const useHomeworkList = (lid: string) => useQuery({ queryKey: ["homework", lid], queryFn: () => api.get<{ homework: Homework[] }>(`${L(lid)}/homework`).then((r) => r.homework) });
+export const useHomework = (lid: string, id: string) =>
+  useQuery({ queryKey: ["homework", lid, id], enabled: !!id, queryFn: () => api.get<{ homework: Homework }>(`${L(lid)}/homework/${id}`).then((r) => r.homework) });
 export { useMutation, useQueryClient };

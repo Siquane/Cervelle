@@ -454,3 +454,13 @@ export interface Goal {
   reached: boolean;
   wins: number;
 }
+
+/** « Aide aux devoirs » : the solution never reaches the phone. */
+export interface Homework {
+  id: string;
+  subject: string;
+  instructions: string;
+  createdAt: string;
+  solved: number;
+  questions: { index: number; prompt: string; hints: string[]; hintsLeft: number; attempts: number; solved: boolean; lastMessage: string }[];
+}

@@ -2,7 +2,7 @@ import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
 import { withOffline } from "../lib/offline";
-import type { AiUsageReport, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework } from "./types";
+import type { AiUsageReport, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -129,4 +129,17 @@ export const learnerPath = L;
 export const useHomeworkList = (lid: string) => useQuery({ queryKey: ["homework", lid], queryFn: () => api.get<{ homework: Homework[] }>(`${L(lid)}/homework`).then((r) => r.homework) });
 export const useHomework = (lid: string, id: string) =>
   useQuery({ queryKey: ["homework", lid, id], enabled: !!id, queryFn: () => api.get<{ homework: Homework }>(`${L(lid)}/homework/${id}`).then((r) => r.homework) });
+export const useBrevet = (lid: string) =>
+  useQuery({
+    queryKey: ["brevet", lid],
+    queryFn: () => api.get<BrevetHome>(`${L(lid)}/brevet`),
+    refetchInterval: (q) => (q.state.data?.sujets.some((s) => s.status === "processing") ? 4000 : false),
+  });
+export const useBrevetSujet = (lid: string, id: string) =>
+  useQuery({
+    queryKey: ["brevet", lid, id],
+    enabled: !!id,
+    queryFn: () => api.get<{ sujet: BrevetSujet }>(`${L(lid)}/brevet/sujets/${id}`).then((r) => r.sujet),
+    refetchInterval: (q) => (q.state.data?.status === "processing" ? 3000 : false),
+  });
 export { useMutation, useQueryClient };

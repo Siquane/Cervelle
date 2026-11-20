@@ -327,6 +327,7 @@ export default function ChildHome() {
         </Card>
         <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />
         <Button tone="white" icon="bulb" label="Aide aux devoirs" onPress={() => router.push({ pathname: "/devoirs", params: { lid } })} />
+        {/^(3|troisi)/i.test(learner.grade.trim()) ? <Button tone="white" icon="ribbon" label="Mode Brevet" onPress={() => router.push({ pathname: "/brevet", params: { lid } })} /> : null}
         <Button tone="white" icon="document-text" label="Mes interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid } })} />
       </ScrollView>
 

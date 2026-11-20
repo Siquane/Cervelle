@@ -463,3 +463,13 @@ export interface AiUsageReport {
   byKind: { kind: UsageKind; calls: number; measured: number; cost: number; average: number | null; outputTokens: number }[];
   byLearner: { id: string; name: string; calls: number; cost: number }[];
 }
+
+/** « Aide aux devoirs » : the solution never reaches the phone. */
+export interface Homework {
+  id: string;
+  subject: string;
+  instructions: string;
+  createdAt: string;
+  solved: number;
+  questions: { index: number; prompt: string; hints: string[]; hintsLeft: number; attempts: number; solved: boolean; lastMessage: string }[];
+}

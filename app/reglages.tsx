@@ -10,11 +10,12 @@ import { useSession } from "../src/state/session";
 import { color, scheme, space, type Scheme } from "../src/theme/tokens";
 import { setScheme } from "../src/state/theme";
 
-type Key = "exams" | "review" | "ready";
+type Key = "exams" | "review" | "daily" | "ready";
 
 const ROWS: { key: Key; icon: keyof typeof Ionicons.glyphMap; title: string; text: (p: ReminderPrefs) => string }[] = [
   { key: "exams", icon: "calendar", title: "Mes interros", text: (p) => `3 jours avant, à ${p.time}. Et la veille à ${EVE_HOUR} h, avec une révision express.` },
   { key: "review", icon: "refresh-circle", title: "Mes notions à revoir", text: (p) => `Chaque jour à ${p.time}, s'il y a des notions à revoir.` },
+  { key: "daily", icon: "chatbubble-ellipses", title: "Petit mot de Cervelle", text: (p) => `À ${p.time}, les jours où tu n'as pas encore ouvert Cervelle.` },
   { key: "ready", icon: "sparkles", title: "Fiches prêtes", text: () => "Quand Cervelle a fini de préparer tes fiches." },
 ];
 

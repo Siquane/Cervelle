@@ -193,7 +193,7 @@ export interface Programme {
 
 // ─── S'organiser ─────────────────────────────────────────────────────────
 
-export type EventKind = "cours" | "interro" | "devoir" | "revision" | "activite";
+export type EventKind = "cours" | "interro" | "devoir" | "revision" | "activite" | "maison" | "sante" | "travail";
 
 export interface AgendaEvent {
   id: string;

@@ -29,7 +29,8 @@ export default function EventForm() {
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<EventKind>("cours");
   const [repeat, setRepeat] = useState<"week" | "once">("week");
-  const [weekday, setWeekday] = useState(weekdayOf(startDay));
+  // Plusieurs jours possibles : un créneau par jour coché (ex. les cours du lundi au vendredi).
+  const [weekdays, setWeekdays] = useState<number[]>([weekdayOf(startDay)]);
   const [day, setDay] = useState<string | null>(startDay);
   const [start, setStart] = useState("08:00");
   const [end, setEnd] = useState("09:00");
@@ -41,7 +42,7 @@ export default function EventForm() {
     setTitle(existing.title);
     setKind(existing.kind);
     setRepeat(existing.weekday !== null ? "week" : "once");
-    if (existing.weekday !== null) setWeekday(existing.weekday);
+    if (existing.weekday !== null) setWeekdays([existing.weekday]);
     setDay(existing.day ?? startDay);
     setStart(existing.start);
     setEnd(existing.end);
@@ -53,9 +54,17 @@ export default function EventForm() {
     router.back();
   };
   const save = useMutation({
-    mutationFn: () => {
-      const body = { title: title.trim(), kind, weekday: repeat === "week" ? weekday : null, day: repeat === "once" ? day : null, start, end, room: room.trim() };
-      return existing ? api.patch(`${learnerPath(lid)}/agenda/events/${existing.id}`, body) : api.post(`${learnerPath(lid)}/agenda/events`, body);
+    mutationFn: async () => {
+      const base = { title: title.trim(), kind, start, end, room: room.trim() };
+      const url = `${learnerPath(lid)}/agenda/events`;
+      if (repeat === "once") {
+        const body = { ...base, weekday: null, day };
+        return existing ? api.patch(`${url}/${existing.id}`, body) : api.post(url, body);
+      }
+      // Le créneau modifié garde son jour s'il est encore coché ; chaque autre jour coché devient un nouveau créneau.
+      const keep = existing ? (existing.weekday !== null && weekdays.includes(existing.weekday) ? existing.weekday : weekdays[0]) : null;
+      if (existing) await api.patch(`${url}/${existing.id}`, { ...base, weekday: keep, day: null });
+      for (const wd of weekdays.filter((w) => w !== keep)) await api.post(url, { ...base, weekday: wd, day: null });
     },
     onSuccess: done,
   });
@@ -91,8 +100,9 @@ export default function EventForm() {
       />
       {repeat === "week" ? (
         <View style={{ gap: space.sm }}>
-          <T v="bodyBold">Quel jour ?</T>
-          <DayPicker value={[weekday]} onChange={(v) => setWeekday(v[0] ?? weekday)} multi={false} />
+          <T v="bodyBold">Quels jours ?</T>
+          <DayPicker value={weekdays} onChange={(v) => v.length && setWeekdays(v)} />
+          {weekdays.length > 1 ? <T v="small">Un créneau sera ajouté pour chaque jour coché.</T> : null}
         </View>
       ) : (
         <DateField label="Quel jour ?" value={day} onChange={setDay} />

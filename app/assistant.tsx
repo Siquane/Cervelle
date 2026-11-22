@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View, type ScrollViewInstance } from "react-native";
+import { KeyboardAvoidingView, Pressable, ScrollView, TextInput, View, type ScrollViewInstance } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,6 +14,23 @@ import { color, font, GUTTER, radius, size, space } from "../src/theme/tokens";
 type Turn = { role: "user" | "assistant"; text: string };
 
 const IDEAS = ["Explique-moi la notion la plus difficile", "Pose-moi 3 questions pour voir si j'ai compris", "Donne-moi une astuce pour retenir"];
+
+/** Cervelle's « **mot** » shown in bold, without the stars. */
+function Rich({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+        i % 2 ? (
+          <T key={i} read v="bodyBold" style={{ color: color.ink }}>
+            {part}
+          </T>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
 
 export default function Assistant() {
   const { revisionId, q } = useLocalSearchParams<{ revisionId?: string; q?: string }>();
@@ -50,7 +67,7 @@ export default function Assistant() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={["top", "left", "right", "bottom"]}>
       <TopBar title="Aide-moi à…" />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView ref={scroll} contentContainerStyle={{ paddingHorizontal: GUTTER, gap: space.md, paddingBottom: space.lg }}>
           <View style={{ flexDirection: "row", gap: space.md, alignItems: "center" }}>
             <Mascot size={70} accessories={["lunettes"]} />
@@ -70,7 +87,7 @@ export default function Assistant() {
           {turns.map((t, i) => (
             <View key={i} style={{ alignSelf: t.role === "user" ? "flex-end" : "flex-start", maxWidth: "88%", backgroundColor: t.role === "user" ? color.brandFill : color.card, borderRadius: radius.lg, borderWidth: t.role === "user" ? 0 : 2, borderColor: color.line, padding: space.md }}>
               <T read v="body" style={{ color: t.role === "user" ? color.white : color.ink }} selectable>
-                {t.text}
+                {t.role === "user" ? t.text : <Rich text={t.text} />}
               </T>
             </View>
           ))}

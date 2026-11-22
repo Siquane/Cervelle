@@ -10,7 +10,7 @@ import { BottomSheet } from "../../../src/components/bits";
 import { Chip } from "../../../src/components/Chip";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { celebrate } from "../../../src/components/organize";
-import { Button, Card, Loading, T } from "../../../src/components/ui";
+import { Button, KeyboardSafe, Card, Loading, T } from "../../../src/components/ui";
 import { useLid } from "../../../src/lib/lid";
 import { leftOf, mmss, useTimer } from "../../../src/state/timer";
 import { color, font, GUTTER, radius, size, space } from "../../../src/theme/tokens";
@@ -92,6 +92,7 @@ export default function TimerTab() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={["top", "left", "right"]}>
+      <KeyboardSafe>
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 40 }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <T v="h2" style={{ flex: 1 }}>
@@ -160,6 +161,7 @@ export default function TimerTab() {
           </View>
         </Card>
       </ScrollView>
+      </KeyboardSafe>
 
       <BottomSheet open={settings} onClose={() => setSettings(false)} title="Réglages du minuteur">
         <T v="bodyBold">Temps de travail</T>

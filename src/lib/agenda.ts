@@ -7,18 +7,22 @@ export const EVENT_KIND: Record<EventKind, { label: string; main: string; soft: 
   interro: { label: "Interro", main: color.brand, soft: color.brandSoft, icon: "alert-circle" },
   devoir: { label: "Devoir", main: color.sunDark, soft: color.sunSoft, icon: "create" },
   revision: { label: "Révision", main: color.teal, soft: color.tealSoft, icon: "book" },
-  activite: { label: "Activité", main: color.violet, soft: color.violetSoft, icon: "football" },
+  // Les mêmes catégories que les tâches de Passerelle (« Activité » s'y appelle « Loisirs »).
+  activite: { label: "Loisirs", main: color.violet, soft: color.violetSoft, icon: "football" },
+  maison: { label: "Maison", main: color.green, soft: color.greenSoft, icon: "home" },
+  sante: { label: "Santé", main: color.red, soft: color.redSoft, icon: "medkit" },
+  travail: { label: "Travail", main: color.brandDark, soft: color.corailSoft, icon: "briefcase" },
 };
 
 type KindStyle = { label: string; main: string; soft: string; icon: string };
 
 /** Catégories des tâches de Passerelle (mêmes noms) ; une autre devient « Divers ». */
 export const PASSERELLE_CATEGORY: Record<string, KindStyle> = {
-  École: { label: "École", main: color.sky, soft: color.skySoft, icon: "school" },
-  Travail: { label: "Travail", main: color.sunDark, soft: color.sunSoft, icon: "briefcase" },
-  Maison: { label: "Maison", main: color.teal, soft: color.tealSoft, icon: "home" },
-  Santé: { label: "Santé", main: color.red, soft: color.redSoft, icon: "medkit" },
-  Loisirs: { label: "Loisirs", main: color.violet, soft: color.violetSoft, icon: "football" },
+  École: { ...EVENT_KIND.cours, label: "École" },
+  Travail: EVENT_KIND.travail,
+  Maison: EVENT_KIND.maison,
+  Santé: EVENT_KIND.sante,
+  Loisirs: EVENT_KIND.activite,
 };
 const DIVERS: KindStyle = { label: "Divers", main: color.muted, soft: color.chip, icon: "ellipsis-horizontal-circle" };
 

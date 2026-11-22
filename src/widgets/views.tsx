@@ -1,6 +1,6 @@
 import { FlexWidget, SvgWidget, TextWidget } from "react-native-android-widget";
 import { mascotSvgString } from "../components/mascot/svgString";
-import type { WidgetData, WidgetState } from "./data";
+import type { ParentWidgetState, WidgetData, WidgetState } from "./data";
 
 // Les widgets Android de Cervelle : un fond en dégradé vif (le même en mode
 // clair et sombre), du texte blanc centré et aéré, Cervelle qui dort tant
@@ -37,7 +37,7 @@ export interface Size {
   height: number;
 }
 
-function Frame({ g, children, uri, click = "OPEN_APP", label, row = false }: { g: Gradient; children: React.ReactNode; uri?: string; click?: string; label: string; row?: boolean }) {
+function Frame({ g, children, uri, click = "OPEN_APP", label, row = false, pad = 16 }: { g: Gradient; children: React.ReactNode; uri?: string; click?: string; label: string; row?: boolean; pad?: number }) {
   return (
     <FlexWidget
       clickAction={uri ? "OPEN_URI" : click}
@@ -48,7 +48,7 @@ function Frame({ g, children, uri, click = "OPEN_APP", label, row = false }: { g
         width: "match_parent",
         backgroundGradient: { from: g[0], to: g[1], orientation: "TL_BR" },
         borderRadius: 24,
-        padding: 16,
+        padding: pad,
         flexDirection: row ? "row" : "column",
         justifyContent: "center",
         alignItems: "center",
@@ -63,6 +63,11 @@ const Gap = ({ h = 8 }: { h?: number }) => <FlexWidget style={{ height: h, width
 
 function Txt({ text, size, color = WHITE, font = TEXT, lines = 1 }: { text: string; size: number; color?: Hex; font?: string; lines?: number }) {
   return <TextWidget text={text} maxLines={lines} truncate="END" style={{ fontSize: size, color, fontFamily: font, textAlign: "center" }} />;
+}
+
+/** Un mot qui rétrécit pour tenir en entier dans un petit widget. */
+function Fit({ text }: { text: string }) {
+  return <TextWidget text={text} maxLines={1} style={{ fontSize: 12, color: WHITE, fontFamily: BOLD, textAlign: "center", width: "match_parent", adjustsFontSizeToFit: true }} />;
 }
 
 function Bar({ value, color = WHITE }: { value: number; color?: Hex }) {
@@ -114,6 +119,7 @@ function Week({ week, dot = 24 }: { week: NonNullable<WidgetData["week"]>; dot?:
   );
 }
 
+const shortDays = (n: number) => (n <= 0 ? "aujourd'hui" : n === 1 ? "demain" : `dans ${n} j`);
 const days = (n: number) => (n <= 0 ? "aujourd'hui" : n === 1 ? "demain" : `dans ${n} jours`);
 const mins = (n: number) => (n >= 60 ? `${Math.floor(n / 60)} h ${String(n % 60).padStart(2, "0")}` : `${n} min`);
 
@@ -284,9 +290,51 @@ function Amis({ d }: { d: WidgetData }) {
 /** 1 × 1 : un seul bouton, la révision express. */
 function Express({ d }: { d: WidgetData }) {
   return (
-    <Frame g={G.express} label={d.exam ? "Révision express pour ta prochaine interro" : "Révision express de tes notions à revoir"} uri={expressUri(d)}>
-      <Txt text="⚡" size={26} />
-      <Txt text="Express" size={13} font={BOLD} />
+    <Frame g={G.express} label={d.exam ? "Révision express pour ta prochaine interro" : "Révision express de tes notions à revoir"} uri={expressUri(d)} pad={4}>
+      <Txt text="⚡" size={22} />
+      <Fit text="Express" />
+    </Frame>
+  );
+}
+
+// ── Widget parent ──
+
+const PARENT: Gradient = ["#1F1A3D", "#6D3FD9"];
+
+export function renderParentWidget(state: ParentWidgetState) {
+  if (state.kind === "signedOut" || state.data.children.length === 0) {
+    return (
+      <Frame g={PARENT} label="Ouvre Cervelle en parent">
+        <Txt text="👨‍👩‍👧 Mes enfants" size={15} font={TITLE} />
+        <Gap h={6} />
+        <Txt text="Ouvre Cervelle avec ton compte parent pour remplir ce widget." size={13} color={SOFT} lines={3} />
+      </Frame>
+    );
+  }
+  const kids = state.data.children.slice(0, 3);
+  const label = kids.map((c) => `${c.name} : ${c.studiedToday ? "a révisé aujourd'hui" : "pas encore révisé"}${c.exam ? `, interro ${days(c.exam.daysLeft)}` : ""}.`).join(" ");
+  return (
+    <Frame g={PARENT} label={label} pad={12}>
+      {kids.map((c, i) => (
+        <FlexWidget key={c.id} style={{ width: "match_parent", flexDirection: "row", alignItems: "center", marginTop: i ? 8 : 0 }}>
+          <SvgWidget svg={mascotSvgString(c.equipped, c.studiedToday ? "happy" : "sleep")} style={{ width: 40, height: 39 }} />
+          <FlexWidget style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
+            <FlexWidget style={{ flexDirection: "row", alignItems: "center" }}>
+              <TextWidget text={c.name} maxLines={1} truncate="END" style={{ fontSize: 16, color: WHITE, fontFamily: TITLE }} />
+              <TextWidget text={c.streak > 0 ? `  🔥 ${c.streak}` : ""} style={{ fontSize: 13, color: SOFT, fontFamily: BOLD }} />
+            </FlexWidget>
+            <TextWidget
+              text={c.exam ? `📅 ${subjectOf(c.exam) || c.exam.title} ${shortDays(c.exam.daysLeft)} · ${c.exam.mastered}/${c.exam.notions} compris` : "Pas d'interro prévue"}
+              maxLines={1}
+              truncate="END"
+              style={{ fontSize: 12, color: SOFT, fontFamily: TEXT }}
+            />
+          </FlexWidget>
+          <FlexWidget style={{ backgroundColor: c.studiedToday ? WHITE : TRACK, borderRadius: 12, paddingVertical: 4, paddingHorizontal: 10, marginLeft: 6 }}>
+            <TextWidget text={c.studiedToday ? "✓ Révisé" : "Pas encore"} style={{ fontSize: 12, color: c.studiedToday ? "#027C3E" : WHITE, fontFamily: BOLD }} />
+          </FlexWidget>
+        </FlexWidget>
+      ))}
     </Frame>
   );
 }
@@ -294,9 +342,9 @@ function Express({ d }: { d: WidgetData }) {
 function SignedOut({ name }: { name: string }) {
   if (name === "Express") {
     return (
-      <Frame g={G.express} label="Ouvre Cervelle">
-        <Txt text="⚡" size={26} />
-        <Txt text="Cervelle" size={12} font={BOLD} />
+      <Frame g={G.express} label="Ouvre Cervelle" pad={4}>
+        <Txt text="⚡" size={22} />
+        <Fit text="Cervelle" />
       </Frame>
     );
   }

@@ -16,10 +16,12 @@ import { Button, Card, ErrorBox, Loading, Page, Segmented, T } from "../../src/c
 import { duration, longDate, MODE_LABEL, shortDate, whenLabel } from "../../src/lib/format";
 import { useParentPrefs } from "../../src/state/parentPrefs";
 import { useSession } from "../../src/state/session";
+import { useParentWidget } from "../../src/widgets/useParentWidget";
 import { color, font, learnerColorOf, space } from "../../src/theme/tokens";
 
 export default function ParentHome() {
   useParentWeeklyReminder();
+  useParentWidget();
   const learners = useLearners();
   const { learnerId, setLearner } = useParentPrefs();
   const selected = learners.data?.find((l) => l.id === learnerId) ?? learners.data?.[0] ?? null;

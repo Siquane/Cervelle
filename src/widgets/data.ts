@@ -125,3 +125,72 @@ export function forgetWidgetData() {
     }
   }
 }
+
+// ── Widget parent : chaque enfant, sur le téléphone du parent ──
+
+export interface ParentWidgetData {
+  day: string;
+  children: { id: string; name: string; streak: number; studiedToday: boolean; equipped: string[]; exam: WidgetData["exam"] }[];
+}
+
+export type ParentWidgetState = { kind: "signedOut" } | { kind: "ready"; data: ParentWidgetData };
+
+const parentCache = () => new File(Paths.document, "widget-parent.json");
+
+export function saveParentData(data: ParentWidgetData) {
+  try {
+    parentCache().write(JSON.stringify(data));
+  } catch {
+    // Le cache n'est qu'un secours.
+  }
+}
+
+/** Ce qui date d'hier ne dit rien d'aujourd'hui. */
+function parentForToday(data: ParentWidgetData, today = localDay()): ParentWidgetData {
+  if (data.day === today) return data;
+  return { ...data, children: data.children.map((c) => ({ ...c, studiedToday: false, exam: c.exam && { ...c.exam, daysLeft: daysBetween(today, c.exam.examDate) } })) };
+}
+
+/**
+ * Hors de l'appli, le widget n'essaie que le jeton d'accès déjà enregistré :
+ * le renouveler ici pourrait déconnecter l'appli (un jeton de renouvellement
+ * ne sert qu'une fois). L'appli met le widget à jour à chaque ouverture.
+ */
+export async function loadParentState(fresh = true): Promise<ParentWidgetState> {
+  let session: { kind?: string; accessToken?: string } | null = null;
+  try {
+    const raw = await SecureStore.getItemAsync(SESSION_KEY);
+    session = raw ? JSON.parse(raw) : null;
+  } catch {
+    session = null;
+  }
+  if (session?.kind !== "parent" || !session.accessToken) return { kind: "signedOut" };
+  let data: ParentWidgetData | null = null;
+  try {
+    const f = parentCache();
+    data = f.exists ? (JSON.parse(f.textSync()) as ParentWidgetData) : null;
+  } catch {
+    data = null;
+  }
+  if (fresh) {
+    try {
+      const res = await fetch(`${API_URL}/cervelle/widget/parent`, { headers: { Authorization: `Bearer ${session.accessToken}` } });
+      if (res.ok) {
+        data = (await res.json()) as ParentWidgetData;
+        saveParentData(data);
+      }
+    } catch {
+      // Hors connexion : on garde le cache.
+    }
+  }
+  return data ? { kind: "ready", data: parentForToday(data) } : { kind: "signedOut" };
+}
+
+export function forgetParentData() {
+  try {
+    const f = parentCache();
+    if (f.exists) f.delete();
+  } catch {
+    // rien
+  }
+}

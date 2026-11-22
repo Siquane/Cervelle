@@ -155,12 +155,24 @@
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
               "previewImage": "./assets/widgets/express.png"
+            },
+            {
+              "name": "Parent",
+              "label": "Cervelle · mes enfants",
+              "description": "Pour les parents : qui a révisé aujourd'hui, et la prochaine interro de chaque enfant.",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/parent.png"
             }
           ]
         }
       ]
     ],
-    "runtimeVersion": "6",
+    "runtimeVersion": "7",
     "updates": {
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0

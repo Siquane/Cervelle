@@ -1,7 +1,9 @@
 // Rappels de l'enfant, programmés sur son téléphone (notifications locales) :
 //   - 3 jours avant une interro, à l'heure choisie par l'enfant ;
 //   - la veille d'une interro, à 18 h, avec un bouton « Révision express » ;
-//   - chaque jour à l'heure choisie, s'il reste des notions « À revoir ».
+//   - chaque jour à l'heure choisie, s'il reste des notions « À revoir » ;
+//   - les jours suivants, un petit mot de Cervelle si l'enfant n'a pas ouvert
+//     l'appli (chaque ouverture recalcule tout : le mot du jour n'existe plus).
 // Le calcul est ici, sans dépendance à Expo, pour être testé.
 // « Tes fiches sont prêtes » vient du serveur (notification push).
 
@@ -22,9 +24,11 @@ export interface ReminderPrefs {
   time: string;
   /** « Tes fiches sont prêtes » (envoyé par le serveur). */
   ready: boolean;
+  /** Petit mot quotidien si l'appli n'a pas été ouverte de la journée. */
+  daily: boolean;
 }
 
-export const DEFAULT_PREFS: ReminderPrefs = { exams: true, review: true, time: "17:30", ready: true };
+export const DEFAULT_PREFS: ReminderPrefs = { exams: true, review: true, time: "17:30", ready: true, daily: true };
 
 export const EVE_HOUR = 18;
 /** Jours à l'avance pour le rappel quotidien (le téléphone recalcule à chaque ouverture). */
@@ -119,7 +123,36 @@ export function planReminders(data: RemindersData, prefs: ReminderPrefs, now: Da
     }
   }
 
+  if (prefs.daily) {
+    const taken = new Set(out.map((r) => dayKey(r.at)));
+    // À partir de demain : si l'enfant ouvre Cervelle aujourd'hui, tout est recalculé.
+    for (let i = 1; i < REVIEW_DAYS; i++) {
+      const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i, h, m, 0, 0);
+      const key = dayKey(at);
+      if (taken.has(key)) continue;
+      const nudge = dailyNudge(at);
+      out.push({ id: `coucou:${key}`, at, ...nudge, url: "" });
+    }
+  }
+
   return out.sort((a, b) => a.at.getTime() - b.at.getTime());
+}
+
+/** Petits mots du jour : l'effort et la régularité, jamais la note. */
+export const NUDGES: { title: string; body: string }[] = [
+  { title: "⏰ C'est l'heure de Cervelle", body: "5 minutes aujourd'hui, et ta tête est prête pour la semaine ⭐" },
+  { title: "🧠 Cervelle s'ennuie un peu…", body: "Elle t'attend pour une petite révision. On y va ?" },
+  { title: "🔥 Garde ton rythme", body: "Un petit quiz chaque jour, c'est comme ça qu'on retient." },
+  { title: "🌟 Une étoile t'attend", body: "Révise un peu et avance sur ton chemin d'étoiles." },
+  { title: "🎯 Tes missions du jour", body: "Elles t'attendent. 5 minutes, et c'est fait !" },
+  { title: "📚 Petit coucou de Cervelle", body: "Ce que tu revois aujourd'hui, tu t'en souviendras demain." },
+  { title: "💪 Tu peux le faire", body: "Un petit pas chaque jour, et tu apprends plein de choses." },
+];
+
+/** Le même jour donne toujours le même mot ; deux jours qui se suivent, deux mots différents. */
+export function dailyNudge(day: Date): { title: string; body: string } {
+  const n = Math.floor(Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) / 86_400_000);
+  return NUDGES[((n % NUDGES.length) + NUDGES.length) % NUDGES.length];
 }
 
 // Seuls ces écrans peuvent être ouverts depuis une notification.

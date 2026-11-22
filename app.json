@@ -62,9 +62,69 @@
             "com.google.android.googlequicksearchbox"
           ]
         }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "fonts": [
+            "./assets/fonts/Outfit_700Bold.ttf",
+            "./assets/fonts/AtkinsonHyperlegible_400Regular.ttf",
+            "./assets/fonts/AtkinsonHyperlegible_700Bold.ttf"
+          ],
+          "widgets": [
+            {
+              "name": "CervelleSerie",
+              "label": "Cervelle et ta série",
+              "description": "Cervelle et tes jours de révision d'affilée.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/cervelleserie.png"
+            },
+            {
+              "name": "Interro",
+              "label": "Prochaine interro",
+              "description": "Les jours avant ta prochaine interro, et la révision express.",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/interro.png"
+            },
+            {
+              "name": "Missions",
+              "label": "Missions du jour",
+              "description": "Tes missions du jour et tes étoiles du mois.",
+              "minWidth": "180dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/missions.png"
+            },
+            {
+              "name": "Carte",
+              "label": "Carte mémoire du jour",
+              "description": "Une carte à retourner chaque jour.",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/carte.png"
+            }
+          ]
+        }
       ]
     ],
-    "runtimeVersion": "4",
+    "runtimeVersion": "5",
     "updates": {
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0

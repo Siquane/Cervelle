@@ -7,6 +7,7 @@ import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 import { api } from "../api/client";
 import { useSession } from "../state/session";
+import { clearWidgets, refreshWidgets } from "../widgets/handler";
 import { DEFAULT_PREFS, EXPRESS_ACTION, EXPRESS_CATEGORY, planReminders, safeRoute, type ReminderPrefs, type RemindersData } from "./reminders";
 
 // Notifications de l'ENFANT, seulement sur son propre téléphone (session
@@ -123,6 +124,7 @@ export function syncNotifications(): Promise<void> {
 
 async function syncOnce() {
   if (Platform.OS === "web" || !isChild()) return;
+  void refreshWidgets();
   await useReminderPrefs.getState().load();
   const { prefs } = useReminderPrefs.getState();
   const allowed = await notificationsAllowed();
@@ -151,6 +153,7 @@ async function syncOnce() {
 /** Déconnexion : plus aucun rappel sur ce téléphone. */
 export async function clearNotifications() {
   if (Platform.OS === "web") return;
+  void clearWidgets().catch(() => {});
   await Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
 }
 
@@ -178,7 +181,11 @@ export function useChildNotifications(lid: string) {
     askPermission().finally(() => void syncNotifications());
     openFrom(Notifications.getLastNotificationResponse(), lid);
     const tap = Notifications.addNotificationResponseReceivedListener((r) => openFrom(r, lid));
-    const sub = AppState.addEventListener("change", (s) => s === "active" && void syncNotifications());
+    const sub = AppState.addEventListener("change", (s) => {
+      if (s === "active") void syncNotifications();
+      // En quittant l'appli : les widgets montrent ce qui vient d'être fait.
+      else if (s === "background") void refreshWidgets();
+    });
     return () => {
       tap.remove();
       sub.remove();

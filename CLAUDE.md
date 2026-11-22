@@ -41,5 +41,9 @@
 - Notifications de l'enfant : `src/lib/reminders.ts` (calcul, testé) et
   `src/lib/notifications.ts` (programmation locale, jeton push pour « fiches
   prêtes »).
+- Widgets Android (`react-native-android-widget`, déclarés dans `app.json`) :
+  `src/widgets/` (données `GET …/widget` + cache, dessins, gestionnaire
+  enregistré dans `index.js`) ; Cervelle en SVG texte par
+  `src/components/mascot/svgString.ts`. Aperçus dans `assets/widgets/`.
 - Avant de pousser : `npm run typecheck` et `npm test`. Ne jamais redescendre
   `runtimeVersion` ; l'augmenter si `package.json` ou `app.json` change.

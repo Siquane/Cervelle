@@ -12,7 +12,7 @@ import { Mascot } from "../../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, Segmented, T, TopBar } from "../../src/components/ui";
 import { shortDate, whenLabel } from "../../src/lib/format";
 import { useLid } from "../../src/lib/lid";
-import { color, radius, space } from "../../src/theme/tokens";
+import { color, font, radius, space } from "../../src/theme/tokens";
 
 function Step({ done, label, detail, onPress }: { done: boolean; label: string; detail: string; onPress: () => void }) {
   return (
@@ -174,10 +174,24 @@ export default function RevisionScreen() {
                 <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", columnGap: space.md, rowGap: 2 }}>
                   <Meta icon="calendar-outline" text={r.examDate ? `Interro ${whenLabel(r.examDate)}` : shortDate(r.createdAt)} />
                   <Meta icon="camera-outline" text={`${r.photoCount} ${r.photoCount > 1 ? "pages" : "page"}`} />
+                  <Pressable accessibilityRole="button" hitSlop={8} onPress={() => router.push({ pathname: "/revision/pages", params: { lid, id: r.id } })} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                    <Ionicons name="add-circle" size={18} color={color.sky} />
+                    <T v="small" style={{ color: color.sky, fontFamily: font.textBold }}>
+                      Ajouter des pages
+                    </T>
+                  </Pressable>
                 </View>
               </View>
             </View>
             <T v="h2">{r.title}</T>
+            {r.error ? (
+              <View style={{ flexDirection: "row", gap: space.sm, alignItems: "center", backgroundColor: color.sunSoft, borderRadius: radius.md, padding: space.md }}>
+                <Ionicons name="alert-circle" size={22} color={color.sunDark} />
+                <T v="small" style={{ flex: 1, color: color.ink }}>
+                  {r.error}
+                </T>
+              </View>
+            ) : null}
             {r.programme ? (
               <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: "/programme", params: { lid } })} style={{ flexDirection: "row", alignItems: "center", gap: space.sm, backgroundColor: color.tealSoft, borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: space.sm }}>
                 <Ionicons name="school" size={20} color={color.teal} />
@@ -201,6 +215,7 @@ export default function RevisionScreen() {
 
       <BottomSheet open={menu} onClose={() => setMenu(false)} title="Options">
         <DateField label="Date de l'interro" value={r?.examDate ?? null} onChange={(d) => setDate.mutate(d)} />
+        {r?.status === "ready" ? <Button tone="white" icon="camera" label="Ajouter des pages au cours" onPress={() => { setMenu(false); router.push({ pathname: "/revision/pages", params: { lid, id } }); }} /> : null}
         <Button tone="white" icon="document-text" label="Envoyer l'interro corrigée" onPress={() => { setMenu(false); router.push({ pathname: "/exam/new", params: { lid, revisionId: id } }); }} />
         <Button
           tone="danger"

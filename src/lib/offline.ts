@@ -40,6 +40,17 @@ export function readOffline<T>(key: string): T | null {
   }
 }
 
+/** Drops a kept copy (the revision was prepared again): it is fetched afresh next time. */
+export function forgetOffline(key: string) {
+  if (!supported) return;
+  try {
+    const f = fileOf(key);
+    if (f.exists) f.delete();
+  } catch {
+    // Nothing kept, nothing to do.
+  }
+}
+
 export const hasOffline = (key: string) => supported && (() => { try { return fileOf(key).exists; } catch { return false; } })();
 
 export const isNetworkError = (e: unknown) => e instanceof ApiError && e.status === 0;

@@ -132,6 +132,8 @@ export interface ShopItem {
   season: [string, string] | null;
   /** badge: the badge's name. */
   badge: string | null;
+  /** badge / chemin: what to do to win it, in one sentence (null for items that are bought). */
+  how?: string | null;
   onSale: boolean;
   owned: boolean;
   equipped: boolean;

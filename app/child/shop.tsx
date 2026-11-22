@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, View, type ScrollViewInstance } from "react-native";
+import { router } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { api, errorMessage } from "../../src/api/client";
@@ -49,30 +50,15 @@ function nextDate(md: string): string {
   return shortDate(`${y}-${md}`);
 }
 
-function ItemCard({ item, tried, onTry, coins, busy, onBuy, onWear }: { item: ShopItem; tried: boolean; onTry: () => void; coins: number; busy: boolean; onBuy: () => void; onWear: () => void }) {
+function ItemCard({ item, tried, onTry, coins, busy, onBuy, onWear, onHow }: { item: ShopItem; tried: boolean; onTry: () => void; coins: number; busy: boolean; onBuy: () => void; onWear: () => void; onHow: () => void }) {
   const tag = item.kind === "normal" ? null : KIND_TAG[item.kind];
   const preview = item.slot === "decor" ? null : [item.id];
   let action: React.ReactNode;
   if (item.owned) {
     action = <Button small tone={item.equipped ? "teal" : "white"} icon={item.equipped ? "checkmark" : "shirt"} label={item.equipped ? "Porté" : "Mettre"} loading={busy} disabled={item.equipped && item.id === "rose"} onPress={onWear} />;
-  } else if (item.kind === "badge") {
-    action = (
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 4, minHeight: 40 }}>
-        <Ionicons name="lock-closed" size={14} color={color.muted} />
-        <T v="small" numberOfLines={2} style={{ flexShrink: 1, textAlign: "center", fontSize: 12 }}>
-          Badge « {item.badge} »
-        </T>
-      </View>
-    );
-  } else if (item.kind === "chemin") {
-    action = (
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 4, minHeight: 40 }}>
-        <Ionicons name="star" size={14} color={color.sunDark} />
-        <T v="small" numberOfLines={2} style={{ flexShrink: 1, textAlign: "center", fontSize: 12 }}>
-          Au bout du chemin d'étoiles
-        </T>
-      </View>
-    );
+  } else if (item.kind === "badge" || item.kind === "chemin") {
+    // Won, not bought: the button says exactly how (a sheet with the full sentence).
+    action = <Button small tone="white" icon={item.kind === "badge" ? "lock-closed" : "star"} label="Comment l'avoir ?" onPress={onHow} />;
   } else if (!item.onSale && item.season) {
     action = (
       <T v="small" style={{ minHeight: 40, textAlignVertical: "center", textAlign: "center", fontSize: 12 }}>
@@ -86,7 +72,7 @@ function ItemCard({ item, tried, onTry, coins, busy, onBuy, onWear }: { item: Sh
     <View style={{ width: "48%", alignItems: "center", gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: color.card, borderWidth: 2, borderColor: tried ? color.brand : item.equipped ? color.teal : color.line }}>
       {tag ? (
         <View style={{ position: "absolute", top: 8, left: 8, backgroundColor: tag.bg, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 2, zIndex: 2 }}>
-          <T v="small" style={{ color: tag.fg, fontFamily: font.textBold, fontSize: 11 }}>
+          <T v="small" numberOfLines={1} style={{ color: tag.fg, fontFamily: font.textBold, fontSize: 11 }}>
             {tag.label}
           </T>
         </View>
@@ -161,6 +147,7 @@ export default function Shop() {
   const [slot, setSlot] = useState<ShopSlot>("tete");
   const [trying, setTrying] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [howFor, setHowFor] = useState<ShopItem | null>(null);
 
   const onError = (e: unknown) => Alert.alert("Pas possible pour l'instant", errorMessage(e));
   const act = useMutation({
@@ -271,6 +258,7 @@ export default function Shop() {
                 onTry={() => setTrying(trying === item.id ? null : item.id)}
                 onBuy={() => act.mutate({ item, action: "buy" })}
                 onWear={() => act.mutate({ item, action: item.equipped ? "off" : "on" })}
+                onHow={() => setHowFor(item)}
               />
             ))}
           </View>
@@ -288,6 +276,28 @@ export default function Shop() {
           ))}
         </View>
         <T v="small">Une tenue déjà enregistrée est remplacée.</T>
+      </BottomSheet>
+      <BottomSheet open={!!howFor} onClose={() => setHowFor(null)} title={howFor ? `Comment avoir : ${howFor.name}` : ""}>
+        {howFor ? (
+          <View style={{ gap: space.md }}>
+            <View style={{ alignItems: "center" }}>
+              <Mascot size={110} accessories={howFor.slot === "decor" ? [] : [howFor.id]} />
+            </View>
+            <T read v="body">
+              {howFor.how ?? (howFor.kind === "badge" ? `Gagne le badge « ${howFor.badge} » dans « Tes badges ».` : "Gagne toutes les étoiles du chemin d'étoiles du mois.")}
+            </T>
+            <T v="small">Tu peux déjà l'essayer : touche son image.</T>
+            <Button
+              icon={howFor.kind === "badge" ? "ribbon" : "star"}
+              label={howFor.kind === "badge" ? "Voir mes badges" : "Voir le chemin d'étoiles"}
+              onPress={() => {
+                const target = howFor.kind === "badge" ? "/badges" : "/etoiles";
+                setHowFor(null);
+                router.push({ pathname: target, params: { lid } });
+              }}
+            />
+          </View>
+        ) : null}
       </BottomSheet>
     </Page>
   );

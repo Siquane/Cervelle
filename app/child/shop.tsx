@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { useRef, useState } from "react";
+import { Alert, Pressable, ScrollView, View, type ScrollViewInstance } from "react-native";
 import { useMutation } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { api, errorMessage } from "../../src/api/client";
@@ -109,6 +109,51 @@ function ItemCard({ item, tried, onTry, coins, busy, onBuy, onWear }: { item: Sh
   );
 }
 
+/**
+ * The shelves (Tête, Visage…) in a row that scrolls sideways. Round arrows on
+ * the edges show there is more to see, and scroll when touched.
+ */
+function RayonRow({ slot, onPick }: { slot: ShopSlot; onPick: (s: ShopSlot) => void }) {
+  const ref = useRef<ScrollViewInstance>(null);
+  const [x, setX] = useState(0);
+  const [view, setView] = useState(0);
+  const [content, setContent] = useState(0);
+  const more = content - view - x > 4;
+  const back = x > 4;
+  const arrow = (side: "left" | "right") => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={side === "right" ? "Voir les autres rayons" : "Revenir aux premiers rayons"}
+      hitSlop={8}
+      onPress={() => ref.current?.scrollTo({ x: side === "right" ? Math.min(x + view * 0.7, content - view) : Math.max(0, x - view * 0.7), animated: true })}
+      style={{ position: "absolute", top: 0, bottom: 0, [side]: 0, justifyContent: "center" }}
+    >
+      <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: color.ink, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: color.bg }}>
+        <Ionicons name={side === "right" ? "chevron-forward" : "chevron-back"} size={22} color={color.bg} />
+      </View>
+    </Pressable>
+  );
+  return (
+    <View onLayout={(e) => setView(e.nativeEvent.layout.width)}>
+      <ScrollView
+        ref={ref}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: space.sm, paddingRight: 44 }}
+        onContentSizeChange={(w) => setContent(w)}
+        onScroll={(e) => setX(e.nativeEvent.contentOffset.x)}
+        scrollEventThrottle={32}
+      >
+        {RAYONS.map((r) => (
+          <Chip key={r.slot} label={r.label} on={slot === r.slot} onPress={() => onPick(r.slot)} />
+        ))}
+      </ScrollView>
+      {back ? arrow("left") : null}
+      {more ? arrow("right") : null}
+    </View>
+  );
+}
+
 export default function Shop() {
   const { lid } = useLid();
   const shop = useShop(lid);
@@ -214,11 +259,7 @@ export default function Shop() {
           </View>
 
           {/* Rayons */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm }}>
-            {RAYONS.map((r) => (
-              <Chip key={r.slot} label={r.label} on={slot === r.slot} onPress={() => setSlot(r.slot)} />
-            ))}
-          </ScrollView>
+          <RayonRow slot={slot} onPick={setSlot} />
           <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: space.md }}>
             {shelf.map((item) => (
               <ItemCard

@@ -8,7 +8,7 @@ import { api, errorMessage } from "../../../src/api/client";
 import { keys, learnerPath, useAgenda, useHome, useQueryClient } from "../../../src/api/hooks";
 import { BottomSheet } from "../../../src/components/bits";
 import { Button, Card, ErrorBox, Loading, T } from "../../../src/components/ui";
-import { EVENT_KIND, countByDay, itemsForDay, type AgendaItem } from "../../../src/lib/agenda";
+import { EVENT_KIND, countByDay, itemsForDay, styleOf, type AgendaItem } from "../../../src/lib/agenda";
 import { planSessions, plannedRevisionId } from "../../../src/lib/plan";
 import { WEEKDAYS, WEEKDAYS_SHORT, addDays, dayNumber, weekOf } from "../../../src/lib/dates";
 import { longDate, todayIso } from "../../../src/lib/format";
@@ -99,7 +99,7 @@ export default function AgendaTab() {
           </Card>
         ) : (
           items.map((i) => {
-            const k = EVENT_KIND[i.type === "exam" ? "interro" : i.event.kind];
+            const k = i.type === "exam" ? EVENT_KIND.interro : styleOf(i.event);
             return (
               <Pressable key={i.key} accessibilityRole="button" onPress={() => open(i)} style={({ pressed }) => [{ flexDirection: "row", borderRadius: radius.lg, backgroundColor: k.soft, opacity: pressed ? 0.85 : 1, overflow: "hidden" }]}>
                 <View style={{ width: 8, backgroundColor: k.main }} />

@@ -10,6 +10,24 @@ export const EVENT_KIND: Record<EventKind, { label: string; main: string; soft: 
   activite: { label: "Activité", main: color.violet, soft: color.violetSoft, icon: "football" },
 };
 
+type KindStyle = { label: string; main: string; soft: string; icon: string };
+
+/** Catégories des tâches de Passerelle (mêmes noms) ; une autre devient « Divers ». */
+export const PASSERELLE_CATEGORY: Record<string, KindStyle> = {
+  École: { label: "École", main: color.sky, soft: color.skySoft, icon: "school" },
+  Travail: { label: "Travail", main: color.sunDark, soft: color.sunSoft, icon: "briefcase" },
+  Maison: { label: "Maison", main: color.teal, soft: color.tealSoft, icon: "home" },
+  Santé: { label: "Santé", main: color.red, soft: color.redSoft, icon: "medkit" },
+  Loisirs: { label: "Loisirs", main: color.violet, soft: color.violetSoft, icon: "football" },
+};
+const DIVERS: KindStyle = { label: "Divers", main: color.muted, soft: color.chip, icon: "ellipsis-horizontal-circle" };
+
+/** Ce qui vient de Passerelle garde la catégorie de Passerelle ; le reste, le type choisi dans Cervelle. */
+export function styleOf(e: Pick<AgendaEvent, "kind" | "source" | "category">): KindStyle {
+  if (e.source === "passerelle") return (e.category && PASSERELLE_CATEGORY[e.category]) || DIVERS;
+  return EVENT_KIND[e.kind];
+}
+
 export type AgendaItem =
   | { type: "event"; key: string; event: AgendaEvent; start: string; end: string }
   | { type: "exam"; key: string; exam: AgendaExam; start: null; end: null };

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -49,6 +49,19 @@ export function T({ v = "body", read = false, style, ...rest }: TextProps & { v?
 }
 
 /** A page: safe area, scroll, side gutter. */
+/**
+ * Keeps what is typed above the keyboard. On Android the app is drawn edge to
+ * edge, so the window no longer shrinks for the keyboard by itself: the screen
+ * makes room (padding) on both platforms.
+ */
+export function KeyboardSafe({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  return (
+    <KeyboardAvoidingView behavior="padding" style={[{ flex: 1 }, style]}>
+      {children}
+    </KeyboardAvoidingView>
+  );
+}
+
 export function Page({ children, scroll = true, header, footer, bg = color.bg }: { children: ReactNode; scroll?: boolean; header?: ReactNode; footer?: ReactNode; bg?: string }) {
   // Android draws the app under the phone's navigation buttons (edge to edge):
   // whatever sits at the bottom (footer, or the end of the page) gets that height too.
@@ -56,14 +69,16 @@ export function Page({ children, scroll = true, header, footer, bg = color.bg }:
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bg }} edges={["top", "left", "right"]}>
       {header}
-      {scroll ? (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40 + (footer ? 0 : bottom), gap: space.lg }} keyboardShouldPersistTaps="handled">
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={{ flex: 1, paddingHorizontal: GUTTER, paddingBottom: footer ? 0 : bottom }}>{children}</View>
-      )}
-      {footer ? <View style={{ paddingBottom: bottom }}>{footer}</View> : null}
+      <KeyboardSafe>
+        {scroll ? (
+          <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 40 + (footer ? 0 : bottom), gap: space.lg }} keyboardShouldPersistTaps="handled">
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={{ flex: 1, paddingHorizontal: GUTTER, paddingBottom: footer ? 0 : bottom }}>{children}</View>
+        )}
+        {footer ? <View style={{ paddingBottom: bottom }}>{footer}</View> : null}
+      </KeyboardSafe>
     </SafeAreaView>
   );
 }

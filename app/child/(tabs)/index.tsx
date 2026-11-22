@@ -17,7 +17,7 @@ import { GoalRow } from "../../../src/components/GoalCard";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
-import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
+import { Button, KeyboardSafe, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { daysUntil, whenLabel } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
 import { flushOutbox, useOffline } from "../../../src/lib/offline";
@@ -117,6 +117,7 @@ export default function ChildHome() {
         </Pressable>
       </View>
 
+      <KeyboardSafe>
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 120 }}>
         {offline ? (
           <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, backgroundColor: color.skySoft, borderRadius: radius.md, padding: space.md }}>
@@ -350,6 +351,7 @@ export default function ChildHome() {
         </Pressable>
       </View>
 
+      </KeyboardSafe>
       <BottomSheet open={menu} onClose={() => setMenu(false)} title="Menu">
         <Button tone="white" icon="shirt" label="Habiller Cervelle" onPress={() => { setMenu(false); router.push({ pathname: "/child/shop", params: { lid } }); }} />
         <Button tone="white" icon="chatbubbles" label="Poser une question à Cervelle" onPress={() => { setMenu(false); router.push({ pathname: "/assistant", params: { lid } }); }} />

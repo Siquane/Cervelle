@@ -9,7 +9,7 @@ import { keys, learnerPath, useDuels, useFriends, useQueryClient, useRevisions }
 import type { BoardRow, Duel } from "../../../src/api/types";
 import { BottomSheet } from "../../../src/components/bits";
 import { Mascot } from "../../../src/components/mascot/Mascot";
-import { Button, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
+import { Button, KeyboardSafe, Card, ErrorBox, Loading, ProgressBar, T } from "../../../src/components/ui";
 import { duration, de } from "../../../src/lib/format";
 import { useLid } from "../../../src/lib/lid";
 import { color, font, GUTTER, learnerColorOf, onColor, radius, size, space } from "../../../src/theme/tokens";
@@ -110,6 +110,7 @@ export default function FriendsTab() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={["top", "left", "right"]}>
+      <KeyboardSafe>
       <ScrollView contentContainerStyle={{ padding: GUTTER, gap: space.lg, paddingBottom: 40 }}>
         <T v="h2">Mes amis</T>
 
@@ -256,6 +257,7 @@ export default function FriendsTab() {
           ))}
         </Card>
       </ScrollView>
+      </KeyboardSafe>
 
       <BottomSheet open={!!duelFor} onClose={() => setDuelFor(null)} title={`Défi quiz avec ${duelFor?.name ?? ""}`}>
         <T v="body">Choisis un de tes cours : vous aurez les mêmes 10 questions. 10 pièces chacun pour le finir, et 10 de plus si tu progresses depuis ton dernier défi.</T>

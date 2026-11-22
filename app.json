@@ -82,7 +82,8 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/cervelleserie.png"
+              "previewImage": "./assets/widgets/cervelleserie.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Interro",
@@ -94,7 +95,8 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/interro.png"
+              "previewImage": "./assets/widgets/interro.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Missions",
@@ -106,7 +108,8 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/missions.png"
+              "previewImage": "./assets/widgets/missions.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Carte",
@@ -118,7 +121,8 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/carte.png"
+              "previewImage": "./assets/widgets/carte.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Minuteur",
@@ -130,7 +134,8 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/minuteur.png"
+              "previewImage": "./assets/widgets/minuteur.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Amis",
@@ -142,7 +147,8 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/amis.png"
+              "previewImage": "./assets/widgets/amis.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Express",
@@ -154,7 +160,8 @@
               "targetCellHeight": 1,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/express.png"
+              "previewImage": "./assets/widgets/express.png",
+              "widgetFeatures": "reconfigurable"
             },
             {
               "name": "Parent",
@@ -166,13 +173,14 @@
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
-              "previewImage": "./assets/widgets/parent.png"
+              "previewImage": "./assets/widgets/parent.png",
+              "widgetFeatures": "reconfigurable"
             }
           ]
         }
       ]
     ],
-    "runtimeVersion": "7",
+    "runtimeVersion": "8",
     "updates": {
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0

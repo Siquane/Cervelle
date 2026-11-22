@@ -194,3 +194,30 @@ export function forgetParentData() {
     // rien
   }
 }
+
+// ── Style de chaque widget posé (couleur, clair, sombre), choisi en le posant ──
+
+export type StoredStyle = "couleur" | "clair" | "sombre";
+const stylesFile = () => new File(Paths.document, "widget-styles.json");
+
+function readStyles(): Record<string, StoredStyle> {
+  try {
+    const f = stylesFile();
+    return f.exists ? (JSON.parse(f.textSync()) as Record<string, StoredStyle>) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function widgetStyleOf(widgetId: number): StoredStyle {
+  const s = readStyles()[String(widgetId)];
+  return s === "clair" || s === "sombre" ? s : "couleur";
+}
+
+export function setWidgetStyle(widgetId: number, style: StoredStyle) {
+  try {
+    stylesFile().write(JSON.stringify({ ...readStyles(), [String(widgetId)]: style }));
+  } catch {
+    // Pas grave : le widget restera en couleur.
+  }
+}

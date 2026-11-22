@@ -4,7 +4,10 @@ import "expo-router/entry";
 import { Platform } from "react-native";
 
 if (Platform.OS === "android") {
-  const { registerWidgetTaskHandler } = require("react-native-android-widget");
+  const { registerWidgetTaskHandler, registerWidgetConfigurationScreen } = require("react-native-android-widget");
   const { widgetTaskHandler } = require("./src/widgets/handler");
+  const { WidgetConfigScreen } = require("./src/widgets/ConfigScreen");
   registerWidgetTaskHandler(widgetTaskHandler);
+  // Choix du style (couleur, clair, sombre) en posant ou en réglant un widget.
+  registerWidgetConfigurationScreen(WidgetConfigScreen);
 }

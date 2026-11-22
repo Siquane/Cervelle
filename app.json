@@ -75,10 +75,10 @@
             {
               "name": "CervelleSerie",
               "label": "Cervelle et ta série",
-              "description": "Cervelle et tes jours de révision d'affilée.",
+              "description": "Ta série de jours, la semaine cochée et Cervelle.",
               "minWidth": "110dp",
               "minHeight": "110dp",
-              "targetCellWidth": 2,
+              "targetCellWidth": 4,
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
@@ -143,12 +143,24 @@
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
               "previewImage": "./assets/widgets/amis.png"
+            },
+            {
+              "name": "Express",
+              "label": "Révision express",
+              "description": "Un bouton pour lancer une révision express.",
+              "minWidth": "40dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 1,
+              "targetCellHeight": 1,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/express.png"
             }
           ]
         }
       ]
     ],
-    "runtimeVersion": "5",
+    "runtimeVersion": "6",
     "updates": {
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0

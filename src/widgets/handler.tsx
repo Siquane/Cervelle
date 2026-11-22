@@ -10,12 +10,12 @@ export async function widgetTaskHandler({ widgetInfo, widgetAction, clickAction,
   if (widgetAction === "WIDGET_CLICK" && clickAction === "FLIP") {
     const state = await loadWidgetState(false);
     if (state.kind === "ready") state.flipped = toggleFlip(state.data);
-    renderWidget(renderWidgetFor(widgetInfo.widgetName, state));
+    renderWidget(renderWidgetFor(widgetInfo.widgetName, state, widgetInfo));
     return;
   }
   // Redimensionné : pas besoin de redemander au serveur.
   const state = await loadWidgetState(widgetAction !== "WIDGET_RESIZED");
-  renderWidget(renderWidgetFor(widgetInfo.widgetName, state));
+  renderWidget(renderWidgetFor(widgetInfo.widgetName, state, widgetInfo));
 }
 
 let pending: Promise<void> | null = null;
@@ -26,7 +26,7 @@ export function refreshWidgets(): Promise<void> {
   pending ??= (async () => {
     try {
       const state = await loadWidgetState(true);
-      await Promise.all(WIDGETS.map((name) => requestWidgetUpdate({ widgetName: name, renderWidget: () => renderWidgetFor(name, state) }).catch(() => {})));
+      await Promise.all(WIDGETS.map((name) => requestWidgetUpdate({ widgetName: name, renderWidget: (info) => renderWidgetFor(name, state, info) }).catch(() => {})));
     } catch {
       // Un widget en retard n'est pas grave.
     } finally {

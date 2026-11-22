@@ -41,6 +41,7 @@ export default function ChildHome() {
   const signOut = useSession((s) => s.signOut);
   const [ask, setAsk] = useState("");
   const [menu, setMenu] = useState(false);
+  const [allRevisions, setAllRevisions] = useState(false);
   const agenda = useAgenda(lid);
   const todos = useTodos(lid);
   const habits = useHabits(lid);
@@ -308,9 +309,23 @@ export default function ChildHome() {
         {revisions.length ? (
           <>
             <T v="h3">Toutes mes révisions</T>
-            {revisions.map((r) => (
+            {(allRevisions ? revisions : revisions.slice(0, 3)).map((r) => (
               <RevisionRow key={r.id} r={r} lid={lid} />
             ))}
+            {revisions.length > 3 ? (
+              <Pressable
+                onPress={() => setAllRevisions((v) => !v)}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: allRevisions }}
+                accessibilityLabel={allRevisions ? "Voir moins de révisions" : `Voir les ${revisions.length - 3} autres révisions`}
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.xs, paddingVertical: space.sm }}
+              >
+                <T v="bodyBold" style={{ color: color.brand }}>
+                  {allRevisions ? "Voir moins" : `Voir les ${revisions.length - 3} autres`}
+                </T>
+                <Ionicons name={allRevisions ? "chevron-up" : "chevron-down"} size={22} color={color.brand} />
+              </Pressable>
+            ) : null}
           </>
         ) : null}
 

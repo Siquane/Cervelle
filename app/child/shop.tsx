@@ -128,8 +128,8 @@ function RayonRow({ slot, onPick }: { slot: ShopSlot; onPick: (s: ShopSlot) => v
       onPress={() => ref.current?.scrollTo({ x: side === "right" ? Math.min(x + view * 0.7, content - view) : Math.max(0, x - view * 0.7), animated: true })}
       style={{ position: "absolute", top: 0, bottom: 0, [side]: 0, justifyContent: "center" }}
     >
-      <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: color.ink, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: color.bg }}>
-        <Ionicons name={side === "right" ? "chevron-forward" : "chevron-back"} size={22} color={color.bg} />
+      <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: color.brandSoft, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: color.bg }}>
+        <Ionicons name={side === "right" ? "chevron-forward" : "chevron-back"} size={22} color={color.brand} />
       </View>
     </Pressable>
   );

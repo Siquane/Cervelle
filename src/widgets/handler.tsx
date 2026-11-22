@@ -1,21 +1,27 @@
 import { Platform } from "react-native";
 import { requestWidgetUpdate, type WidgetTaskHandlerProps } from "react-native-android-widget";
-import { forgetWidgetData, loadWidgetState, toggleFlip } from "./data";
-import { renderWidgetFor, WIDGETS } from "./views";
+import { forgetParentData, forgetWidgetData, loadParentState, loadWidgetState, saveParentData, toggleFlip, widgetStyleOf, type ParentWidgetData } from "./data";
+import { renderParentWidget, renderWidgetFor, WIDGETS } from "./views";
+
+export const PARENT_WIDGET = "Parent";
 
 // Appelé par Android (hors de l'appli) : widget ajouté, mise à jour toutes les
 // 30 minutes, redimensionné, ou touché (« FLIP » retourne la carte du jour).
 export async function widgetTaskHandler({ widgetInfo, widgetAction, clickAction, renderWidget }: WidgetTaskHandlerProps) {
   if (widgetAction === "WIDGET_DELETED") return;
+  if (widgetInfo.widgetName === PARENT_WIDGET) {
+    renderWidget(renderParentWidget(await loadParentState(widgetAction !== "WIDGET_RESIZED"), widgetStyleOf(widgetInfo.widgetId)));
+    return;
+  }
   if (widgetAction === "WIDGET_CLICK" && clickAction === "FLIP") {
     const state = await loadWidgetState(false);
     if (state.kind === "ready") state.flipped = toggleFlip(state.data);
-    renderWidget(renderWidgetFor(widgetInfo.widgetName, state, widgetInfo));
+    renderWidget(renderWidgetFor(widgetInfo.widgetName, state, widgetInfo, widgetStyleOf(widgetInfo.widgetId)));
     return;
   }
   // Redimensionné : pas besoin de redemander au serveur.
   const state = await loadWidgetState(widgetAction !== "WIDGET_RESIZED");
-  renderWidget(renderWidgetFor(widgetInfo.widgetName, state, widgetInfo));
+  renderWidget(renderWidgetFor(widgetInfo.widgetName, state, widgetInfo, widgetStyleOf(widgetInfo.widgetId)));
 }
 
 let pending: Promise<void> | null = null;
@@ -26,7 +32,7 @@ export function refreshWidgets(): Promise<void> {
   pending ??= (async () => {
     try {
       const state = await loadWidgetState(true);
-      await Promise.all(WIDGETS.map((name) => requestWidgetUpdate({ widgetName: name, renderWidget: (info) => renderWidgetFor(name, state, info) }).catch(() => {})));
+      await Promise.all(WIDGETS.map((name) => requestWidgetUpdate({ widgetName: name, renderWidget: (info) => renderWidgetFor(name, state, info, widgetStyleOf(info.widgetId)) }).catch(() => {})));
     } catch {
       // Un widget en retard n'est pas grave.
     } finally {
@@ -36,9 +42,18 @@ export function refreshWidgets(): Promise<void> {
   return pending;
 }
 
-/** Déconnexion : les widgets oublient l'enfant. */
+/** Depuis l'espace parent : l'appli (qui sait renouveler le jeton) donne les données au widget. */
+export async function refreshParentWidget(data: ParentWidgetData) {
+  if (Platform.OS !== "android") return;
+  saveParentData(data);
+  await requestWidgetUpdate({ widgetName: PARENT_WIDGET, renderWidget: (info) => renderParentWidget({ kind: "ready", data }, widgetStyleOf(info.widgetId)) }).catch(() => {});
+}
+
+/** Déconnexion : les widgets oublient l'enfant et le parent. */
 export async function clearWidgets() {
   if (Platform.OS !== "android") return;
   forgetWidgetData();
-  await Promise.all(WIDGETS.map((name) => requestWidgetUpdate({ widgetName: name, renderWidget: () => renderWidgetFor(name, { kind: "signedOut" }) }).catch(() => {})));
+  forgetParentData();
+  await requestWidgetUpdate({ widgetName: PARENT_WIDGET, renderWidget: (info) => renderParentWidget({ kind: "signedOut" }, widgetStyleOf(info.widgetId)) }).catch(() => {});
+  await Promise.all(WIDGETS.map((name) => requestWidgetUpdate({ widgetName: name, renderWidget: (info) => renderWidgetFor(name, { kind: "signedOut" }, info, widgetStyleOf(info.widgetId)) }).catch(() => {})));
 }

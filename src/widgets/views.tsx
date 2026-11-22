@@ -2,238 +2,330 @@ import { FlexWidget, SvgWidget, TextWidget } from "react-native-android-widget";
 import { mascotSvgString } from "../components/mascot/svgString";
 import type { WidgetData, WidgetState } from "./data";
 
-// Les 4 widgets Android. Mêmes couleurs que l'appli (texte ≥ 4,5:1) ; une
-// version claire et une sombre, choisie par le téléphone.
+// Les widgets Android de Cervelle : un fond en dégradé vif (le même en mode
+// clair et sombre), du texte blanc centré et aéré, Cervelle qui dort tant
+// que l'enfant n'a pas révisé. Blanc sur chaque dégradé : contraste ≥ 4,5:1.
 
 type Hex = `#${string}`;
-interface Palette {
-  bg: Hex;
-  card: Hex;
-  ink: Hex;
-  muted: Hex;
-  brand: Hex;
-  teal: Hex;
-  sky: Hex;
-  sunText: Hex;
-  track: Hex;
-}
+type Gradient = [Hex, Hex];
 
-const LIGHT: Palette = { bg: "#FFFFFF", card: "#F3F6FB", ink: "#1F1A3D", muted: "#6B6889", brand: "#BC0F54", teal: "#02786D", sky: "#0B61CF", sunText: "#856000", track: "#E3E6EF" };
-const DARK: Palette = { bg: "#141A2E", card: "#0A0C1A", ink: "#EEF0FF", muted: "#A9AECB", brand: "#FF8FB1", teal: "#4FD6C6", sky: "#8EC5FF", sunText: "#FFD45C", track: "#2A3150" };
+const G = {
+  serie: ["#6D3FD9", "#0B61CF"],
+  interro: ["#BC0F54", "#6D3FD9"],
+  missions: ["#02786D", "#0B61CF"],
+  carte: ["#6D3FD9", "#BC0F54"],
+  minuteur: ["#0B61CF", "#6D3FD9"],
+  amis: ["#0B61CF", "#02786D"],
+  express: ["#BC0F54", "#6D3FD9"],
+} satisfies Record<string, Gradient>;
+
+const WHITE: Hex = "#FFFFFF";
+/** Texte secondaire : blanc légèrement bleuté, encore lisible sur les dégradés. */
+const SOFT: Hex = "#EAE6FF";
+const TRACK = "rgba(255, 255, 255, 0.28)" as const;
 
 const TITLE = "Outfit_700Bold";
 const TEXT = "AtkinsonHyperlegible_400Regular";
 const BOLD = "AtkinsonHyperlegible_700Bold";
 
-export const WIDGETS = ["CervelleSerie", "Interro", "Missions", "Carte", "Minuteur", "Amis"] as const;
+export const WIDGETS = ["CervelleSerie", "Interro", "Missions", "Carte", "Minuteur", "Amis", "Express"] as const;
 export type WidgetName = (typeof WIDGETS)[number];
 
-/** Fond du widget : arrondi, ouvre l'appli au toucher (sauf mention contraire). */
-function Frame({ p, children, click = "OPEN_APP", uri, label, center = false }: { p: Palette; children: React.ReactNode; click?: string; uri?: string; label: string; center?: boolean }) {
+/** Taille du widget posé (dp), pour choisir une mise en page. */
+export interface Size {
+  width: number;
+  height: number;
+}
+
+function Frame({ g, children, uri, click = "OPEN_APP", label, row = false }: { g: Gradient; children: React.ReactNode; uri?: string; click?: string; label: string; row?: boolean }) {
   return (
     <FlexWidget
       clickAction={uri ? "OPEN_URI" : click}
       clickActionData={uri ? { uri } : undefined}
       accessibilityLabel={label}
-      style={{ height: "match_parent", width: "match_parent", backgroundColor: p.bg, borderRadius: 22, padding: 14, flexDirection: "column", justifyContent: center ? "center" : "space-between", alignItems: center ? "center" : "flex-start" }}
+      style={{
+        height: "match_parent",
+        width: "match_parent",
+        backgroundGradient: { from: g[0], to: g[1], orientation: "TL_BR" },
+        borderRadius: 24,
+        padding: 16,
+        flexDirection: row ? "row" : "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
       {children}
     </FlexWidget>
   );
 }
 
-function Bar({ p, value, color }: { p: Palette; value: number; color: Hex }) {
+const Gap = ({ h = 8 }: { h?: number }) => <FlexWidget style={{ height: h, width: h }} />;
+
+function Txt({ text, size, color = WHITE, font = TEXT, lines = 1 }: { text: string; size: number; color?: Hex; font?: string; lines?: number }) {
+  return <TextWidget text={text} maxLines={lines} truncate="END" style={{ fontSize: size, color, fontFamily: font, textAlign: "center" }} />;
+}
+
+function Bar({ value, color = WHITE }: { value: number; color?: Hex }) {
   const v = Math.max(0, Math.min(1, value));
   return (
-    <FlexWidget style={{ width: "match_parent", height: 10, borderRadius: 5, backgroundColor: p.track, flexDirection: "row" }}>
-      {v > 0 ? <FlexWidget style={{ flex: Math.round(v * 100), height: 10, borderRadius: 5, backgroundColor: color }} /> : null}
-      {v < 1 ? <FlexWidget style={{ flex: Math.round((1 - v) * 100), height: 10 }} /> : null}
+    <FlexWidget style={{ width: "match_parent", height: 10, borderRadius: 5, backgroundColor: TRACK, flexDirection: "row" }}>
+      {v > 0 ? <FlexWidget style={{ flex: Math.max(1, Math.round(v * 100)), height: 10, borderRadius: 5, backgroundColor: color }} /> : null}
+      {v < 1 ? <FlexWidget style={{ flex: Math.max(1, Math.round((1 - v) * 100)), height: 10 }} /> : null}
     </FlexWidget>
   );
 }
 
-function Txt({ text, size, color, font = TEXT, lines = 1, align }: { text: string; size: number; color: Hex; font?: string; lines?: number; align?: "center" | "left" }) {
-  return <TextWidget text={text} maxLines={lines} truncate="END" style={{ fontSize: size, color, fontFamily: font, textAlign: align }} />;
+/** Bouton blanc, texte de la couleur du widget. */
+function Pill({ text, uri, color, label }: { text: string; uri: string; color: Hex; label: string }) {
+  return (
+    <FlexWidget clickAction="OPEN_URI" clickActionData={{ uri }} accessibilityLabel={label} style={{ backgroundColor: WHITE, borderRadius: 18, paddingVertical: 8, paddingHorizontal: 18 }}>
+      <TextWidget text={text} style={{ fontSize: 15, color, fontFamily: BOLD }} />
+    </FlexWidget>
+  );
+}
+
+const LETTERS = ["L", "M", "M", "J", "V", "S", "D"];
+
+/** Les 7 jours de la semaine : coche blanche quand l'enfant a travaillé. */
+function Week({ week, dot = 24 }: { week: NonNullable<WidgetData["week"]>; dot?: number }) {
+  return (
+    <FlexWidget style={{ flexDirection: "row", justifyContent: "center" }}>
+      {week.map((d, i) => (
+        <FlexWidget key={d.day} style={{ flexDirection: "column", alignItems: "center", marginHorizontal: 3 }}>
+          <TextWidget text={LETTERS[i]} style={{ fontSize: 11, color: d.today ? WHITE : SOFT, fontFamily: d.today ? BOLD : TEXT }} />
+          <FlexWidget
+            style={{
+              width: dot,
+              height: dot,
+              borderRadius: dot / 2,
+              marginTop: 3,
+              backgroundColor: d.done ? WHITE : TRACK,
+              borderWidth: d.today && !d.done ? 2 : 0,
+              borderColor: WHITE,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {d.done ? <TextWidget text="✓" style={{ fontSize: dot * 0.55, color: "#6D3FD9", fontFamily: BOLD }} /> : null}
+          </FlexWidget>
+        </FlexWidget>
+      ))}
+    </FlexWidget>
+  );
 }
 
 const days = (n: number) => (n <= 0 ? "aujourd'hui" : n === 1 ? "demain" : `dans ${n} jours`);
+const mins = (n: number) => (n >= 60 ? `${Math.floor(n / 60)} h ${String(n % 60).padStart(2, "0")}` : `${n} min`);
 
-function examLabel(e: NonNullable<WidgetData["exam"]>): string {
+function subjectOf(e: NonNullable<WidgetData["exam"]>): string {
   const s = e.subject.trim();
-  if (!s) return e.title;
+  if (!s) return "";
   return s.length > 1 && s[1] === s[1].toLowerCase() ? s[0].toUpperCase() + s.slice(1) : s;
+}
+
+/** Ce que lance « Révision express » : l'interro qui arrive, sinon les notions à revoir. */
+function expressUri(d: WidgetData): string {
+  return d.exam ? `cervelle://quiz?mode=express&revisionId=${d.exam.revisionId}` : "cervelle://quiz?mode=a_revoir";
 }
 
 // ── Les widgets ──
 
-function Serie({ d, p }: { d: WidgetData; p: Palette }) {
-  const label = d.studiedToday ? `Cervelle. Série de ${d.streak} jours. Tu as révisé aujourd'hui.` : `Cervelle. Série de ${d.streak} jours. Pas encore révisé aujourd'hui.`;
+function Serie({ d, size }: { d: WidgetData; size: Size }) {
+  const wide = size.width >= 230;
+  const label = `Cervelle. ${d.streak} jour${d.streak > 1 ? "s" : ""} de suite. ${d.studiedToday ? "Tu as révisé aujourd'hui." : "Pas encore révisé aujourd'hui."}`;
+  const mascot = <SvgWidget svg={mascotSvgString(d.equipped, d.studiedToday ? "happy" : "sleep")} style={wide ? { width: 110, height: 107 } : { width: 64, height: 62 }} />;
+  const count = (
+    <FlexWidget style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+      <TextWidget text="🔥" style={{ fontSize: wide ? 30 : 22 }} />
+      <TextWidget text={` ${d.streak}`} style={{ fontSize: wide ? 44 : 30, color: WHITE, fontFamily: TITLE }} />
+    </FlexWidget>
+  );
+  const status = <Txt text={d.studiedToday ? "Bravo, c'est fait !" : d.streak > 0 ? "Garde ta série !" : "C'est parti !"} size={13} color={SOFT} font={BOLD} />;
+  if (!wide) {
+    return (
+      <Frame g={G.serie} label={label}>
+        {mascot}
+        <Gap h={2} />
+        {count}
+        {status}
+      </Frame>
+    );
+  }
   return (
-    <Frame p={p} label={label} center>
-      <SvgWidget svg={mascotSvgString(d.equipped, d.studiedToday ? "happy" : "sleep")} style={{ width: 84, height: 82 }} />
-      <Txt text={d.streak > 0 ? `🔥 ${d.streak} jour${d.streak > 1 ? "s" : ""}` : "🔥 C'est parti !"} size={17} color={p.ink} font={TITLE} align="center" />
-      <Txt text={d.studiedToday ? "✓ Révisé aujourd'hui" : "Cervelle t'attend"} size={13} color={d.studiedToday ? p.teal : p.brand} font={BOLD} align="center" />
+    <Frame g={G.serie} label={label} row>
+      <FlexWidget style={{ flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        {count}
+        {status}
+        {d.week ? (
+          <>
+            <Gap h={10} />
+            <Week week={d.week} />
+          </>
+        ) : null}
+      </FlexWidget>
+      <Gap h={8} />
+      {mascot}
     </Frame>
   );
 }
 
-function Interro({ d, p }: { d: WidgetData; p: Palette }) {
+function Interro({ d }: { d: WidgetData }) {
   const e = d.exam;
   if (!e) {
     return (
-      <Frame p={p} label="Pas d'interro prévue" center>
-        <Txt text="📅 Pas d'interro prévue" size={16} color={p.ink} font={TITLE} align="center" />
-        <Txt text="Ajoute la date dans un cours pour la voir ici." size={13} color={p.muted} lines={2} align="center" />
+      <Frame g={G.interro} label="Pas d'interro prévue">
+        <Txt text="📅" size={26} />
+        <Gap h={6} />
+        <Txt text="Pas d'interro prévue" size={17} font={TITLE} />
+        <Gap h={4} />
+        <Txt text="Ajoute la date dans un cours pour la voir ici." size={13} color={SOFT} lines={2} />
       </Frame>
     );
   }
-  const share = e.notions ? e.mastered / e.notions : 0;
+  const subject = subjectOf(e);
   return (
-    <Frame p={p} label={`Interro de ${examLabel(e)} ${days(e.daysLeft)}`}>
-      <FlexWidget style={{ width: "match_parent", flexDirection: "column" }} clickAction="OPEN_URI" clickActionData={{ uri: `cervelle://revision/${e.revisionId}` }}>
-        <Txt text={`📅 Interro ${days(e.daysLeft)}`} size={13} color={p.sky} font={BOLD} />
-        <Txt text={`${examLabel(e)} · ${e.title}`} size={16} color={p.ink} font={TITLE} />
-      </FlexWidget>
-      <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
-        <Txt text={`Tu as compris ${e.mastered} notion${e.mastered > 1 ? "s" : ""} sur ${e.notions}`} size={13} color={p.muted} />
-        <FlexWidget style={{ height: 6 }} />
-        <Bar p={p} value={share} color="#10B5A5" />
-      </FlexWidget>
-      <FlexWidget
-        clickAction="OPEN_URI"
-        clickActionData={{ uri: `cervelle://quiz?mode=express&revisionId=${e.revisionId}` }}
-        accessibilityLabel="Révision express"
-        style={{ backgroundColor: "#BC0F54", borderRadius: 14, paddingVertical: 7, paddingHorizontal: 14 }}
-      >
-        <Txt text="⚡ Révision express" size={14} color="#FFFFFF" font={BOLD} />
-      </FlexWidget>
+    <Frame g={G.interro} label={`Interro ${subject} ${days(e.daysLeft)}`} uri={`cervelle://revision/${e.revisionId}`}>
+      <Txt text={`📅 Interro ${days(e.daysLeft)}`} size={14} color={SOFT} font={BOLD} />
+      <Gap h={4} />
+      <Txt text={subject ? `${subject} · ${e.title}` : e.title} size={18} font={TITLE} lines={2} />
+      <Gap h={10} />
+      <Bar value={e.notions ? e.mastered / e.notions : 0} />
+      <Gap h={4} />
+      <Txt text={`Tu as compris ${e.mastered} notion${e.mastered > 1 ? "s" : ""} sur ${e.notions}`} size={12} color={SOFT} />
+      <Gap h={10} />
+      <Pill text="⚡ Révision express" uri={expressUri(d)} color="#BC0F54" label="Révision express" />
     </Frame>
   );
 }
 
-function Missions({ d, p }: { d: WidgetData; p: Palette }) {
+function Missions({ d }: { d: WidgetData }) {
   const m = d.missions;
   const all = m.total > 0 && m.done >= m.total;
   return (
-    <Frame p={p} label={`Missions du jour : ${m.done} sur ${m.total}. ${d.stars.total} étoiles ce mois-ci.`}>
-      <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
-        <Txt text={all ? (m.chestOpened ? "🎉 Missions finies !" : "🎁 Ton coffre t'attend !") : "🎯 Missions du jour"} size={15} color={p.ink} font={TITLE} />
-        <FlexWidget style={{ height: 4 }} />
-        <Txt text={`${m.done} sur ${m.total}`} size={13} color={p.teal} font={BOLD} />
-        <FlexWidget style={{ height: 4 }} />
-        <Bar p={p} value={m.total ? m.done / m.total : 0} color="#10B5A5" />
-      </FlexWidget>
-      <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
-        <Txt text={`⭐ ${d.stars.total} étoile${d.stars.total > 1 ? "s" : ""} ce mois-ci`} size={13} color={p.sunText} font={BOLD} />
-        <FlexWidget style={{ height: 4 }} />
-        <Bar p={p} value={d.stars.end ? d.stars.total / d.stars.end : 0} color="#FFC23D" />
-      </FlexWidget>
+    <Frame g={G.missions} label={`Missions du jour : ${m.done} sur ${m.total}. ${d.stars.total} étoiles ce mois-ci.`}>
+      <Txt text={all ? (m.chestOpened ? "🎉 Missions finies !" : "🎁 Ton coffre t'attend !") : "🎯 Missions du jour"} size={14} color={SOFT} font={BOLD} />
+      <Gap h={2} />
+      <Txt text={`${m.done} / ${m.total}`} size={34} font={TITLE} />
+      <Bar value={m.total ? m.done / m.total : 0} />
+      <Gap h={12} />
+      <Txt text={`⭐ ${d.stars.total} étoile${d.stars.total > 1 ? "s" : ""} ce mois-ci`} size={13} font={BOLD} />
+      <Gap h={4} />
+      <Bar value={d.stars.end ? d.stars.total / d.stars.end : 0} color="#FFD45C" />
     </Frame>
   );
 }
 
-function Carte({ d, p, flipped }: { d: WidgetData; p: Palette; flipped: boolean }) {
+function Carte({ d, flipped }: { d: WidgetData; flipped: boolean }) {
   const c = d.card;
   if (!c) {
     return (
-      <Frame p={p} label="Carte mémoire du jour" center>
-        <Txt text="🃏 Carte du jour" size={16} color={p.ink} font={TITLE} align="center" />
-        <Txt text="Photographie un cours pour avoir tes cartes." size={13} color={p.muted} lines={2} align="center" />
+      <Frame g={G.carte} label="Carte mémoire du jour">
+        <Txt text="🃏" size={26} />
+        <Gap h={6} />
+        <Txt text="Carte du jour" size={17} font={TITLE} />
+        <Gap h={4} />
+        <Txt text="Photographie un cours pour avoir tes cartes." size={13} color={SOFT} lines={2} />
       </Frame>
     );
   }
   return (
-    <Frame p={p} label={flipped ? `Réponse : ${c.back}` : `Question : ${c.front}. Touche pour retourner.`} click="FLIP">
-      <Txt text={flipped ? "✓ La réponse" : "🃏 Carte du jour"} size={13} color={flipped ? p.teal : p.brand} font={BOLD} />
-      <FlexWidget style={{ width: "match_parent", backgroundColor: p.card, borderRadius: 14, padding: 10, flex: 1, marginVertical: 6, justifyContent: "center" }}>
-        <Txt text={flipped ? c.back : c.front} size={15} color={p.ink} font={flipped ? TEXT : BOLD} lines={4} />
-      </FlexWidget>
-      <Txt text={flipped ? `${c.title} · touche pour revoir la question` : "Touche pour voir la réponse"} size={12} color={p.muted} />
+    <Frame g={G.carte} label={flipped ? `Réponse : ${c.back}` : `Question : ${c.front}. Touche pour retourner.`} click="FLIP">
+      <Txt text={flipped ? "✓ La réponse" : "🃏 Carte du jour"} size={13} color={SOFT} font={BOLD} />
+      <Gap h={8} />
+      <Txt text={flipped ? c.back : c.front} size={c.front.length > 60 ? 16 : 20} font={TITLE} lines={4} />
+      <Gap h={10} />
+      <Txt text={flipped ? "Touche pour revoir la question" : "Touche pour voir la réponse"} size={12} color={SOFT} />
     </Frame>
   );
 }
 
-const mins = (n: number) => (n >= 60 ? `${Math.floor(n / 60)} h ${String(n % 60).padStart(2, "0")}` : `${n} min`);
-
-function Minuteur({ d, p }: { d: WidgetData; p: Palette }) {
+function Minuteur({ d }: { d: WidgetData }) {
   const focus = d.timer?.focus ?? 25;
   const week = d.timer?.weekMinutes ?? 0;
   return (
-    <Frame p={p} label={`Minuteur. ${mins(week)} de travail cette semaine. Touche pour lancer ${focus} minutes.`} uri="cervelle://child/minuteur">
-      <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
-        <Txt text="⏱️ Minuteur" size={15} color={p.ink} font={TITLE} />
-        <Txt text={week > 0 ? `${mins(week)} de travail cette semaine` : "Prêt à te concentrer ?"} size={13} color={p.teal} font={BOLD} lines={2} />
-      </FlexWidget>
-      <FlexWidget
-        clickAction="OPEN_URI"
-        clickActionData={{ uri: "cervelle://child/minuteur?start=1" }}
-        accessibilityLabel={`Je me lance : ${focus} minutes`}
-        style={{ backgroundColor: "#BC0F54", borderRadius: 14, paddingVertical: 7, paddingHorizontal: 14 }}
-      >
-        <Txt text={`▶ Je me lance · ${focus} min`} size={14} color="#FFFFFF" font={BOLD} />
-      </FlexWidget>
+    <Frame g={G.minuteur} label={`Minuteur. ${mins(week)} de travail cette semaine.`} uri="cervelle://child/minuteur">
+      <Txt text="⏱️ Cette semaine" size={13} color={SOFT} font={BOLD} />
+      <Txt text={week > 0 ? mins(week) : "0 min"} size={30} font={TITLE} />
+      <Txt text="de travail" size={12} color={SOFT} />
+      <Gap h={10} />
+      <Pill text={`▶ ${focus} min`} uri="cervelle://child/minuteur?start=1" color="#0B61CF" label={`Je me lance : ${focus} minutes`} />
     </Frame>
   );
 }
 
-function Amis({ d, p }: { d: WidgetData; p: Palette }) {
+function Amis({ d }: { d: WidgetData }) {
   const f = d.friends;
   const c = f?.challenge;
   const cheer = f?.lastCheer;
-  const label = [c ? `Défi avec ${c.otherName} : toi ${mins(c.myMinutes)}, ${c.otherName} ${mins(c.theirMinutes)}.` : "", f?.cheers ? `${f.cheers} encouragement${f.cheers > 1 ? "s" : ""}.` : ""].filter(Boolean).join(" ") || "Tes amis";
+  const label = [c ? `Défi avec ${c.otherName} : toi ${mins(c.myMinutes)}, ${c.otherName} ${mins(c.theirMinutes)}.` : "", f?.cheers ? `${f.cheers} encouragement${f.cheers > 1 ? "s" : ""}.` : ""].filter(Boolean).join(" ") || "Mes amis";
   return (
-    <Frame p={p} label={label} uri="cervelle://child/amis">
-      <Txt text="🤝 Mes amis" size={15} color={p.ink} font={TITLE} />
+    <Frame g={G.amis} label={label} uri="cervelle://child/amis">
+      <Txt text="🤝 Mes amis" size={13} color={SOFT} font={BOLD} />
+      <Gap h={6} />
       {c ? (
-        <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
-          <Txt text={`Défi avec ${c.otherName}`} size={13} color={p.sky} font={BOLD} />
-          <Txt text={`Toi ${mins(c.myMinutes)} · ${c.otherName} ${mins(c.theirMinutes)}`} size={13} color={p.muted} />
-          <FlexWidget style={{ height: 4 }} />
-          <Bar p={p} value={c.myMinutes + c.theirMinutes ? c.myMinutes / (c.myMinutes + c.theirMinutes) : 0.5} color="#3D8BFD" />
-        </FlexWidget>
+        <>
+          <Txt text={`Défi avec ${c.otherName}`} size={17} font={TITLE} />
+          <Gap h={6} />
+          <Bar value={c.myMinutes + c.theirMinutes ? c.myMinutes / (c.myMinutes + c.theirMinutes) : 0.5} />
+          <Gap h={4} />
+          <Txt text={`Toi ${mins(c.myMinutes)} · ${c.otherName} ${mins(c.theirMinutes)}`} size={12} color={SOFT} />
+        </>
       ) : f?.invites ? (
-        <Txt text={`📨 ${f.invites} défi${f.invites > 1 ? "s" : ""} à accepter`} size={13} color={p.sky} font={BOLD} />
+        <Txt text={`📨 ${f.invites} défi${f.invites > 1 ? "s" : ""} à accepter`} size={16} font={TITLE} />
       ) : (
-        <Txt text="Lance un défi à un ami !" size={13} color={p.muted} />
+        <Txt text="Lance un défi à un ami !" size={16} font={TITLE} lines={2} />
       )}
-      <Txt
-        text={cheer ? `${cheer.emoji} ${cheer.fromName} t'encourage${f!.cheers > 1 ? ` (+${f!.cheers - 1})` : ""}` : "Pas de nouvel encouragement"}
-        size={13}
-        color={cheer ? p.brand : p.muted}
-        font={cheer ? BOLD : TEXT}
-      />
+      <Gap h={10} />
+      <Txt text={cheer ? `${cheer.emoji} ${cheer.fromName} t'encourage${f!.cheers > 1 ? ` (+${f!.cheers - 1})` : ""}` : "Pas de nouvel encouragement"} size={13} font={cheer ? BOLD : TEXT} color={cheer ? WHITE : SOFT} />
     </Frame>
   );
 }
 
-function SignedOut({ p }: { p: Palette }) {
+/** 1 × 1 : un seul bouton, la révision express. */
+function Express({ d }: { d: WidgetData }) {
   return (
-    <Frame p={p} label="Ouvre Cervelle" center>
-      <SvgWidget svg={mascotSvgString([], "sleep")} style={{ width: 56, height: 54 }} />
-      <Txt text="Ouvre Cervelle avec ton code pour remplir ce widget." size={13} color={p.muted} lines={3} align="center" />
+    <Frame g={G.express} label={d.exam ? "Révision express pour ta prochaine interro" : "Révision express de tes notions à revoir"} uri={expressUri(d)}>
+      <Txt text="⚡" size={26} />
+      <Txt text="Express" size={13} font={BOLD} />
     </Frame>
   );
 }
 
-function one(name: string, state: WidgetState, p: Palette) {
-  if (state.kind === "signedOut") return <SignedOut p={p} />;
+function SignedOut({ name }: { name: string }) {
+  if (name === "Express") {
+    return (
+      <Frame g={G.express} label="Ouvre Cervelle">
+        <Txt text="⚡" size={26} />
+        <Txt text="Cervelle" size={12} font={BOLD} />
+      </Frame>
+    );
+  }
+  return (
+    <Frame g={G.serie} label="Ouvre Cervelle">
+      <SvgWidget svg={mascotSvgString([], "sleep")} style={{ width: 56, height: 54 }} />
+      <Gap h={6} />
+      <Txt text="Ouvre Cervelle avec ton code pour remplir ce widget." size={13} lines={3} />
+    </Frame>
+  );
+}
+
+export function renderWidgetFor(name: string, state: WidgetState, size: Size = { width: 300, height: 150 }) {
+  if (state.kind === "signedOut") return <SignedOut name={name} />;
   const { data, flipped } = state;
   switch (name as WidgetName) {
     case "Interro":
-      return <Interro d={data} p={p} />;
+      return <Interro d={data} />;
     case "Missions":
-      return <Missions d={data} p={p} />;
+      return <Missions d={data} />;
     case "Carte":
-      return <Carte d={data} p={p} flipped={flipped} />;
+      return <Carte d={data} flipped={flipped} />;
     case "Minuteur":
-      return <Minuteur d={data} p={p} />;
+      return <Minuteur d={data} />;
     case "Amis":
-      return <Amis d={data} p={p} />;
+      return <Amis d={data} />;
+    case "Express":
+      return <Express d={data} />;
     default:
-      return <Serie d={data} p={p} />;
+      return <Serie d={data} size={size} />;
   }
-}
-
-export function renderWidgetFor(name: string, state: WidgetState) {
-  return { light: one(name, state, LIGHT), dark: one(name, state, DARK) };
 }

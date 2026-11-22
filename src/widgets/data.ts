@@ -12,6 +12,8 @@ export interface WidgetData {
   name: string;
   streak: number;
   studiedToday: boolean;
+  /** Lundi → dimanche (absent d'un ancien cache). */
+  week?: { day: string; done: boolean; today: boolean }[];
   equipped: string[];
   missions: { done: number; total: number; chestOpened: boolean };
   stars: { total: number; end: number };
@@ -55,7 +57,10 @@ function readCache(): WidgetData | null {
 /** Une donnée d'hier ne dit rien d'aujourd'hui : série à confirmer, missions à zéro. */
 export function forToday(data: WidgetData, today = localDay()): WidgetData {
   if (data.day === today) return data;
-  return { ...data, studiedToday: false, missions: { ...data.missions, done: 0, chestOpened: false }, exam: data.exam && { ...data.exam, daysLeft: daysBetween(today, data.exam.examDate) } };
+  const monday = data.week?.[0]?.day;
+  const sameWeek = !!monday && daysBetween(monday, today) >= 0 && daysBetween(monday, today) < 7;
+  const week = sameWeek ? data.week!.map((d) => ({ ...d, today: d.day === today })) : undefined;
+  return { ...data, week, studiedToday: false, missions: { ...data.missions, done: 0, chestOpened: false }, exam: data.exam && { ...data.exam, daysLeft: daysBetween(today, data.exam.examDate) } };
 }
 
 function daysBetween(from: string, to: string): number {

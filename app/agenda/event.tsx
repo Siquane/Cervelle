@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../src/api/client";
 import { keys, learnerPath, useAgenda, useQueryClient } from "../../src/api/hooks";
-import type { EventKind } from "../../src/api/types";
+import type { AgendaEvent, EventKind } from "../../src/api/types";
 import { BottomSheet } from "../../src/components/bits";
 import { Chip } from "../../src/components/Chip";
 import { DateField } from "../../src/components/DateField";
 import { Field } from "../../src/components/Field";
 import { DayPicker, TimeField } from "../../src/components/organize";
 import { Button, ErrorBox, Page, Segmented, T, TopBar } from "../../src/components/ui";
-import { EVENT_KIND, minutesBetween } from "../../src/lib/agenda";
+import { EVENT_KIND, minutesBetween, styleOf } from "../../src/lib/agenda";
 import { weekdayOf } from "../../src/lib/dates";
 import { todayIso } from "../../src/lib/format";
 import { useLid } from "../../src/lib/lid";
@@ -65,14 +66,21 @@ export default function EventForm() {
   return (
     <Page header={<TopBar title={existing ? "Modifier" : "Ajouter à l'agenda"} />}>
       <Field label="Quoi ?" value={title} onChangeText={setTitle} placeholder="Maths, Anglais, Piscine…" maxLength={60} />
-      <View style={{ gap: space.sm }}>
-        <T v="bodyBold">Type</T>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
-          {(Object.keys(EVENT_KIND) as EventKind[]).map((k) => (
-            <Chip key={k} label={EVENT_KIND[k].label} on={kind === k} onPress={() => setKind(k)} />
-          ))}
+      {existing?.source === "passerelle" ? (
+        <View style={{ gap: space.sm }}>
+          <T v="bodyBold">Catégorie</T>
+          <PasserelleCategory event={existing} />
         </View>
-      </View>
+      ) : (
+        <View style={{ gap: space.sm }}>
+          <T v="bodyBold">Type</T>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
+            {(Object.keys(EVENT_KIND) as EventKind[]).map((k) => (
+              <Chip key={k} label={EVENT_KIND[k].label} on={kind === k} onPress={() => setKind(k)} />
+            ))}
+          </View>
+        </View>
+      )}
       <Segmented
         options={[
           { key: "week", label: "Chaque semaine" },
@@ -99,7 +107,7 @@ export default function EventForm() {
         </T>
       ) : null}
       <Field label="Salle (facultatif)" value={room} onChangeText={setRoom} placeholder="2-004" maxLength={30} />
-      {existing?.source === "passerelle" ? <T v="small">Ceci vient du planning familial : la prochaine synchronisation le remettra comme dans Passerelle.</T> : null}
+      {existing?.source === "passerelle" ? <T v="small">Ceci vient du planning familial. Sa catégorie se change dans Passerelle ; la prochaine synchronisation remettra tout comme dans Passerelle.</T> : null}
       {save.error ? <ErrorBox message={errorMessage(save.error)} /> : null}
       <Button label="Enregistrer" icon="checkmark" loading={save.isPending} disabled={!title.trim() || tooShort || (repeat === "once" && !day)} onPress={() => save.mutate()} />
       {existing ? <Button tone="ghost" icon="trash" label="Supprimer de l'agenda" onPress={() => setConfirm(true)} /> : null}
@@ -109,5 +117,18 @@ export default function EventForm() {
         <Button tone="white" label="Annuler" onPress={() => setConfirm(false)} />
       </BottomSheet>
     </Page>
+  );
+}
+
+/** La catégorie Passerelle, affichée sans pouvoir la changer ici. */
+function PasserelleCategory({ event }: { event: AgendaEvent }) {
+  const c = styleOf(event);
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, alignSelf: "flex-start", backgroundColor: c.soft, borderRadius: 999, paddingVertical: space.sm, paddingHorizontal: space.lg }}>
+      <Ionicons name={c.icon as keyof typeof Ionicons.glyphMap} size={18} color={c.main} />
+      <T v="bodyBold" style={{ color: c.main }}>
+        {c.label}
+      </T>
+    </View>
   );
 }

@@ -8,7 +8,7 @@ import { api, errorMessage } from "../../../src/api/client";
 import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos } from "../../../src/api/hooks";
 import type { Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
-import { EVENT_KIND, itemsForDay } from "../../../src/lib/agenda";
+import { EVENT_KIND, itemsForDay, styleOf } from "../../../src/lib/agenda";
 import { planSessions } from "../../../src/lib/plan";
 import { weekdayOf } from "../../../src/lib/dates";
 import { todayIso } from "../../../src/lib/format";
@@ -242,7 +242,7 @@ export default function ChildHome() {
             <T v="small">{agenda.data?.events.length ? "Plus rien de prévu aujourd'hui." : "Ajoute ton emploi du temps dans l'onglet Agenda."}</T>
           ) : (
             todayItems.map((i) => {
-              const k = EVENT_KIND[i.type === "exam" ? "interro" : i.event.kind];
+              const k = i.type === "exam" ? EVENT_KIND.interro : styleOf(i.event);
               return (
                 <View key={i.key} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
                   <View style={{ width: 6, alignSelf: "stretch", borderRadius: 3, backgroundColor: k.main }} />

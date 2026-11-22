@@ -207,6 +207,8 @@ export interface AgendaEvent {
   createdBy: "parent" | "enfant";
   source: "cervelle" | "passerelle";
   synced: boolean;
+  /** Catégorie de la tâche Passerelle (« École », « Maison »…), pour ce qui vient de Passerelle. */
+  category?: string | null;
 }
 
 export interface AgendaExam {

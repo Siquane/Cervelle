@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import { Alert, ScrollView, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
@@ -52,6 +53,14 @@ export default function TimerTab() {
   const t = useTimer();
   const [, setNow] = useState(0);
   const [settings, setSettings] = useState(false);
+  // Ouvert depuis le widget « Je me lance » : la séance démarre tout de suite.
+  const { start } = useLocalSearchParams<{ start?: string }>();
+  const focusMinutes = home.data?.learner.timer.focus;
+  useEffect(() => {
+    if (start !== "1" || !focusMinutes) return;
+    if (useTimer.getState().phase === "idle") useTimer.getState().startFocus(focusMinutes);
+    router.setParams({ start: undefined });
+  }, [start, focusMinutes]);
 
   // Re-draw every half second while it runs.
   useEffect(() => {

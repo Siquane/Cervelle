@@ -119,6 +119,30 @@
               "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000,
               "previewImage": "./assets/widgets/carte.png"
+            },
+            {
+              "name": "Minuteur",
+              "label": "Minuteur",
+              "description": "Lance une séance de travail en un geste.",
+              "minWidth": "180dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/minuteur.png"
+            },
+            {
+              "name": "Amis",
+              "label": "Mes amis",
+              "description": "Tes encouragements et ton défi de la semaine.",
+              "minWidth": "180dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000,
+              "previewImage": "./assets/widgets/amis.png"
             }
           ]
         }

@@ -25,14 +25,15 @@ const TITLE = "Outfit_700Bold";
 const TEXT = "AtkinsonHyperlegible_400Regular";
 const BOLD = "AtkinsonHyperlegible_700Bold";
 
-export const WIDGETS = ["CervelleSerie", "Interro", "Missions", "Carte"] as const;
+export const WIDGETS = ["CervelleSerie", "Interro", "Missions", "Carte", "Minuteur", "Amis"] as const;
 export type WidgetName = (typeof WIDGETS)[number];
 
 /** Fond du widget : arrondi, ouvre l'appli au toucher (sauf mention contraire). */
-function Frame({ p, children, click = "OPEN_APP", label, center = false }: { p: Palette; children: React.ReactNode; click?: string; label: string; center?: boolean }) {
+function Frame({ p, children, click = "OPEN_APP", uri, label, center = false }: { p: Palette; children: React.ReactNode; click?: string; uri?: string; label: string; center?: boolean }) {
   return (
     <FlexWidget
-      clickAction={click}
+      clickAction={uri ? "OPEN_URI" : click}
+      clickActionData={uri ? { uri } : undefined}
       accessibilityLabel={label}
       style={{ height: "match_parent", width: "match_parent", backgroundColor: p.bg, borderRadius: 22, padding: 14, flexDirection: "column", justifyContent: center ? "center" : "space-between", alignItems: center ? "center" : "flex-start" }}
     >
@@ -152,6 +153,59 @@ function Carte({ d, p, flipped }: { d: WidgetData; p: Palette; flipped: boolean 
   );
 }
 
+const mins = (n: number) => (n >= 60 ? `${Math.floor(n / 60)} h ${String(n % 60).padStart(2, "0")}` : `${n} min`);
+
+function Minuteur({ d, p }: { d: WidgetData; p: Palette }) {
+  const focus = d.timer?.focus ?? 25;
+  const week = d.timer?.weekMinutes ?? 0;
+  return (
+    <Frame p={p} label={`Minuteur. ${mins(week)} de travail cette semaine. Touche pour lancer ${focus} minutes.`} uri="cervelle://child/minuteur">
+      <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
+        <Txt text="⏱️ Minuteur" size={15} color={p.ink} font={TITLE} />
+        <Txt text={week > 0 ? `${mins(week)} de travail cette semaine` : "Prêt à te concentrer ?"} size={13} color={p.teal} font={BOLD} lines={2} />
+      </FlexWidget>
+      <FlexWidget
+        clickAction="OPEN_URI"
+        clickActionData={{ uri: "cervelle://child/minuteur?start=1" }}
+        accessibilityLabel={`Je me lance : ${focus} minutes`}
+        style={{ backgroundColor: "#BC0F54", borderRadius: 14, paddingVertical: 7, paddingHorizontal: 14 }}
+      >
+        <Txt text={`▶ Je me lance · ${focus} min`} size={14} color="#FFFFFF" font={BOLD} />
+      </FlexWidget>
+    </Frame>
+  );
+}
+
+function Amis({ d, p }: { d: WidgetData; p: Palette }) {
+  const f = d.friends;
+  const c = f?.challenge;
+  const cheer = f?.lastCheer;
+  const label = [c ? `Défi avec ${c.otherName} : toi ${mins(c.myMinutes)}, ${c.otherName} ${mins(c.theirMinutes)}.` : "", f?.cheers ? `${f.cheers} encouragement${f.cheers > 1 ? "s" : ""}.` : ""].filter(Boolean).join(" ") || "Tes amis";
+  return (
+    <Frame p={p} label={label} uri="cervelle://child/amis">
+      <Txt text="🤝 Mes amis" size={15} color={p.ink} font={TITLE} />
+      {c ? (
+        <FlexWidget style={{ width: "match_parent", flexDirection: "column" }}>
+          <Txt text={`Défi avec ${c.otherName}`} size={13} color={p.sky} font={BOLD} />
+          <Txt text={`Toi ${mins(c.myMinutes)} · ${c.otherName} ${mins(c.theirMinutes)}`} size={13} color={p.muted} />
+          <FlexWidget style={{ height: 4 }} />
+          <Bar p={p} value={c.myMinutes + c.theirMinutes ? c.myMinutes / (c.myMinutes + c.theirMinutes) : 0.5} color="#3D8BFD" />
+        </FlexWidget>
+      ) : f?.invites ? (
+        <Txt text={`📨 ${f.invites} défi${f.invites > 1 ? "s" : ""} à accepter`} size={13} color={p.sky} font={BOLD} />
+      ) : (
+        <Txt text="Lance un défi à un ami !" size={13} color={p.muted} />
+      )}
+      <Txt
+        text={cheer ? `${cheer.emoji} ${cheer.fromName} t'encourage${f!.cheers > 1 ? ` (+${f!.cheers - 1})` : ""}` : "Pas de nouvel encouragement"}
+        size={13}
+        color={cheer ? p.brand : p.muted}
+        font={cheer ? BOLD : TEXT}
+      />
+    </Frame>
+  );
+}
+
 function SignedOut({ p }: { p: Palette }) {
   return (
     <Frame p={p} label="Ouvre Cervelle" center>
@@ -171,6 +225,10 @@ function one(name: string, state: WidgetState, p: Palette) {
       return <Missions d={data} p={p} />;
     case "Carte":
       return <Carte d={data} p={p} flipped={flipped} />;
+    case "Minuteur":
+      return <Minuteur d={data} p={p} />;
+    case "Amis":
+      return <Amis d={data} p={p} />;
     default:
       return <Serie d={data} p={p} />;
   }

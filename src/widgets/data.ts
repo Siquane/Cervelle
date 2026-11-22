@@ -17,6 +17,9 @@ export interface WidgetData {
   stars: { total: number; end: number };
   exam: { revisionId: string; title: string; subject: string; examDate: string; daysLeft: number; mastered: number; notions: number; progress: number } | null;
   card: { front: string; back: string; revisionId: string; title: string } | null;
+  /** Absents d'un ancien cache : lire avec `?.`. */
+  timer?: { focus: number; weekMinutes: number };
+  friends?: { cheers: number; lastCheer: { fromName: string; emoji: string } | null; invites: number; challenge: { otherName: string; myMinutes: number; theirMinutes: number } | null };
 }
 
 /** Ce que le widget sait : rien (pas connecté en enfant), ou les dernières données. */

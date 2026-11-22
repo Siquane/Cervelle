@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { errorMessage } from "../src/api/client";
-import { useStars } from "../src/api/hooks";
+import { useRefreshLearner, useStars } from "../src/api/hooks";
 import type { StarPath } from "../src/api/types";
 import { BottomSheet } from "../src/components/bits";
 import { Coin } from "../src/components/Coin";
@@ -52,12 +52,17 @@ function RewardArt({ step, item }: { step: StarPath["steps"][number]; item: stri
 export default function StarsScreen() {
   const { lid } = useLid();
   const stars = useStars(lid);
+  const refresh = useRefreshLearner(lid);
   const [info, setInfo] = useState(false);
   const [fresh, setFresh] = useState<StarPath["fresh"]>([]);
   const p = stars.data;
 
   useEffect(() => {
-    if (p?.fresh.length) setFresh(p.fresh);
+    if (p?.fresh.length) {
+      setFresh(p.fresh);
+      // A prize is worn at once: the home screen and the shop show it.
+      if (p.fresh.some((f) => f.item)) refresh();
+    }
   }, [p]);
 
   const scene = SCENES[p?.theme.id ?? "espace"];
@@ -162,7 +167,7 @@ export default function StarsScreen() {
           <View key={f.at} style={{ flexDirection: "row", alignItems: "center", gap: space.md }}>
             {f.item ? <Mascot size={56} accessories={[f.item]} /> : <Coin size={36} />}
             <T v="bodyBold" style={{ flex: 1 }}>
-              Palier {f.at} : {f.item ? `${f.itemName}, à mettre dans la boutique !` : `+${f.coins} pièces`}
+              Palier {f.at} : {f.item ? `${f.itemName} ! Cervelle le porte déjà.` : `+${f.coins} pièces`}
             </T>
           </View>
         ))}

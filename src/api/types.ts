@@ -434,7 +434,8 @@ export interface DuelResult {
   corrections: { questionId: string; correct: boolean; expected: string }[];
 }
 
-export type StarReward = { type: "coins"; coins: number } | { type: "chest" } | { type: "item" };
+/** « none » : une case du chemin sans récompense (il y en a une toutes les 5 cases). */
+export type StarReward = { type: "coins"; coins: number } | { type: "chest" } | { type: "item" } | { type: "none" };
 
 export interface StarPath {
   month: string;

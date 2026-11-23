@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, ScrollView, View, type ScrollViewInstance } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +14,7 @@ import { useLid } from "../src/lib/lid";
 import { font, GUTTER, radius, size, space } from "../src/theme/tokens";
 
 // « Chemin d'étoiles »: a month's path, from the bottom (start) to the top
-// (50 stars). The scene is always night-coloured, in both themes, so its
+// (100 cases, une toutes les 5 étoiles : 500 étoiles). The scene is always night-coloured, in both themes, so its
 // colours are set here (white text on dark grounds, ink text on the cards).
 
 const SCENES: Record<StarPath["theme"]["id"], { bg: string; deco: string[] }> = {
@@ -28,6 +28,9 @@ const CARD = "#E8ECFF";
 const DONE = "#FFC94D";
 const RAIL = "#7C86D9";
 const ROW = 118;
+
+/** 0,5 → « ½ étoile », 1 → « 1 ». */
+const half = (n: number) => (n === 0.5 ? "½ étoile" : n % 1 === 0.5 ? `${Math.floor(n)} ½` : String(n));
 
 function RewardArt({ step, item }: { step: StarPath["steps"][number]; item: string }) {
   if (step.reward.type === "item" || step.result?.item) {
@@ -67,7 +70,11 @@ export default function StarsScreen() {
 
   const scene = SCENES[p?.theme.id ?? "espace"];
   const steps = p ? [...p.steps].reverse() : [];
-  const next = p?.steps.find((s) => !s.reached);
+  const next = p?.steps.find((s) => !s.reached && s.reward.type !== "none");
+  const square = p ? Math.min(p.steps.length, Math.floor(p.stars / (p.steps[0]?.at || 5))) : 0;
+  // Le chemin est long : on descend tout seul jusqu'à la case où en est l'enfant.
+  const scroll = useRef<ScrollViewInstance>(null);
+  const scrolled = useRef(false);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: scene.bg }} edges={["top", "left", "right"]}>
@@ -91,19 +98,31 @@ export default function StarsScreen() {
       ) : null}
 
       {p ? (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 60 }}>
+        <ScrollView ref={scroll} contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 60 }}>
           <View style={{ backgroundColor: "rgba(255,255,255,0.1)", borderRadius: radius.lg, padding: space.md, gap: 4, marginBottom: space.lg }}>
             <T style={{ fontFamily: font.title, fontSize: size.xl, color: "#FFFFFF" }}>⭐ {p.stars} étoile{p.stars > 1 ? "s" : ""} ce mois-ci</T>
             <T style={{ color: "#DDE3FF", fontSize: size.sm }}>
-              {next ? `Encore ${next.at - p.stars} pour le palier ${next.at}.` : `Chemin terminé ! Ton cadeau : ${p.theme.itemName}.`} Le chemin repart de zéro le 1er du mois.
+              {next ? `Case ${square} sur ${p.steps.length}. Encore ${next.at - p.stars} étoile${next.at - p.stars > 1 ? "s" : ""} pour la prochaine récompense.` : `Chemin terminé ! Ton cadeau : ${p.theme.itemName}.`} Le chemin repart de zéro le 1er du mois.
             </T>
           </View>
 
           {steps.map((s, i) => {
             // The bubble with the current count sits just above the first step reached.
             const bubble = s.reached && (i === 0 || !steps[i - 1].reached);
+            const plain = s.reward.type === "none";
             return (
-              <View key={s.at}>
+              <View
+                key={s.at}
+                onLayout={
+                  bubble
+                    ? (e) => {
+                        if (scrolled.current) return;
+                        scrolled.current = true;
+                        scroll.current?.scrollTo({ y: Math.max(0, e.nativeEvent.layout.y - 160), animated: false });
+                      }
+                    : undefined
+                }
+              >
                 {bubble ? (
                   <View style={{ flexDirection: "row", alignItems: "center", height: 44 }}>
                     <View style={{ width: 60, alignItems: "center" }}>
@@ -115,6 +134,15 @@ export default function StarsScreen() {
                     </View>
                   </View>
                 ) : null}
+                {plain ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", height: 40 }} accessible accessibilityLabel={`${s.at} étoiles${s.reached ? ", atteint" : ""}`}>
+                    <View style={{ width: 60, alignItems: "center", alignSelf: "stretch", justifyContent: "center" }}>
+                      <View style={{ position: "absolute", top: 0, bottom: 0, width: 14, backgroundColor: s.reached ? DONE : RAIL }} />
+                      <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: s.reached ? "#FFFFFF" : CARD, borderWidth: 3, borderColor: s.reached ? DONE : RAIL }} />
+                    </View>
+                    <T style={{ fontFamily: font.textBold, fontSize: size.sm, color: s.reached ? DONE : "#DDE3FF" }}>{s.at}</T>
+                  </View>
+                ) : (
                 <View style={{ flexDirection: "row", alignItems: "center", height: ROW }}>
                   <View style={{ width: 60, alignItems: "center", alignSelf: "stretch" }}>
                     <View style={{ position: "absolute", top: 0, bottom: 0, width: 14, backgroundColor: s.reached ? DONE : RAIL }} />
@@ -135,6 +163,7 @@ export default function StarsScreen() {
                     </View>
                   </View>
                 </View>
+                )}
               </View>
             );
           })}
@@ -150,7 +179,7 @@ export default function StarsScreen() {
       <BottomSheet open={info} onClose={() => setInfo(false)} title="Gagner des étoiles">
         {p ? (
           <View style={{ gap: space.sm }}>
-            <T v="body">⭐ {p.rules.quiz} par quiz fini, +{p.rules.effort} si tu revois tes erreurs ou fais 10 questions et plus</T>
+            <T v="body">⭐ {half(p.rules.quiz)} par quiz fini, +{half(p.rules.effort)} si tu revois tes erreurs ou fais 10 questions et plus</T>
             <T v="body">⭐ {p.rules.interro} par interro de Cervelle</T>
             <T v="body">⭐ {p.rules.day} par jour de révision, +{p.rules.week} pour 7 jours d'affilée</T>
             <T v="body">⭐ {p.rules.chest} quand tu ouvres le coffre des missions</T>

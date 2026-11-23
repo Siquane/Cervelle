@@ -14,7 +14,7 @@ import { color, font, learnerColorOf, radius, size, space } from "../../src/them
 // The parent sets up to 3 goals with a real family reward. Reached → shown
 // as won to the child, straight away.
 
-const RANGE = { jours: { min: 1, max: 7, start: 5 }, etoiles: { min: 5, max: 50, start: 30, step: 5 } } as const;
+const RANGE = { jours: { min: 1, max: 7, start: 5 }, etoiles: { min: 25, max: 500, start: 250, step: 25 } } as const;
 const IDEAS = ["Une sortie au cinéma", "30 min d'écran en plus", "Choisir le dessert", "Une soirée jeux", "Inviter un copain"];
 
 export default function Objectifs() {

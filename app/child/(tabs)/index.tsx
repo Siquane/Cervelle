@@ -3,7 +3,7 @@ import { Alert, Pressable, ScrollView, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
 import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos, useAdvent, useAlbumPending } from "../../../src/api/hooks";
 import type { Advent, Reward, Todo } from "../../../src/api/types";
@@ -31,6 +31,7 @@ export default function ChildHome() {
   const goals = useGoals(lid);
   const advent = useAdvent(lid);
   const albumPending = useAlbumPending(lid);
+  const teachUnseen = useQuery({ queryKey: ["teachUnseen", lid], enabled: !!lid, queryFn: () => api.get<{ unseen: number }>(`${learnerPath(lid)}/teach`).then((r) => r.unseen) });
   const home = useHome(lid);
   const offline = useOffline((st) => st.offline);
   // Back online: send what was done offline, then keep every ready revision on the phone.
@@ -144,6 +145,9 @@ export default function ChildHome() {
           </View>
         </Card>
 
+        {teachUnseen.data ? (
+          <Button tone="sky" icon="school" label={teachUnseen.data > 1 ? "Tes parents ont répondu à tes quiz !" : "Un parent a répondu à ton quiz !"} onPress={() => router.push({ pathname: "/apprends", params: { lid } })} />
+        ) : null}
         {albumPending.data ? (
           <Button tone="sun" icon="albums" label={`${albumPending.data} nouvelle${albumPending.data > 1 ? "s" : ""} carte${albumPending.data > 1 ? "s" : ""} pour ton album ! 🎁`} onPress={() => router.push({ pathname: "/album", params: { lid } })} />
         ) : null}
@@ -348,6 +352,7 @@ export default function ChildHome() {
           </View>
           <Mascot size={86} accessories={["lunettes"]} />
         </Card>
+        <Button tone="white" icon="school" label="Apprends-le à tes parents" onPress={() => router.push({ pathname: "/apprends", params: { lid } })} />
         <Button tone="white" icon="albums" label="Mon album de cartes" onPress={() => router.push({ pathname: "/album", params: { lid } })} />
         <Button tone="white" icon="map" label="Ma carte au trésor" onPress={() => router.push({ pathname: "/carte", params: { lid } })} />
         <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />

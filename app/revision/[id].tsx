@@ -62,6 +62,16 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
   const toReview = r.notions.flatMap((n): { mastery: string }[] => (n.children.length ? n.children : [n])).filter((n) => n.mastery !== "mastered").length;
   const toReviewLabel = toReview ? `${toReview} notion${toReview > 1 ? "s" : ""} à revoir` : "tout est compris";
   const play = (mode: QuizMode) => router.push({ pathname: "/quiz", params: { lid, revisionId: r.id, mode } });
+  // « Apprends-le à papa/maman » : 5 questions de la leçon envoyées aux parents (dans Passerelle).
+  const teach = useMutation({
+    mutationFn: () => api.post(`${learnerPath(lid)}/teach`, { revisionId: r.id }),
+    onSuccess: () =>
+      Alert.alert("Quiz envoyé ! 🧠", "Tes parents vont recevoir 5 questions sur ta leçon. Quand ils auront répondu, tu verras leurs réponses et tu gagneras des étoiles.", [
+        { text: "Voir mes quiz", onPress: () => router.push({ pathname: "/apprends", params: { lid } }) },
+        { text: "OK" },
+      ]),
+    onError: (e) => Alert.alert("Pas envoyé", errorMessage(e)),
+  });
   return (
     <>
       <Card style={{ gap: space.sm }}>
@@ -77,6 +87,7 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
         <Button tone="white" small icon="albums" label="Cartes mémoire" onPress={() => play("cartes")} style={{ marginTop: space.sm }} />
         <Button tone="white" small icon="flash" label="Révision express · 6 questions" onPress={() => play("express")} />
         <Button tone="white" small icon="people" label="Réviser à deux" onPress={() => router.push({ pathname: "/duo/[id]", params: { id: r.id, lid } })} />
+        <Button tone="white" small icon="school" label="Apprends-le à papa/maman" loading={teach.isPending} onPress={() => teach.mutate()} />
       </Card>
 
       {r.boss ? <BossCard r={r} lid={lid} /> : null}

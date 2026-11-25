@@ -88,6 +88,7 @@ describe("examName", () => {
 
 describe("safeRoute", () => {
   it("n'ouvre que les écrans prévus", () => {
+    expect(safeRoute("/apprends")).toBe("/apprends");
     expect(safeRoute("/revision/ck123")).toBe("/revision/ck123");
     expect(safeRoute("/quiz?mode=express&revisionId=ck123")).toBe("/quiz?mode=express&revisionId=ck123");
     expect(safeRoute("/quiz?mode=a_revoir")).toBe("/quiz?mode=a_revoir");

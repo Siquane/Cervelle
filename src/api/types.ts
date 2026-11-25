@@ -571,3 +571,23 @@ export interface Album {
   duplicateCoins: Record<CardRarity, number>;
   fresh: (Omit<AlbumCard, "count"> & { duplicate: boolean; coins: number })[];
 }
+
+/** « Apprends-le à papa/maman » (serveur : src/routes/cervelleTeach.ts). */
+export interface TeachQuiz {
+  id: string;
+  learnerName: string;
+  revisionTitle: string;
+  createdAt: string;
+  answered: boolean;
+  answeredByName: string | null;
+  score: number | null;
+  total: number;
+  seen: boolean;
+  questions: { id: string; type: string; prompt: string; choices: string[]; expected?: number; given?: number | null; correct?: boolean | null; explanation?: string }[];
+}
+
+export interface TeachQuizList {
+  quizzes: TeachQuiz[];
+  unseen: number;
+  stars: number;
+}

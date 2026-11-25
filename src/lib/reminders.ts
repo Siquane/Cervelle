@@ -164,7 +164,7 @@ export function dailyNudge(day: Date): { title: string; body: string } {
 }
 
 // Seuls ces écrans peuvent être ouverts depuis une notification.
-const ALLOWED = /^\/(revision\/[A-Za-z0-9_-]{1,40}|quiz\?mode=(a_revoir|express(&revisionId=[A-Za-z0-9_-]{1,40})?))$/;
+const ALLOWED = /^\/(apprends|revision\/[A-Za-z0-9_-]{1,40}|quiz\?mode=(a_revoir|express(&revisionId=[A-Za-z0-9_-]{1,40})?))$/;
 
 export function safeRoute(url: unknown): string | null {
   return typeof url === "string" && ALLOWED.test(url) ? url : null;

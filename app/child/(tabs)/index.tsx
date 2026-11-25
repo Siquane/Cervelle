@@ -14,6 +14,7 @@ import { weekdayOf } from "../../../src/lib/dates";
 import { todayIso } from "../../../src/lib/format";
 import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
 import { GoalRow } from "../../../src/components/GoalCard";
+import { RoutineCard } from "../../../src/components/RoutineCard";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
@@ -152,6 +153,8 @@ export default function ChildHome() {
           <Button tone="sun" icon="albums" label={`${albumPending.data} nouvelle${albumPending.data > 1 ? "s" : ""} carte${albumPending.data > 1 ? "s" : ""} pour ton album ! 🎁`} onPress={() => router.push({ pathname: "/album", params: { lid } })} />
         ) : null}
         {advent.data ? <AdventCard a={advent.data} onPress={() => router.push({ pathname: "/avent", params: { lid } })} /> : null}
+
+        <RoutineCard lid={lid} />
 
         {goals.data?.length ? (
           <Card style={{ gap: space.sm }}>

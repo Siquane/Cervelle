@@ -9,6 +9,7 @@ import type { QuizMode, RevisionDetail } from "../../src/api/types";
 import { BottomSheet, MasteryHelp, MasteryTag, RevisionIcon } from "../../src/components/bits";
 import { DateField } from "../../src/components/DateField";
 import { Mascot } from "../../src/components/mascot/Mascot";
+import { BossArt, bossName } from "../../src/components/Boss";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, Segmented, T, TopBar } from "../../src/components/ui";
 import { shortDate, whenLabel } from "../../src/lib/format";
 import { useLid } from "../../src/lib/lid";
@@ -26,6 +27,32 @@ function Step({ done, label, detail, onPress }: { done: boolean; label: string; 
       </View>
       <Ionicons name="play-circle" size={40} color={color.brand} />
     </Pressable>
+  );
+}
+
+/** Le boss de fin de chapitre : il arrive quand chaque notion a été travaillée. */
+function BossCard({ r, lid }: { r: RevisionDetail; lid: string }) {
+  const boss = r.boss!;
+  const name = bossName(r.id);
+  return (
+    <Card style={{ flexDirection: "row", alignItems: "center", gap: space.md, borderColor: boss.ready && !boss.beaten ? color.brand : color.line, borderWidth: 2 }}>
+      <View style={{ opacity: boss.ready ? 1 : 0.35 }}>
+        <BossArt revisionId={r.id} size={74} beaten={boss.beaten} />
+      </View>
+      <View style={{ flex: 1, gap: 4 }}>
+        <T v="bodyBold">{boss.beaten ? `${name} est battu 🏆` : boss.ready ? `${name} est apparu !` : "Boss de fin de chapitre"}</T>
+        <T v="small">
+          {boss.beaten
+            ? "Tu peux le défier encore pour réviser."
+            : boss.ready
+              ? `Tu as travaillé chaque notion. ${boss.hearts} cœurs à lui enlever avec tes réponses !`
+              : "Il arrive quand tu auras travaillé chaque notion de la leçon."}
+        </T>
+        {boss.ready ? (
+          <Button small tone={boss.beaten ? "white" : "brand"} icon="flash" label={boss.beaten ? "Revanche" : "Combattre"} onPress={() => router.push({ pathname: "/boss", params: { lid, revisionId: r.id } })} style={{ alignSelf: "flex-start" }} />
+        ) : null}
+      </View>
+    </Card>
   );
 }
 
@@ -51,6 +78,8 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
         <Button tone="white" small icon="flash" label="Révision express · 6 questions" onPress={() => play("express")} />
         <Button tone="white" small icon="people" label="Réviser à deux" onPress={() => router.push({ pathname: "/duo/[id]", params: { id: r.id, lid } })} />
       </Card>
+
+      {r.boss ? <BossCard r={r} lid={lid} /> : null}
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <T v="h2" style={{ flex: 1 }}>

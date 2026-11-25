@@ -49,6 +49,7 @@ export const MODE_LABEL: Record<string, string> = {
   interro: "Interro",
   a_revoir: "À revoir",
   express: "Révision express",
+  boss: "Combat de boss",
   minuteur: "Minuteur",
 };
 

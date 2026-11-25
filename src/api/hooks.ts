@@ -2,7 +2,7 @@ import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
 import { withOffline } from "../lib/offline";
-import type { Advent, AiUsageReport, TreasureMap, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
+import type { Advent, AiUsageReport, Album, TreasureMap, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -40,6 +40,8 @@ export const keys = {
   stars: (lid: string, month: string) => ["stars", lid, month] as const,
   advent: (lid: string) => ["advent", lid] as const,
   islands: (lid: string) => ["islands", lid] as const,
+  album: (lid: string) => ["album", lid] as const,
+  albumPending: (lid: string) => ["albumPending", lid] as const,
 };
 
 export const useAgenda = (lid: string) => useQuery({ queryKey: keys.agenda(lid), queryFn: () => api.get<Agenda>(`${L(lid)}/agenda`) });
@@ -64,6 +66,11 @@ export const useAdvent = (lid: string) => useQuery({ queryKey: keys.advent(lid),
 
 /** Asking also pays a newly explored island (server side). */
 export const useIslands = (lid: string) => useQuery({ queryKey: keys.islands(lid), enabled: !!lid, queryFn: () => api.get<TreasureMap>(`${L(lid)}/islands`) });
+
+/** Asking draws the cards waiting (server side). */
+export const useAlbum = (lid: string) => useQuery({ queryKey: keys.album(lid), enabled: !!lid, queryFn: () => api.get<Album>(`${L(lid)}/album`) });
+/** How many cards wait to be drawn, without drawing them. */
+export const useAlbumPending = (lid: string) => useQuery({ queryKey: keys.albumPending(lid), enabled: !!lid, queryFn: () => api.get<{ pending: number }>(`${L(lid)}/album?peek=1`).then((r) => r.pending) });
 
 export const useGoals = (lid: string) => useQuery({ queryKey: keys.goals(lid), enabled: !!lid, queryFn: () => api.get<{ goals: Goal[] }>(`${L(lid)}/goals`).then((r) => r.goals) });
 
@@ -126,7 +133,7 @@ export const useDevices = (lid: string) =>
 export function useRefreshLearner(lid: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid), keys.duels(lid), ["stars", lid], keys.goals(lid), keys.advent(lid), keys.islands(lid)]) {
+    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid), keys.duels(lid), ["stars", lid], keys.goals(lid), keys.advent(lid), keys.islands(lid), keys.albumPending(lid)]) {
       qc.invalidateQueries({ queryKey: k });
     }
   };

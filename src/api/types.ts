@@ -547,3 +547,25 @@ export interface TreasureMap {
   decorAfter: number;
   fresh: { kind: "coffre" | "chapeau" | "decor"; island: string | null; islandName: string | null; coins: number; item: string | null; itemName: string | null }[];
 }
+
+/** Album de cartes (serveur : src/lib/cervelle/cards.ts). */
+export type CardRarity = "commune" | "rare" | "legendaire";
+
+export interface AlbumCard {
+  id: string;
+  name: string;
+  rarity: CardRarity;
+  fact: string;
+  /** Combien de fois on l'a tirée (0 : pas encore dans l'album). */
+  count: number;
+}
+
+export interface Album {
+  cards: AlbumCard[];
+  collected: number;
+  total: number;
+  pending: number;
+  odds: Record<CardRarity, number>;
+  duplicateCoins: Record<CardRarity, number>;
+  fresh: (Omit<AlbumCard, "count"> & { duplicate: boolean; coins: number })[];
+}

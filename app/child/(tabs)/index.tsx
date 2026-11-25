@@ -5,8 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos } from "../../../src/api/hooks";
-import type { Reward, Todo } from "../../../src/api/types";
+import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos, useAdvent } from "../../../src/api/hooks";
+import type { Advent, Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
 import { EVENT_KIND, itemsForDay, styleOf } from "../../../src/lib/agenda";
 import { planSessions } from "../../../src/lib/plan";
@@ -29,6 +29,7 @@ export default function ChildHome() {
   const { lid, asParent } = useLid();
   const stars = useStars(lid);
   const goals = useGoals(lid);
+  const advent = useAdvent(lid);
   const home = useHome(lid);
   const offline = useOffline((st) => st.offline);
   // Back online: send what was done offline, then keep every ready revision on the phone.
@@ -141,6 +142,8 @@ export default function ChildHome() {
             <T v="small">Touche pour habiller Cervelle</T>
           </View>
         </Card>
+
+        {advent.data ? <AdventCard a={advent.data} onPress={() => router.push({ pathname: "/avent", params: { lid } })} /> : null}
 
         {goals.data?.length ? (
           <Card style={{ gap: space.sm }}>
@@ -378,5 +381,41 @@ export default function ChildHome() {
         )}
       </BottomSheet>
     </SafeAreaView>
+  );
+}
+
+/** Le calendrier de l'Avent sur l'accueil (du 20 novembre au 6 janvier). */
+function AdventCard({ a, onPress }: { a: Advent; onPress: () => void }) {
+  const todayCell = a.today ? a.cells[a.today - 1] : null;
+  const missed = a.cells.filter((c) => c.arrived && !c.opened).length;
+  const text =
+    a.phase === "bientot"
+      ? `Il commence dans ${a.daysUntil} jour${a.daysUntil > 1 ? "s" : ""} : une révision par jour ouvre une case.`
+      : todayCell && !todayCell.opened
+        ? todayCell.openable
+          ? "Ta case du jour t'attend ! Touche pour l'ouvrir."
+          : "Fais une petite révision pour ouvrir la case du jour."
+        : missed && a.keysLeft > 0
+          ? "Tu peux rattraper une case oubliée !"
+          : missed
+            ? `${missed} case${missed > 1 ? "s" : ""} à rattraper : fais deux révisions le même jour.`
+            : "Case du jour ouverte. À demain !";
+  const ready = !!todayCell?.openable || (missed > 0 && a.keysLeft > 0);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Calendrier de l'Avent. ${text}`}
+      onPress={onPress}
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space.md, borderRadius: radius.lg, backgroundColor: "#102A43", borderBottomWidth: 5, borderColor: ready ? "#FFC94D" : "#0A1C2E", padding: space.md, opacity: pressed ? 0.9 : 1 })}
+    >
+      <View style={{ width: 56, height: 56, borderRadius: radius.md, backgroundColor: ready ? "#FFC94D" : "#B42A2F", alignItems: "center", justifyContent: "center" }}>
+        <Ionicons name="gift" size={32} color={ready ? "#1F1A3D" : "#FFFFFF"} />
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <T style={{ fontFamily: font.title, fontSize: size.lg, color: "#FFFFFF" }}>Calendrier de l'Avent</T>
+        <T style={{ fontSize: size.sm, color: "#D9E6F5" }}>{text}</T>
+      </View>
+      <Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+    </Pressable>
   );
 }

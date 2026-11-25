@@ -127,7 +127,7 @@ export interface ShopItem {
   slot: ShopSlot;
   price: number;
   /** saison: on sale only part of the year; legendaire: very expensive; badge: won with a badge. */
-  kind: "normal" | "saison" | "legendaire" | "badge" | "chemin";
+  kind: "normal" | "saison" | "legendaire" | "badge" | "chemin" | "avent";
   /** saison: « MM-DD » first and last day. */
   season: [string, string] | null;
   /** badge: the badge's name. */
@@ -496,4 +496,36 @@ export interface BrevetHome {
   daysLeft: number;
   subjects: { key: BrevetKey; label: string; revisions: number }[];
   sujets: BrevetSujet[];
+}
+
+/** Calendrier de l'Avent (serveur : src/lib/cervelle/advent.ts). */
+export interface AdventReward {
+  type: "item" | "stars" | "defi";
+  item: string | null;
+  itemName: string | null;
+  stars: number;
+  text: string | null;
+}
+
+export interface AdventCell {
+  day: number;
+  date: string;
+  opened: boolean;
+  /** Son jour est arrivé. */
+  arrived: boolean;
+  /** S'ouvre si on la touche (il reste une clé). */
+  openable: boolean;
+  reward: AdventReward | null;
+}
+
+export interface Advent {
+  year: number;
+  phase: "bientot" | "ouvert" | "rattrapage";
+  daysUntil: number;
+  keys: number;
+  keysLeft: number;
+  revisedToday: boolean;
+  /** Numéro de la case du jour (null hors 1er–24 décembre). */
+  today: number | null;
+  cells: AdventCell[];
 }

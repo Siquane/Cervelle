@@ -2,7 +2,7 @@ import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
 import { withOffline } from "../lib/offline";
-import type { Advent, AiUsageReport, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
+import type { Advent, AiUsageReport, TreasureMap, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -39,6 +39,7 @@ export const keys = {
   goals: (lid: string) => ["goals", lid] as const,
   stars: (lid: string, month: string) => ["stars", lid, month] as const,
   advent: (lid: string) => ["advent", lid] as const,
+  islands: (lid: string) => ["islands", lid] as const,
 };
 
 export const useAgenda = (lid: string) => useQuery({ queryKey: keys.agenda(lid), queryFn: () => api.get<Agenda>(`${L(lid)}/agenda`) });
@@ -60,6 +61,9 @@ export const useStars = (lid: string, month = "") => useQuery({ queryKey: keys.s
 
 /** Calendrier de l'Avent ; null hors saison (du 20 novembre au 6 janvier). */
 export const useAdvent = (lid: string) => useQuery({ queryKey: keys.advent(lid), enabled: !!lid, queryFn: () => api.get<{ advent: Advent | null }>(`${L(lid)}/advent`).then((r) => r.advent) });
+
+/** Asking also pays a newly explored island (server side). */
+export const useIslands = (lid: string) => useQuery({ queryKey: keys.islands(lid), enabled: !!lid, queryFn: () => api.get<TreasureMap>(`${L(lid)}/islands`) });
 
 export const useGoals = (lid: string) => useQuery({ queryKey: keys.goals(lid), enabled: !!lid, queryFn: () => api.get<{ goals: Goal[] }>(`${L(lid)}/goals`).then((r) => r.goals) });
 
@@ -122,7 +126,7 @@ export const useDevices = (lid: string) =>
 export function useRefreshLearner(lid: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid), keys.duels(lid), ["stars", lid], keys.goals(lid), keys.advent(lid)]) {
+    for (const k of [keys.home(lid), keys.revisions(lid), keys.overview(lid), keys.shop(lid), ["revision", lid], keys.learners, keys.programme(lid), keys.stats(lid), keys.friends(lid), keys.badges(lid), keys.duels(lid), ["stars", lid], keys.goals(lid), keys.advent(lid), keys.islands(lid)]) {
       qc.invalidateQueries({ queryKey: k });
     }
   };

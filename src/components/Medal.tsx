@@ -27,7 +27,7 @@ const LOCKED: [string, string, string] = scheme === "dark" ? ["#3A4263", "#2A315
 const INK = "#1F1A3D";
 
 /** A season's own colours, a holiday's violet; grey until earned. */
-export const windowMetal = (w: BadgeWindow): Metal => (!w.earned ? "locked" : w.family === "fete" ? "fete" : w.family === "chemin" ? "or" : (w.key.split(":")[1] as Metal));
+export const windowMetal = (w: BadgeWindow): Metal => (!w.earned ? "locked" : w.family === "fete" ? "fete" : w.family === "chemin" || w.family === "ile" ? "or" : (w.key.split(":")[1] as Metal));
 
 /**
  * In the mascot's viewBox (-24 to 190, 214 high, drawn 214/220 of its width),

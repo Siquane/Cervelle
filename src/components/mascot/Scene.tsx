@@ -89,6 +89,23 @@ function Art({ id }: { id: DecorId }) {
           <Polygon points="176,46 164,74 188,74" fill="#2E7D5B" />
         </>
       );
+    case "ile_tresor":
+      return (
+        <>
+          <Rect x={0} y={0} width={200} height={140} fill="#8FD3F5" />
+          <Circle cx={30} cy={26} r={14} fill="#FFD45C" />
+          <Rect x={0} y={70} width={200} height={70} fill="#1E88C7" />
+          <Path d="M 0 78 Q 12 74 24 78 T 48 78 T 72 78 T 96 78 T 120 78 T 144 78 T 168 78 T 192 78 T 216 78" stroke="#DDF3FF" strokeWidth={2} fill="none" />
+          <Ellipse cx={150} cy={104} rx={56} ry={18} fill="#F7DC94" />
+          <Path d="M 168 100 L 174 62" stroke="#8A5A2B" strokeWidth={4} />
+          <Path d="M 174 62 Q 158 56 150 66 M 174 62 Q 188 52 198 62 M 174 62 Q 170 46 158 46" stroke="#2E9E5B" strokeWidth={5} fill="none" strokeLinecap="round" />
+          <Rect x={124} y={92} width={22} height={14} rx={2} fill="#A0652E" stroke="#5A3519" strokeWidth={2} />
+          <Rect x={124} y={88} width={22} height={6} rx={2} fill="#C98F0E" stroke="#5A3519" strokeWidth={2} />
+          <Path d="M 30 96 L 40 96 L 36 104 L 22 104 Z" fill="#8A5A2B" />
+          <Path d="M 32 96 L 32 80 L 42 92 Z" fill="#FFFFFF" />
+          <Path d="M 176 104 L 184 112 M 184 104 L 176 112" stroke="#E5484D" strokeWidth={3} strokeLinecap="round" />
+        </>
+      );
     case "aurore":
       return (
         <>

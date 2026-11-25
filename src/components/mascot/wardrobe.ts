@@ -252,6 +252,17 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
 
+  // ── Carte au trésor ──
+  chapeau_pirate: {
+    shapes: [
+      { kind: "path", d: "M 34 62 C 40 40 60 30 76 34 C 86 14 120 14 130 34 C 146 30 166 40 172 62 C 140 52 66 52 34 62 Z", fill: "#2A2440", ...st },
+      { kind: "path", d: "M 40 60 C 70 52 136 52 166 60", fill: "none", stroke: "#FFC23D", strokeWidth: 4 },
+      { kind: "circle", cx: 103, cy: 36, r: 9, fill: "#FFFFFF", stroke: INK, strokeWidth: 2.5 },
+      { kind: "circle", cx: 100, cy: 35, r: 2, fill: INK },
+      { kind: "circle", cx: 106, cy: 35, r: 2, fill: INK },
+      { kind: "path", d: "M 93 48 L 113 40 M 93 40 L 113 48", fill: "none", stroke: "#FFFFFF", strokeWidth: 3 },
+    ],
+  },
   // ── Calendrier de l'Avent (cases 4, 8, 12, 16, 20, 24) ──
   bois_renne: {
     shapes: [
@@ -385,5 +396,5 @@ export const BRAIN_COLORS: Record<string, BrainColor> = {
   galaxie: { fill: "#3B2F86", gradient: ["#6D3FD9", "#3B2F86", "#1F2A6B"], folds: "#A98BFF", cheeks: "#FF5C8A", stars: true },
 };
 
-export const DECORS = ["classe", "bibliotheque", "plage", "foret", "espace", "neige", "aurore"] as const;
+export const DECORS = ["classe", "bibliotheque", "plage", "foret", "espace", "neige", "aurore", "ile_tresor"] as const;
 export type DecorId = (typeof DECORS)[number];

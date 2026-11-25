@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos, useAdvent } from "../../../src/api/hooks";
+import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos, useAdvent, useAlbumPending } from "../../../src/api/hooks";
 import type { Advent, Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
 import { EVENT_KIND, itemsForDay, styleOf } from "../../../src/lib/agenda";
@@ -30,6 +30,7 @@ export default function ChildHome() {
   const stars = useStars(lid);
   const goals = useGoals(lid);
   const advent = useAdvent(lid);
+  const albumPending = useAlbumPending(lid);
   const home = useHome(lid);
   const offline = useOffline((st) => st.offline);
   // Back online: send what was done offline, then keep every ready revision on the phone.
@@ -143,6 +144,9 @@ export default function ChildHome() {
           </View>
         </Card>
 
+        {albumPending.data ? (
+          <Button tone="sun" icon="albums" label={`${albumPending.data} nouvelle${albumPending.data > 1 ? "s" : ""} carte${albumPending.data > 1 ? "s" : ""} pour ton album ! 🎁`} onPress={() => router.push({ pathname: "/album", params: { lid } })} />
+        ) : null}
         {advent.data ? <AdventCard a={advent.data} onPress={() => router.push({ pathname: "/avent", params: { lid } })} /> : null}
 
         {goals.data?.length ? (
@@ -344,6 +348,7 @@ export default function ChildHome() {
           </View>
           <Mascot size={86} accessories={["lunettes"]} />
         </Card>
+        <Button tone="white" icon="albums" label="Mon album de cartes" onPress={() => router.push({ pathname: "/album", params: { lid } })} />
         <Button tone="white" icon="map" label="Ma carte au trésor" onPress={() => router.push({ pathname: "/carte", params: { lid } })} />
         <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />
         <Button tone="white" icon="bulb" label="Aide aux devoirs" onPress={() => router.push({ pathname: "/devoirs", params: { lid } })} />

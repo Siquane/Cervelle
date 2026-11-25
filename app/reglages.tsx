@@ -111,6 +111,13 @@ export default function Reglages() {
         <T v="bodyBold">La Révolution française</T>
         <T v="body">En 1789, les députés du tiers état se proclament Assemblée nationale. Le 14 juillet, le peuple de Paris prend la Bastille.</T>
       </Card>
+
+      <T v="label">Crédits</T>
+      <Card style={{ gap: space.sm }}>
+        <T v="small">
+          Dessins des animaux de l'album : Fluent Emoji, © Microsoft Corporation, licence MIT (github.com/microsoft/fluentui-emoji).
+        </T>
+      </Card>
     </Page>
   );
 }

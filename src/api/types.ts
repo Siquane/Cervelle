@@ -127,7 +127,7 @@ export interface ShopItem {
   slot: ShopSlot;
   price: number;
   /** saison: on sale only part of the year; legendaire: very expensive; badge: won with a badge. */
-  kind: "normal" | "saison" | "legendaire" | "badge" | "chemin" | "avent";
+  kind: "normal" | "saison" | "legendaire" | "badge" | "chemin" | "avent" | "tresor";
   /** saison: « MM-DD » first and last day. */
   season: [string, string] | null;
   /** badge: the badge's name. */
@@ -359,7 +359,7 @@ export interface BadgeSuccess {
 
 export interface BadgeWindow {
   key: string;
-  family: "saison" | "fete" | "chemin";
+  family: "saison" | "fete" | "chemin" | "ile";
   label: string;
   icon: string;
   shape: BadgeShape;
@@ -528,4 +528,22 @@ export interface Advent {
   /** Numéro de la case du jour (null hors 1er–24 décembre). */
   today: number | null;
   cells: AdventCell[];
+}
+
+/** Carte au trésor (serveur : src/lib/cervelle/islands.ts). */
+export interface Island {
+  id: "maths" | "francais" | "histoire" | "sciences" | "langues" | "talents" | "mystere";
+  name: string;
+  explored: number;
+  spots: number;
+  complete: boolean;
+  mastered: number;
+  found: { title: string; revisionTitle: string }[];
+}
+
+export interface TreasureMap {
+  islands: Island[];
+  completeCount: number;
+  decorAfter: number;
+  fresh: { kind: "coffre" | "chapeau" | "decor"; island: string | null; islandName: string | null; coins: number; item: string | null; itemName: string | null }[];
 }

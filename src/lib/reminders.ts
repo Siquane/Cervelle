@@ -149,8 +149,16 @@ export const NUDGES: { title: string; body: string }[] = [
   { title: "💪 Tu peux le faire", body: "Un petit pas chaque jour, et tu apprends plein de choses." },
 ];
 
+/** Du 1er au 24 décembre : le calendrier de l'Avent. */
+export function adventNudge(day: Date): { title: string; body: string } | null {
+  if (day.getMonth() !== 11 || day.getDate() > 24) return null;
+  return { title: `🎁 Case ${day.getDate()} du calendrier`, body: "Une petite révision et elle s'ouvre. Qu'est-ce qui se cache derrière ?" };
+}
+
 /** Le même jour donne toujours le même mot ; deux jours qui se suivent, deux mots différents. */
 export function dailyNudge(day: Date): { title: string; body: string } {
+  const advent = adventNudge(day);
+  if (advent) return advent;
   const n = Math.floor(Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) / 86_400_000);
   return NUDGES[((n % NUDGES.length) + NUDGES.length) % NUDGES.length];
 }

@@ -252,6 +252,56 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
 
+  // ── Calendrier de l'Avent (cases 4, 8, 12, 16, 20, 24) ──
+  bois_renne: {
+    shapes: [
+      { kind: "path", d: "M 78 52 C 72 34 62 20 48 8 M 66 32 C 56 32 46 28 38 20 M 58 20 C 56 12 58 4 62 -4", fill: "none", stroke: INK, strokeWidth: 13 },
+      { kind: "path", d: "M 128 52 C 134 34 144 20 158 8 M 140 32 C 150 32 160 28 168 20 M 148 20 C 150 12 148 4 144 -4", fill: "none", stroke: INK, strokeWidth: 13 },
+      { kind: "path", d: "M 78 52 C 72 34 62 20 48 8 M 66 32 C 56 32 46 28 38 20 M 58 20 C 56 12 58 4 62 -4", fill: "none", stroke: "#A0652E", strokeWidth: 7 },
+      { kind: "path", d: "M 128 52 C 134 34 144 20 158 8 M 140 32 C 150 32 160 28 168 20 M 148 20 C 150 12 148 4 144 -4", fill: "none", stroke: "#A0652E", strokeWidth: 7 },
+    ],
+  },
+  bonnet_lutin: {
+    shapes: [
+      { kind: "path", d: "M 56 64 C 60 30 90 10 122 6 C 152 2 178 14 190 32 C 170 26 152 28 142 38 C 150 46 152 56 150 64 Z", fill: "#1F9E57", ...st },
+      { kind: "rect", x: 50, y: 56, width: 106, height: 18, rx: 9, fill: "#E5484D", ...st },
+      ...[66, 86, 106, 126, 146].map((x) => ({ kind: "circle" as const, cx: x, cy: 65, r: 3, fill: "#FFC23D" })),
+      { kind: "circle", cx: 192, cy: 36, r: 10, fill: "#FFC23D", ...st },
+      { kind: "path", d: "M 188 40 L 196 40", fill: "none", stroke: INK, strokeWidth: 3 },
+    ],
+  },
+  nez_renne: {
+    shapes: [
+      { kind: "circle", cx: 102, cy: 120, r: 8, fill: "#E5484D", ...st },
+      { kind: "circle", cx: 99.5, cy: 117.5, r: 2.5, fill: "#FFB3B5" },
+    ],
+  },
+  echarpe_noel: {
+    shapes: [
+      { kind: "path", d: "M 52 150 C 84 166 122 166 154 150 L 150 164 C 120 176 86 176 56 164 Z", fill: "#E5484D", ...st },
+      { kind: "path", d: "M 72 160 L 70 171 M 92 164 L 91 175 M 114 164 L 115 175 M 134 160 L 136 171", fill: "none", stroke: "#FFFFFF", strokeWidth: 5 },
+      { kind: "rect", x: 126, y: 164, width: 20, height: 34, rx: 4, fill: "#E5484D", ...st },
+      { kind: "path", d: "M 128 176 L 144 176 M 128 186 L 144 186", fill: "none", stroke: "#1F9E57", strokeWidth: 5 },
+      { kind: "path", d: "M 130 198 L 130 205 M 136 198 L 136 205 M 142 198 L 142 205", fill: "none", stroke: INK, strokeWidth: 3 },
+    ],
+  },
+  cape_noel: {
+    layer: "behind",
+    shapes: [
+      { kind: "path", d: "M 44 112 C 22 138 6 166 -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184 C 200 166 184 138 162 112 Z", fill: "#D62F35", ...st },
+      { kind: "path", d: "M -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184", fill: "none", stroke: INK, strokeWidth: 16 },
+      { kind: "path", d: "M -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184", fill: "none", stroke: "#FFFFFF", strokeWidth: 10 },
+      ...[[30, 150], [180, 152], [16, 172], [194, 172]].map(([x, y]) => ({ kind: "circle" as const, cx: x, cy: y, r: 4, fill: "#FFFFFF" })),
+    ],
+  },
+  sucre_orge: {
+    shapes: [
+      { kind: "path", d: "M 176 178 L 176 104 C 176 86 200 86 200 104 L 200 110", fill: "none", stroke: INK, strokeWidth: 15 },
+      { kind: "path", d: "M 176 178 L 176 104 C 176 86 200 86 200 104 L 200 110", fill: "none", stroke: "#FFFFFF", strokeWidth: 9 },
+      { kind: "path", d: "M 176 170 L 176 162 M 176 148 L 176 140 M 176 126 L 176 118 M 178 98 L 182 94 M 195 94 L 199 99", fill: "none", stroke: "#E5484D", strokeWidth: 9 },
+    ],
+  },
+
   // ── Dans la main (à droite) ──
   crayon: {
     shapes: [

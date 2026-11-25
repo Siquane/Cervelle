@@ -69,6 +69,12 @@ describe("petit mot du jour", () => {
     expect(dailyNudge(new Date(2026, 10, 18))).not.toEqual(dailyNudge(new Date(2026, 10, 19)));
     expect(planReminders(empty, { ...DEFAULT_PREFS, daily: false }, NOW)).toEqual([]);
   });
+
+  it("parle du calendrier de l'Avent du 1er au 24 décembre", () => {
+    expect(dailyNudge(new Date(2026, 11, 3)).title).toContain("Case 3");
+    expect(dailyNudge(new Date(2026, 11, 25)).title).not.toContain("Case");
+    expect(dailyNudge(new Date(2026, 10, 30)).title).not.toContain("Case");
+  });
 });
 
 describe("examName", () => {

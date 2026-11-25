@@ -25,13 +25,14 @@ const RAYONS: { slot: ShopSlot; label: string }[] = [
   { slot: "decor", label: "Décors" },
 ];
 
-const KIND_ORDER = { normal: 0, saison: 1, legendaire: 2, badge: 3, chemin: 4 } as const;
+const KIND_ORDER = { normal: 0, saison: 1, legendaire: 2, badge: 3, chemin: 4, avent: 5 } as const;
 
 const KIND_TAG: Record<Exclude<ShopItem["kind"], "normal">, { label: string; fg: string; bg: string }> = {
   saison: { label: "De saison", fg: color.sunDark, bg: color.sunSoft },
   legendaire: { label: "Légendaire", fg: color.violet, bg: color.violetSoft },
   badge: { label: "Badge", fg: color.teal, bg: color.tealSoft },
   chemin: { label: "Chemin d'étoiles", fg: color.sky, bg: color.skySoft },
+  avent: { label: "Calendrier de l'Avent", fg: color.red, bg: color.redSoft },
 };
 
 /** What Cervelle wears with `item` tried on (it takes its slot's place). */
@@ -56,9 +57,9 @@ function ItemCard({ item, tried, onTry, coins, busy, onBuy, onWear, onHow }: { i
   let action: React.ReactNode;
   if (item.owned) {
     action = <Button small tone={item.equipped ? "teal" : "white"} icon={item.equipped ? "checkmark" : "shirt"} label={item.equipped ? "Porté" : "Mettre"} loading={busy} disabled={item.equipped && item.id === "rose"} onPress={onWear} />;
-  } else if (item.kind === "badge" || item.kind === "chemin") {
+  } else if (item.kind === "badge" || item.kind === "chemin" || item.kind === "avent") {
     // Won, not bought: the button says exactly how (a sheet with the full sentence).
-    action = <Button small tone="white" icon={item.kind === "badge" ? "lock-closed" : "star"} label="Comment l'avoir ?" onPress={onHow} />;
+    action = <Button small tone="white" icon={item.kind === "badge" ? "lock-closed" : item.kind === "avent" ? "gift" : "star"} label="Comment l'avoir ?" onPress={onHow} />;
   } else if (!item.onSale && item.season) {
     action = (
       <T v="small" style={{ minHeight: 40, textAlignVertical: "center", textAlign: "center", fontSize: 12 }}>
@@ -200,7 +201,7 @@ export default function Shop() {
                     <Button small tone="white" icon="close" label="Enlever" onPress={() => setTrying(null)} style={{ flex: 1 }} />
                     {tried.owned ? (
                       <Button small icon="shirt" label="Garder" loading={act.isPending} onPress={() => act.mutate({ item: tried, action: "on" })} style={{ flex: 1.3 }} />
-                    ) : tried.kind !== "badge" && tried.kind !== "chemin" && tried.onSale ? (
+                    ) : tried.kind !== "badge" && tried.kind !== "chemin" && tried.kind !== "avent" && tried.onSale ? (
                       <Button small tone="sun" icon="coin" label={`Acheter · ${tried.price}`} disabled={data.coins < tried.price} loading={act.isPending} onPress={() => act.mutate({ item: tried, action: "buy" })} style={{ flex: 1.3 }} />
                     ) : null}
                   </View>
@@ -288,10 +289,10 @@ export default function Shop() {
             </T>
             <T v="small">Tu peux déjà l'essayer : touche son image.</T>
             <Button
-              icon={howFor.kind === "badge" ? "ribbon" : "star"}
-              label={howFor.kind === "badge" ? "Voir mes badges" : "Voir le chemin d'étoiles"}
+              icon={howFor.kind === "badge" ? "ribbon" : howFor.kind === "avent" ? "gift" : "star"}
+              label={howFor.kind === "badge" ? "Voir mes badges" : howFor.kind === "avent" ? "Voir le calendrier de l'Avent" : "Voir le chemin d'étoiles"}
               onPress={() => {
-                const target = howFor.kind === "badge" ? "/badges" : "/etoiles";
+                const target = howFor.kind === "badge" ? "/badges" : howFor.kind === "avent" ? "/avent" : "/etoiles";
                 setHowFor(null);
                 router.push({ pathname: target, params: { lid } });
               }}

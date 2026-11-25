@@ -1,6 +1,6 @@
 export type Level = "primaire" | "college" | "lycee" | "superieur" | "adulte";
 export type Mastery = "new" | "review" | "mastered";
-export type QuizMode = "qcm" | "cartes" | "interro" | "a_revoir" | "express";
+export type QuizMode = "qcm" | "cartes" | "interro" | "a_revoir" | "express" | "boss";
 export type QuestionType = "qcm" | "vrai_faux" | "carte" | "courte" | "trous" | "ordre";
 
 export interface MascotLevel {
@@ -61,6 +61,8 @@ export interface RevisionDetail extends Omit<RevisionCard, "counts" | "programme
   summary: string;
   questionCount: number;
   steps: { sheets: boolean; quizBest: number | null; examBest: number | null };
+  /** Boss de fin de chapitre : là quand chaque notion a été travaillée. */
+  boss?: { ready: boolean; beaten: boolean; hearts: number };
   notions: { id: string; title: string; mastery: Mastery; children: { id: string; title: string; mastery: Mastery; fromProgramme: boolean }[] }[];
   sheets: Sheet[];
 }

@@ -1,7 +1,10 @@
 import { useParentWeeklyReminder } from "../../src/lib/notifications";
 import { SlideIn, useCountUp, useDirection } from "../../src/components/motion";
+
+/** Hauteur d'une ligne de « Dernières séances ». */
+const SESSION_ROW = 44;
 import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
@@ -188,9 +191,11 @@ export default function ParentHome() {
               {o.recentSessions.length ? (
                 <>
                   <T v="h2">Dernières séances</T>
-                  <Card style={{ gap: space.md }}>
+                  {/* Les 4 dernières en vue, les autres avec l'ascenseur. */}
+                  <Card style={{ paddingVertical: space.sm }}>
+                    <ScrollView nestedScrollEnabled persistentScrollbar showsVerticalScrollIndicator style={{ maxHeight: SESSION_ROW * 4 }}>
                     {o.recentSessions.map((s) => (
-                      <View key={s.id} style={{ flexDirection: "row", gap: space.sm }}>
+                      <View key={s.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm, height: SESSION_ROW, paddingRight: space.sm }}>
                         <T v="small" style={{ width: 64 }}>
                           {shortDate(s.createdAt)}
                         </T>
@@ -203,6 +208,7 @@ export default function ParentHome() {
                         </T>
                       </View>
                     ))}
+                    </ScrollView>
                   </Card>
                 </>
               ) : null}

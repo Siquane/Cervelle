@@ -60,6 +60,27 @@ const STARS = [
   [14, 18], [40, 10], [66, 26], [150, 14], [178, 30], [190, 8], [24, 54], [172, 62], [120, 22], [92, 8],
 ] as const;
 
+
+/** A pine in three soft tiers, on a little trunk, with its shadow on the ground. */
+function Pine({ x, base, h, color: c, p }: { x: number; base: number; h: number; color: string; p: Paints }) {
+  const tiers = [0, 1, 2].map((k) => {
+    const top = base - h + k * h * 0.26;
+    const bottom = top + h * 0.42;
+    const hw = h * (0.2 + k * 0.08);
+    return `M ${x} ${top} C ${x + hw * 0.4} ${top + h * 0.12} ${x + hw * 0.8} ${bottom - h * 0.1} ${x + hw} ${bottom} Q ${x} ${bottom + h * 0.08} ${x - hw} ${bottom} C ${x - hw * 0.8} ${bottom - h * 0.1} ${x - hw * 0.4} ${top + h * 0.12} ${x} ${top} Z`;
+  });
+  const edge = { stroke: shade(c, -0.45), strokeOpacity: 0.6, strokeWidth: 1.5, strokeLinejoin: "round" as const };
+  return (
+    <>
+      <Ellipse cx={x} cy={base + 2} rx={h * 0.36} ry={3.5} fill={p.halo("#1F5130")} />
+      <Rect x={x - 2.5} y={base - h * 0.14} width={5} height={h * 0.16} rx={1.5} fill={p.ball("#8A5A2B")} {...edge} stroke={shade("#8A5A2B", -0.45)} />
+      {tiers.map((d, k) => (
+        <Path key={k} d={d} fill={p.ball(c)} {...edge} />
+      ))}
+    </>
+  );
+}
+
 function Art({ id, p }: { id: DecorId; p: Paints }) {
   switch (id) {
     case "classe":
@@ -97,7 +118,6 @@ function Art({ id, p }: { id: DecorId; p: Paints }) {
           <Circle cx={168} cy={28} r={32} fill={p.halo("#FFE89A")} />
           <Circle cx={168} cy={28} r={16} fill={p.ball("#FFD45C")} stroke={shade("#FFD45C", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
           <Rect x={0} y={78} width={200} height={26} fill={p.ball("#2C9BE0")} stroke={shade("#2C9BE0", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          <Path d="M 0 84 Q 12 80 24 84 T 48 84 T 72 84 T 96 84 T 120 84 T 144 84 T 168 84 T 192 84 T 216 84" stroke="#DDF3FF" strokeWidth={2} fill="none" />
           <Path d="M 0 100 Q 100 90 200 100 L 200 140 L 0 140 Z" fill={p.ball("#F7DC94")} stroke={shade("#F7DC94", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
           <Path d="M 22 104 L 30 66" stroke="#8A5A2B" strokeWidth={4} />
           <Path d="M 30 66 Q 14 60 6 70 M 30 66 Q 44 56 54 66 M 30 66 Q 26 50 14 50 M 30 66 Q 40 48 52 52" stroke="#2E9E5B" strokeWidth={5} fill="none" strokeLinecap="round" />
@@ -108,14 +128,13 @@ function Art({ id, p }: { id: DecorId; p: Paints }) {
         <>
           <Rect x={0} y={0} width={200} height={140} fill={p.sky("#CFEFD9")} />
           <Rect x={0} y={108} width={200} height={32} fill={p.ball("#6CC27E")} stroke={shade("#6CC27E", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          {[16, 44, 156, 184, 100].map((x, i) => (
-            <Polygon key={x} points={`${x},${i === 4 ? 40 : 30 + (i % 2) * 12} ${x - 20},${104} ${x + 20},${104}`} fill={i % 2 ? "#2E9E5B" : "#1F7A45"} />
-          ))}
-          {[16, 44, 156, 184, 100].map((x) => (
-            <Ellipse key={`o${x}`} cx={x} cy={113} rx={22} ry={4} fill={p.halo("#1F5130")} />
-          ))}
-          {[16, 44, 156, 184, 100].map((x) => (
-            <Rect key={`t${x}`} x={x - 3} y={104} width={6} height={10} fill={p.ball("#8A5A2B")} stroke={shade("#8A5A2B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          {[
+            [44, 100, 58, "#2E9E5B"],
+            [16, 106, 70, "#1F7A45"],
+            [184, 106, 70, "#1F7A45"],
+            [158, 100, 58, "#2E9E5B"],
+          ].map(([x, base, h, c]) => (
+            <Pine key={x} x={x as number} base={base as number} h={h as number} color={c as string} p={p} />
           ))}
         </>
       );
@@ -126,8 +145,9 @@ function Art({ id, p }: { id: DecorId; p: Paints }) {
           {STARS.map(([x, y]) => (
             <Circle key={`${x}-${y}`} cx={x} cy={y} r={1.6} fill={p.ball("#FFFFFF")} />
           ))}
+          <Path d="M 134 104 A 32 7 0 0 1 198 104" fill="none" stroke="#E0A21E" strokeWidth={3} />
           <Circle cx={166} cy={104} r={20} fill={p.ball("#FF8A6B")} stroke={shade("#FF8A6B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          <Ellipse cx={166} cy={104} rx={32} ry={7} fill="none" stroke="#FFD45C" strokeWidth={3} />
+          <Path d="M 134 104 A 32 7 0 0 0 198 104" fill="none" stroke="#FFD45C" strokeWidth={3.5} strokeLinecap="round" />
           <Circle cx={30} cy={112} r={10} fill={p.ball("#8EC5FF")} stroke={shade("#8EC5FF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
         </>
       );
@@ -139,8 +159,8 @@ function Art({ id, p }: { id: DecorId; p: Paints }) {
           {STARS.map(([x, y]) => (
             <Circle key={`${x}-${y}`} cx={x} cy={y + 6} r={2.4} fill={p.ball("#FFFFFF")} />
           ))}
-          <Polygon points="176,56 160,96 192,96" fill={p.ball("#2E7D5B")} stroke={shade("#2E7D5B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          <Polygon points="176,46 164,74 188,74" fill={p.ball("#2E7D5B")} stroke={shade("#2E7D5B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Pine x={176} base={98} h={56} color="#2E7D5B" p={p} />
+          <Pine x={24} base={104} h={40} color="#3A8F68" p={p} />
         </>
       );
     case "ile_tresor":
@@ -150,15 +170,93 @@ function Art({ id, p }: { id: DecorId; p: Paints }) {
           <Circle cx={30} cy={26} r={28} fill={p.halo("#FFE89A")} />
           <Circle cx={30} cy={26} r={14} fill={p.ball("#FFD45C")} stroke={shade("#FFD45C", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
           <Rect x={0} y={70} width={200} height={70} fill={p.ball("#1E88C7")} stroke={shade("#1E88C7", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          <Path d="M 0 78 Q 12 74 24 78 T 48 78 T 72 78 T 96 78 T 120 78 T 144 78 T 168 78 T 192 78 T 216 78" stroke="#DDF3FF" strokeWidth={2} fill="none" />
           <Ellipse cx={150} cy={104} rx={56} ry={18} fill={p.ball("#F7DC94")} stroke={shade("#F7DC94", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          <Path d="M 168 100 L 174 62" stroke="#8A5A2B" strokeWidth={4} />
-          <Path d="M 174 62 Q 158 56 150 66 M 174 62 Q 188 52 198 62 M 174 62 Q 170 46 158 46" stroke="#2E9E5B" strokeWidth={5} fill="none" strokeLinecap="round" />
-          <Rect x={124} y={92} width={22} height={14} rx={2} fill={p.ball("#A0652E")} stroke="#5A3519" strokeWidth={2} />
-          <Rect x={124} y={88} width={22} height={6} rx={2} fill={p.ball("#C98F0E")} stroke="#5A3519" strokeWidth={2} />
+          <Path d="M 150 102 L 156 64" stroke="#8A5A2B" strokeWidth={4} strokeLinecap="round" />
+          <Path d="M 156 64 Q 140 58 132 68 M 156 64 Q 170 54 180 64 M 156 64 Q 152 48 140 48" stroke="#2E9E5B" strokeWidth={5} fill="none" strokeLinecap="round" />
+          <Rect x={168} y={94} width={22} height={14} rx={2} fill={p.ball("#A0652E")} stroke="#5A3519" strokeWidth={2} />
+          <Rect x={168} y={90} width={22} height={6} rx={2} fill={p.ball("#C98F0E")} stroke="#5A3519" strokeWidth={2} />
           <Path d="M 30 96 L 40 96 L 36 104 L 22 104 Z" fill={p.ball("#8A5A2B")} stroke={shade("#8A5A2B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
           <Path d="M 32 96 L 32 80 L 42 92 Z" fill={p.ball("#FFFFFF")} stroke={shade("#FFFFFF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
-          <Path d="M 176 104 L 184 112 M 184 104 L 176 112" stroke="#E5484D" strokeWidth={3} strokeLinecap="round" />
+          <Path d="M 158 110 L 164 116 M 164 110 L 158 116" stroke="#E5484D" strokeWidth={3} strokeLinecap="round" />
+        </>
+      );
+    case "fond_marin":
+      return (
+        <>
+          <Rect x={0} y={0} width={200} height={140} fill={p.sky("#1F7FD0")} />
+          {[[20, 0, 40], [70, 0, 30], [130, 0, 36]].map(([x, , w]) => (
+            <Path key={x} d={`M ${x} 0 L ${x + w} 0 L ${x + w + 30} 140 L ${x + 18} 140 Z`} fill="#FFFFFF" opacity={0.08} />
+          ))}
+          <Path d="M 0 116 Q 50 104 100 114 T 200 110 L 200 140 L 0 140 Z" fill={p.ball("#F2D28A")} stroke={shade("#F2D28A", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 18 132 C 10 118 24 108 16 94 C 10 84 22 76 18 64" fill="none" stroke="#2E9E5B" strokeWidth={6} strokeLinecap="round" />
+          <Path d="M 30 134 C 24 122 36 114 30 102" fill="none" stroke="#3DD486" strokeWidth={5} strokeLinecap="round" />
+          <Path d="M 186 132 C 194 118 180 108 188 94 C 194 84 182 76 186 66" fill="none" stroke="#2E9E5B" strokeWidth={6} strokeLinecap="round" />
+          <Ellipse cx={34} cy={40} rx={12} ry={7} fill={p.ball("#FF8A3D")} stroke={shade("#FF8A3D", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 46 40 L 56 33 L 56 47 Z" fill={p.ball("#FF8A3D")} stroke={shade("#FF8A3D", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Circle cx={29} cy={38} r={1.8} fill="#1F1A3D" />
+          <Ellipse cx={164} cy={56} rx={10} ry={6} fill={p.ball("#FFC23D")} stroke={shade("#FFC23D", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 154 56 L 146 50 L 146 62 Z" fill={p.ball("#FFC23D")} stroke={shade("#FFC23D", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Circle cx={169} cy={54} r={1.5} fill="#1F1A3D" />
+          {[[150, 30, 3], [156, 20, 2.2], [152, 12, 1.6], [48, 78, 2.5], [44, 68, 1.8]].map(([x, y, r]) => (
+            <Circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill="#FFFFFF" fillOpacity={0.25} stroke="#FFFFFF" strokeOpacity={0.8} strokeWidth={1} />
+          ))}
+          <Path d="M 168 122 L 172 112 L 176 122 L 186 118 L 178 126 L 182 134 L 172 130 L 162 134 L 166 126 L 158 118 Z" fill={p.ball("#FF6B8A")} stroke={shade("#FF6B8A", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+        </>
+      );
+    case "montagne":
+      return (
+        <>
+          <Rect x={0} y={0} width={200} height={140} fill={p.sky("#9ED8FF")} />
+          <Path d="M -10 108 L 40 34 L 78 84 L 112 46 L 160 108 Z" fill={p.ball("#7C8FB8")} stroke={shade("#7C8FB8", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 120 108 L 168 28 L 214 108 Z" fill={p.ball("#6A7DA8")} stroke={shade("#6A7DA8", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 40 34 L 30 50 L 38 47 L 44 54 L 50 46 Z" fill={p.ball("#FFFFFF")} stroke={shade("#FFFFFF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 112 46 L 103 58 L 111 56 L 116 62 L 121 56 Z" fill={p.ball("#FFFFFF")} stroke={shade("#FFFFFF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 168 28 L 156 48 L 165 45 L 171 52 L 178 44 Z" fill={p.ball("#FFFFFF")} stroke={shade("#FFFFFF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={0} y={104} width={200} height={36} fill={p.ball("#8BD17C")} stroke={shade("#8BD17C", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Ellipse cx={36} cy={122} rx={30} ry={8} fill={p.ball("#4FA8E0")} stroke={shade("#4FA8E0", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Pine x={180} base={122} h={34} color="#2E9E5B" p={p} />
+          <Pine x={166} base={126} h={26} color="#1F7A45" p={p} />
+        </>
+      );
+    case "jungle":
+      return (
+        <>
+          <Rect x={0} y={0} width={200} height={140} fill={p.sky("#FFD9A8")} />
+          {[[150, 14, 8], [160, 6, 6], [142, 4, 5]].map(([x, y, r]) => (
+            <Circle key={x} cx={x} cy={y} r={r} fill={p.ball("#C9C3D6")} />
+          ))}
+          <Path d="M 112 96 L 140 30 L 160 30 L 190 96 Z" fill={p.ball("#8A5A3B")} stroke={shade("#8A5A3B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 140 30 L 160 30 L 156 40 L 150 36 L 144 42 Z" fill={p.ball("#FF6A2B")} stroke={shade("#FF6A2B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={0} y={96} width={200} height={44} fill={p.ball("#5FB36B")} stroke={shade("#5FB36B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Ellipse cx={10} cy={60} rx={30} ry={11} transform="rotate(-35 10 60)" fill={p.ball("#2E9E5B")} stroke={shade("#2E9E5B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Ellipse cx={18} cy={92} rx={30} ry={10} transform="rotate(-10 18 92)" fill={p.ball("#3DB86A")} stroke={shade("#3DB86A", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Ellipse cx={6} cy={30} rx={26} ry={9} transform="rotate(-60 6 30)" fill={p.ball("#1F7A45")} stroke={shade("#1F7A45", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Ellipse cx={196} cy={112} rx={24} ry={8} transform="rotate(20 196 112)" fill={p.ball("#2E9E5B")} stroke={shade("#2E9E5B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Ellipse cx={168} cy={126} rx={14} ry={3} fill={p.halo("#1F5130")} />
+          <Path d="M 154 116 C 150 104 162 96 174 102 L 182 86 C 184 80 192 80 192 86 L 184 108 C 188 116 182 124 172 124 L 158 124 C 152 124 150 120 154 116 Z" fill={p.ball("#6CC27E")} stroke={shade("#6CC27E", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={158} y={120} width={6} height={8} rx={2} fill={p.ball("#4FA45F")} stroke={shade("#4FA45F", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={172} y={120} width={6} height={8} rx={2} fill={p.ball("#4FA45F")} stroke={shade("#4FA45F", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Circle cx={188} cy={84} r={1.5} fill="#1F1A3D" />
+        </>
+      );
+    case "chateau":
+      return (
+        <>
+          <Rect x={0} y={0} width={200} height={140} fill={p.sky("#BFE3FF")} />
+          {[[26, 24, 10], [38, 20, 12], [50, 26, 9], [96, 14, 7], [106, 12, 8]].map(([x, y, r]) => (
+            <Circle key={x} cx={x} cy={y} r={r} fill={p.ball("#FFFFFF")} />
+          ))}
+          <Path d="M -10 112 Q 50 92 110 108 T 210 102 L 210 140 L -10 140 Z" fill={p.ball("#8FD38A")} stroke={shade("#8FD38A", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={136} y={70} width={50} height={44} fill={p.ball("#E8DCF5")} stroke={shade("#E8DCF5", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={128} y={54} width={16} height={60} rx={2} fill={p.ball("#DCCCF0")} stroke={shade("#DCCCF0", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={178} y={54} width={16} height={60} rx={2} fill={p.ball("#DCCCF0")} stroke={shade("#DCCCF0", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 126 54 L 136 34 L 146 54 Z" fill={p.ball("#A98BFF")} stroke={shade("#A98BFF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 176 54 L 186 34 L 196 54 Z" fill={p.ball("#A98BFF")} stroke={shade("#A98BFF", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Path d="M 136 34 L 136 24 L 144 27 L 136 30" fill="none" stroke="#E5484D" strokeWidth={2} strokeLinejoin="round" />
+          <Path d="M 186 34 L 186 24 L 194 27 L 186 30" fill="none" stroke="#FFC23D" strokeWidth={2} strokeLinejoin="round" />
+          <Path d="M 154 114 L 154 98 Q 161 88 168 98 L 168 114 Z" fill={p.ball("#8A5A2B")} stroke={shade("#8A5A2B", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={133} y={66} width={6} height={9} rx={3} fill={p.ball("#5B4FD6")} stroke={shade("#5B4FD6", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
+          <Rect x={183} y={66} width={6} height={9} rx={3} fill={p.ball("#5B4FD6")} stroke={shade("#5B4FD6", -0.45)} strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" />
         </>
       );
     case "aurore":

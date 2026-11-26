@@ -47,3 +47,14 @@
   `src/components/mascot/svgString.ts`. Aperçus dans `assets/widgets/`.
 - Avant de pousser : `npm run typecheck` et `npm test`. Ne jamais redescendre
   `runtimeVersion` ; l'augmenter si `package.json` ou `app.json` change.
+- Effets de mouvement : `src/components/motion.tsx` (Animated de React Native
+  seulement, pas de module natif) ; respecter « réduire les animations »
+  (`motionReduced()`). Pas de caractère émoji brut dans le code des écrans (le
+  test `Emoji.test.tsx` les cherche) : écrire `"\u2605"` par exemple.
+- Fonctions de jeu (serveur dans Passerelle, `server/src/lib/cervelle/`) :
+  calendrier de l'Avent (`advent.ts`), carte au trésor (`islands.ts`), album
+  (`cards.ts`, dessins `assets/cards/`), boss (mode `boss`), « Apprends-le »
+  (`routes/cervelleTeach.ts`), routines (`routes/cervelleRoutines.ts`). Les
+  étoiles bonus passent par `StarEvent.stars` (comptées dans le chemin d'étoiles).
+- L'utilisatrice veut des questions à choix cliquables avant chaque nouveauté,
+  puis fusion automatique dès que les vérifications sont vertes.

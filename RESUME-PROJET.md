@@ -1,7 +1,40 @@
 # Revue de projet — Cervelle
 
 À lire en premier dans une nouvelle session. Remplace l'historique des
-conversations précédentes. Dernière mise à jour : 16 novembre 2026 (soir).
+conversations précédentes. Dernière mise à jour : 26 novembre 2026.
+
+## État au 26/11/2026 — à lire d'abord
+
+- `runtimeVersion` **"8"**. Dernier APK : workflow « EAS Build (Android APK / Play Store) »
+  du 26/11 (run 45784719879, fichier dans les *Artifacts*). Tout le reste arrive
+  par EAS Update à chaque fusion sur `main` (le dépôt est public : Actions gratuit).
+- **Fusion** : l'utilisatrice a dit « fusionne tout sans me demander » : fusionner
+  dès que les vérifications GitHub sont vertes, serveur (Passerelle) d'abord, appli
+  ensuite. Toujours poser des questions (cliquables) avant une nouveauté.
+- **Livré les 25–26/11** (serveur dans `Siquane/Appli-planning-familial`) :
+  - Calendrier de l'Avent (`app/avent.tsx`, `lib/cervelle/advent.ts`) : 24 cases,
+    une clé par jour de révision (2 avec 2 révisions = rattrapage, jusqu'au 6/01),
+    6 accessoires « avent », étoiles bonus (`StarEvent.stars`), défis du jour.
+  - Carte au trésor (`app/carte.tsx`, `lib/cervelle/islands.ts`) : une île par
+    matière, 12 lieux = notions « Maîtrisé » (`Notion.masteredAt`), coffre, badge
+    `ile:<id>`, chapeau de pirate, décor « Île au trésor » (type « tresor »).
+  - Album « Animaux du monde » (`app/album.tsx`, `lib/cervelle/cards.ts`,
+    `CardDraw`) : 55 animaux (Fluent Emoji 3D, MIT, `assets/cards/`), 1 carte par
+    notion maîtrisée depuis le 25/11 + 3 de bienvenue, doublon = pièces.
+  - Boss de fin de chapitre (`app/boss.tsx`, mode de quiz `boss`, `Revision.bossBeatenAt`).
+  - « Apprends-le à papa/maman » (`app/apprends.tsx`, `TeachQuiz`) : 5 questions
+    envoyées aux parents dans Passerelle (`/cervelle-quiz/<id>`), +3 étoiles.
+  - Routines du matin et du soir (`RoutineCard`, `Routine`/`RoutineCheck`),
+    réglées par le parent dans Passerelle (Famille > Routines).
+  - Décors de la boutique à 300 pièces (Espace 500, Aurore 1000).
+  - Espace parent : 30 dernières séances, 4 visibles + accordéon (PR #66).
+  - Effets de mouvement (`src/components/motion.tsx`) : onglets (`Segmented`)
+    dont la pastille glisse, `SlideIn`, `Cascade`, `Pop`, `FloatUp`, `StarBurst`,
+    `Reaction`, `Alive`/`useBlink` (Cervelle respire et cligne), `useFill`
+    (barres), porte de l'Avent qui pivote, carte de l'album qui se retourne.
+    Tout s'arrête si le téléphone demande moins d'animations.
+- Pas encore vu sur téléphone : les nouveaux effets, la carte de routine.
+
 
 ## En une phrase
 

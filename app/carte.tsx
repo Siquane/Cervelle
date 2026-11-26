@@ -24,6 +24,17 @@ const SOFT = "#D7ECF7";
 const INK = "#1F1A3D";
 const GOLD = "#FFC94D";
 
+/** Les matières de chaque île, en mots d'enfant (serveur : src/lib/cervelle/islands.ts, même tri). */
+const SUBJECTS: Record<Island["id"], string> = {
+  maths: "les maths (calcul, géométrie…)",
+  francais: "le français (lecture, grammaire, orthographe…)",
+  histoire: "l'histoire, la géographie ou l'EMC",
+  sciences: "les sciences (SVT, physique-chimie, technologie…)",
+  langues: "les langues (anglais, espagnol, allemand…)",
+  talents: "la musique, les arts ou le sport",
+  mystere: "une autre matière, qui ne va sur aucune île",
+};
+
 const LOOK: Record<Island["id"], { emoji: string; green: string; dark: string }> = {
   maths: { emoji: "🔢", green: "#3DB46D", dark: "#1F7A45" },
   francais: { emoji: "📖", green: "#7BC96F", dark: "#3E8A35" },
@@ -175,6 +186,7 @@ export default function TreasureMapScreen() {
       <BottomSheet open={!!open} onClose={() => setOpen(null)} title={open ? `${LOOK[open.id].emoji} ${open.name}` : ""}>
         {open ? (
           <View style={{ gap: space.sm }}>
+            <T v="bodyBold">Matière : {SUBJECTS[open.id]}</T>
             {open.found.length ? (
               <>
                 <T v="bodyBold">Ce que tu as appris ici :</T>
@@ -191,7 +203,7 @@ export default function TreasureMapScreen() {
                 </ScrollView>
               </>
             ) : (
-              <T v="body">Cette île est encore dans le brouillard. Révise une leçon de cette matière : chaque notion « Maîtrisé » dévoile un lieu.</T>
+              <T v="body">Cette île est encore dans le brouillard. Révise une leçon : chaque notion « Maîtrisé » dévoile un lieu.</T>
             )}
             <T v="small">
               {open.complete

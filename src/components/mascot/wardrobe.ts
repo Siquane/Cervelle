@@ -10,7 +10,12 @@ import type { Shape } from "./geometry";
 const INK = "#1F1A3D";
 const st = { stroke: INK, strokeWidth: 4 };
 
-export type Item = { layer?: "behind" | "face"; shapes: Shape[] };
+export type Item = {
+  layer?: "behind" | "face";
+  shapes: Shape[];
+  /** SVG transform that keeps a wide item inside the viewBox (otherwise the edge is cut off). */
+  fit?: string;
+};
 
 export const WARDROBE: Record<string, Item> = {
   // ── Tête ──
@@ -175,13 +180,13 @@ export const WARDROBE: Record<string, Item> = {
   foulard: {
     shapes: [
       { kind: "path", d: "M 52 150 C 84 166 122 166 154 150 L 150 164 C 120 176 86 176 56 164 Z", fill: "#3D8BFD", ...st },
-      { kind: "path", d: "M 92 168 L 103 196 L 114 168 Z", fill: "#3D8BFD", ...st },
+      { kind: "path", d: "M 94 168 L 103 186 L 112 168 Z", fill: "#3D8BFD", ...st },
     ],
   },
   cravate: {
     shapes: [
       { kind: "path", d: "M 95 156 L 111 156 L 108 166 L 98 166 Z", fill: "#6D3FD9", ...st },
-      { kind: "path", d: "M 98 166 L 108 166 L 114 186 L 103 196 L 92 186 Z", fill: "#8B5CF6", ...st },
+      { kind: "path", d: "M 98 166 L 108 166 L 112 179 L 103 187 L 94 179 Z", fill: "#8B5CF6", ...st },
     ],
   },
   collier: {
@@ -191,9 +196,9 @@ export const WARDROBE: Record<string, Item> = {
   },
   medaille: {
     shapes: [
-      { kind: "path", d: "M 84 150 L 96 178 M 122 150 L 110 178", fill: "none", stroke: "#3D8BFD", strokeWidth: 7 },
-      { kind: "circle", cx: 103, cy: 184, r: 13, fill: "#FFC23D", ...st },
-      { kind: "path", d: "M 103 177 L 105 182 L 110 182 L 106 186 L 108 191 L 103 188 L 98 191 L 100 186 L 96 182 L 101 182 Z", fill: "#FFF1B8" },
+      { kind: "path", d: "M 86 150 L 97 170 M 120 150 L 109 170", fill: "none", stroke: "#3D8BFD", strokeWidth: 7 },
+      { kind: "circle", cx: 103, cy: 176, r: 11.5, fill: "#FFC23D", ...st },
+      { kind: "path", d: "M 103 170 L 105 174 L 109 174 L 106 177 L 107 182 L 103 179 L 99 182 L 100 177 L 97 174 L 101 174 Z", fill: "#FFF1B8" },
     ],
   },
   guirlande: {
@@ -205,6 +210,7 @@ export const WARDROBE: Record<string, Item> = {
 
   // ── Tenue (derrière Cervelle) ──
   cape: {
+    fit: "translate(103 112) scale(0.97 0.965) translate(-103 -112)",
     layer: "behind",
     shapes: [
       { kind: "path", d: "M 44 112 C 22 138 6 166 -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184 C 200 166 184 138 162 112 Z", fill: "#E5484D", ...st },
@@ -212,6 +218,7 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
   cape_etoiles: {
+    fit: "translate(103 112) scale(0.97 0.965) translate(-103 -112)",
     layer: "behind",
     shapes: [
       { kind: "path", d: "M 44 112 C 22 138 6 166 -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184 C 200 166 184 138 162 112 Z", fill: "#2B2560", ...st },
@@ -219,6 +226,7 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
   ailes_papillon: {
+    fit: "translate(103 100) scale(0.95) translate(-103 -100)",
     layer: "behind",
     shapes: [
       { kind: "path", d: "M 40 96 C 0 40 -14 80 -4 112 C -14 140 10 168 40 130 Z", fill: "#A98BFF", ...st },
@@ -230,6 +238,7 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
   ailes_ange: {
+    fit: "translate(103 100) scale(0.94) translate(-103 -100)",
     layer: "behind",
     shapes: [
       { kind: "path", d: "M 40 100 C 10 70 -10 60 -8 40 C 2 56 10 58 18 58 C 4 70 6 82 14 88 C 6 98 10 108 20 112 C 14 122 22 132 40 128 Z", fill: "#FFFFFF", ...st },
@@ -246,9 +255,9 @@ export const WARDROBE: Record<string, Item> = {
       { kind: "path", d: "M 27.1 166.3 A 86 22 0 0 1 17.8 159.1", fill: "none", stroke: "#FF5C8A", strokeWidth: 20 },
       { kind: "path", d: "M 117.9 177.7 A 86 22 0 0 1 88.1 177.7", fill: "none", stroke: "#FF5C8A", strokeWidth: 20 },
       { kind: "path", d: "M 188.2 159.1 A 86 22 0 0 1 178.9 166.3", fill: "none", stroke: "#FF5C8A", strokeWidth: 20 },
-      { kind: "circle", cx: 198, cy: 130, r: 15, fill: "#FFC23D", ...st },
-      { kind: "circle", cx: 202, cy: 125, r: 2.8, fill: INK },
-      { kind: "path", d: "M 210 130 L 222 133 L 210 137 Z", fill: "#FF8A3D", ...st },
+      { kind: "circle", cx: 182, cy: 124, r: 15, fill: "#FFC23D", ...st },
+      { kind: "circle", cx: 186, cy: 119, r: 2.8, fill: INK },
+      { kind: "path", d: "M 194 124 L 205 127 L 194 131 Z", fill: "#FF8A3D", ...st },
     ],
   },
 
@@ -291,12 +300,13 @@ export const WARDROBE: Record<string, Item> = {
     shapes: [
       { kind: "path", d: "M 52 150 C 84 166 122 166 154 150 L 150 164 C 120 176 86 176 56 164 Z", fill: "#E5484D", ...st },
       { kind: "path", d: "M 72 160 L 70 171 M 92 164 L 91 175 M 114 164 L 115 175 M 134 160 L 136 171", fill: "none", stroke: "#FFFFFF", strokeWidth: 5 },
-      { kind: "rect", x: 126, y: 164, width: 20, height: 34, rx: 4, fill: "#E5484D", ...st },
-      { kind: "path", d: "M 128 176 L 144 176 M 128 186 L 144 186", fill: "none", stroke: "#1F9E57", strokeWidth: 5 },
-      { kind: "path", d: "M 130 198 L 130 205 M 136 198 L 136 205 M 142 198 L 142 205", fill: "none", stroke: INK, strokeWidth: 3 },
+      { kind: "rect", x: 126, y: 164, width: 20, height: 20, rx: 4, fill: "#E5484D", ...st },
+      { kind: "path", d: "M 128 171 L 144 171 M 128 178 L 144 178", fill: "none", stroke: "#1F9E57", strokeWidth: 4 },
+      { kind: "path", d: "M 130 184 L 130 187 M 136 184 L 136 187 M 142 184 L 142 187", fill: "none", stroke: INK, strokeWidth: 2.5 },
     ],
   },
   cape_noel: {
+    fit: "translate(103 112) scale(0.93 0.88) translate(-103 -112)",
     layer: "behind",
     shapes: [
       { kind: "path", d: "M 44 112 C 22 138 6 166 -4 184 C 18 192 34 180 50 188 C 70 196 86 184 103 190 C 120 184 136 196 156 188 C 172 180 188 192 210 184 C 200 166 184 138 162 112 Z", fill: "#D62F35", ...st },
@@ -345,6 +355,7 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
   baguette: {
+    fit: "translate(-3 0)",
     shapes: [
       { kind: "path", d: "M 170 176 L 196 110", fill: "none", stroke: INK, strokeWidth: 7 },
       { kind: "path", d: "M 196 92 L 200 102 L 210 104 L 202 110 L 204 120 L 196 114 L 188 120 L 190 110 L 182 104 L 192 102 Z", fill: "#FFC23D", ...st },
@@ -358,6 +369,7 @@ export const WARDROBE: Record<string, Item> = {
     ],
   },
   trophee: {
+    fit: "translate(-6 0)",
     shapes: [
       { kind: "path", d: "M 168 110 L 204 110 C 204 136 194 146 186 146 C 178 146 168 136 168 110 Z", fill: "#FFC23D", ...st },
       { kind: "path", d: "M 168 116 C 156 116 158 132 170 132 M 204 116 C 216 116 214 132 202 132", fill: "none", ...st },

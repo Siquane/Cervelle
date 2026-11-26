@@ -1,4 +1,5 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Emoji } from "./Emoji";
 import { KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -72,7 +73,7 @@ export function RevisionIcon({ icon, size: px = 56, seed = "" }: { icon: string;
   const bg = TILE[[...seed].reduce((n, c) => n + c.charCodeAt(0), 0) % TILE.length];
   return (
     <View style={{ width: px, height: px, borderRadius: px * 0.3, backgroundColor: bg, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: px * 0.5 }}>{ICON[icon] ?? "📘"}</Text>
+      <Emoji e={ICON[icon] ?? "📘"} size={px * 0.62} />
     </View>
   );
 }

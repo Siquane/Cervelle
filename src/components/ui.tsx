@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import { color, font, GUTTER, onColor, radius, reading, size, space } from "../theme/tokens";
 import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
+import { withEmojis } from "./Emoji";
 
 type Variant = "title" | "h2" | "h3" | "body" | "bodyBold" | "small" | "label";
 
@@ -43,9 +44,15 @@ function readStyle(v: Variant): TextStyle | null {
   };
 }
 
-export function T({ v = "body", read = false, style, ...rest }: TextProps & { v?: Variant; read?: boolean; style?: StyleProp<TextStyle> }) {
+export function T({ v = "body", read = false, style, children, ...rest }: TextProps & { v?: Variant; read?: boolean; style?: StyleProp<TextStyle> }) {
   useFontRefresh();
-  return <RNText {...rest} style={[textStyle(v), read ? readStyle(v) : null, style]} />;
+  const st = [textStyle(v), read ? readStyle(v) : null, style];
+  // Emojis become 3D images (Emoji.tsx), at the size of the letters.
+  return (
+    <RNText {...rest} style={st}>
+      {withEmojis(children, StyleSheet.flatten(st)?.fontSize ?? size.md)}
+    </RNText>
+  );
 }
 
 /** A page: safe area, scroll, side gutter. */
@@ -157,7 +164,7 @@ export function Button({
       ) : (
         <>
           {icon === "coin" ? <Coin size={small ? 18 : 22} /> : icon ? <Ionicons name={icon} size={small ? 18 : 22} color={t.fg} /> : null}
-          <RNText style={[styles.btnText, { fontFamily: font.textBlack }, small && { fontSize: size.sm }, { color: t.fg }]}>{label}</RNText>
+          <RNText style={[styles.btnText, { fontFamily: font.textBlack }, small && { fontSize: size.sm }, { color: t.fg }]}>{withEmojis(label, small ? size.sm : size.md)}</RNText>
         </>
       )}
     </Pressable>

@@ -115,7 +115,7 @@ export default function Reglages() {
       <T v="label">Crédits</T>
       <Card style={{ gap: space.sm }}>
         <T v="small">
-          Dessins des animaux de l'album : Fluent Emoji, © Microsoft Corporation, licence MIT (github.com/microsoft/fluentui-emoji).
+          Dessins des animaux de l'album et des petites images (émojis) : Fluent Emoji, © Microsoft Corporation, licence MIT (github.com/microsoft/fluentui-emoji).
         </T>
       </Card>
     </Page>

@@ -1,4 +1,5 @@
-import { FlexWidget, SvgWidget, TextWidget } from "react-native-android-widget";
+import { FlexWidget, ImageWidget, SvgWidget, TextWidget } from "react-native-android-widget";
+import { EMOJI_IMAGES } from "../lib/emojiImages";
 import { mascotSvgString } from "../components/mascot/svgString";
 import type { ParentWidgetState, WidgetData, WidgetState } from "./data";
 
@@ -98,6 +99,11 @@ function Frame({ th, children, uri, click = "OPEN_APP", label, row = false, pad 
 
 const Gap = ({ h = 8 }: { h?: number }) => <FlexWidget style={{ height: h, width: h }} />;
 
+/** A big emoji on its own: the 3D image, like in the app. */
+function Big({ e, size }: { e: string; size: number }) {
+  return <ImageWidget image={EMOJI_IMAGES[e] as number} imageWidth={size} imageHeight={size} />;
+}
+
 function Txt({ th, text, size, color, font = TEXT, lines = 1 }: { th: Theme; text: string; size: number; color?: Hex; font?: string; lines?: number }) {
   return <TextWidget text={text} maxLines={lines} truncate="END" style={{ fontSize: size, color: color ?? th.text, fontFamily: font, textAlign: "center" }} />;
 }
@@ -180,7 +186,7 @@ function Serie({ d, size, style }: { d: WidgetData; size: Size; style: WidgetSty
   const mascot = <SvgWidget svg={mascotSvgString(d.equipped, d.studiedToday ? "happy" : "sleep")} style={wide ? { width: 110, height: 107 } : { width: 64, height: 62 }} />;
   const count = (
     <FlexWidget style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-      <TextWidget text="🔥" style={{ fontSize: wide ? 30 : 22 }} />
+      <Big e="🔥" size={wide ? 36 : 26} />
       <TextWidget text={` ${d.streak}`} style={{ fontSize: wide ? 44 : 30, color: th.text, fontFamily: TITLE }} />
     </FlexWidget>
   );
@@ -219,7 +225,7 @@ function Interro({ d, style }: { d: WidgetData; style: WidgetStyle }) {
   if (!e) {
     return (
       <Frame th={th} label="Pas d'interro prévue">
-        <Txt th={th} text="📅" size={26} />
+        <Big e="📅" size={30} />
         <Gap h={6} />
         <Txt th={th} text="Pas d'interro prévue" size={17} font={TITLE} />
         <Gap h={4} />
@@ -335,7 +341,7 @@ function Express({ d, style }: { d: WidgetData; style: WidgetStyle }) {
   const th = theme(style, G.express);
   return (
     <Frame th={th} label={d.exam ? "Révision express pour ta prochaine interro" : "Révision express de tes notions à revoir"} uri={expressUri(d)} pad={4}>
-      <Txt th={th} text="⚡" size={22} />
+      <Big e="⚡" size={26} />
       <Fit th={th} text="Express" />
     </Frame>
   );
@@ -389,7 +395,7 @@ function SignedOut({ name, style }: { name: string; style: WidgetStyle }) {
     const th = theme(style, G.express);
     return (
       <Frame th={th} label="Ouvre Cervelle" pad={4}>
-        <Txt th={th} text="⚡" size={22} />
+        <Big e="⚡" size={26} />
         <Fit th={th} text="Cervelle" />
       </Frame>
     );

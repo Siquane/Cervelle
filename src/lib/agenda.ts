@@ -1,8 +1,8 @@
 import type { AgendaEvent, AgendaExam, EventKind } from "../api/types";
-import { color } from "../theme/tokens";
+import { color, themed } from "../theme/tokens";
 import { weekdayOf } from "./dates";
 
-export const EVENT_KIND: Record<EventKind, { label: string; main: string; soft: string; icon: string }> = {
+export const EVENT_KIND: Record<EventKind, { label: string; main: string; soft: string; icon: string }> = themed(() => ({
   cours: { label: "Cours", main: color.sky, soft: color.skySoft, icon: "school" },
   interro: { label: "Interro", main: color.brand, soft: color.brandSoft, icon: "alert-circle" },
   devoir: { label: "Devoir", main: color.sunDark, soft: color.sunSoft, icon: "create" },
@@ -12,7 +12,7 @@ export const EVENT_KIND: Record<EventKind, { label: string; main: string; soft: 
   maison: { label: "Maison", main: color.green, soft: color.greenSoft, icon: "home" },
   sante: { label: "Santé", main: color.red, soft: color.redSoft, icon: "medkit" },
   travail: { label: "Travail", main: color.brandDark, soft: color.corailSoft, icon: "briefcase" },
-};
+}));
 
 type KindStyle = { label: string; main: string; soft: string; icon: string };
 
@@ -24,7 +24,7 @@ export const PASSERELLE_CATEGORY: Record<string, KindStyle> = {
   Santé: EVENT_KIND.sante,
   Loisirs: EVENT_KIND.activite,
 };
-const DIVERS: KindStyle = { label: "Divers", main: color.muted, soft: color.chip, icon: "ellipsis-horizontal-circle" };
+const DIVERS: KindStyle = themed(() => ({ label: "Divers", main: color.muted, soft: color.chip, icon: "ellipsis-horizontal-circle" }));
 
 /** Ce qui vient de Passerelle garde la catégorie de Passerelle ; le reste, le type choisi dans Cervelle. */
 export function styleOf(e: Pick<AgendaEvent, "kind" | "source" | "category">): KindStyle {

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Svg, { Circle, Defs, G, LinearGradient, Path, Polygon, Stop } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
 import type { BadgeShape, BadgeWindow } from "../api/types";
-import { color, scheme } from "../theme/tokens";
+import { color, scheme, themed } from "../theme/tokens";
 import { Mascot } from "./mascot/Mascot";
 
 // A badge: a metal medal (bronze, silver, gold, or a season's colours) with
@@ -23,7 +23,7 @@ const METALS: Record<Exclude<Metal, "locked">, [string, string, string]> = {
   hiver: ["#E8F6FF", "#9CD3F5", "#4A8FC4"],
   fete: ["#EFE6FF", "#B79BFF", "#6D3FD9"],
 };
-const LOCKED: [string, string, string] = scheme === "dark" ? ["#3A4263", "#2A3150", "#1D2440"] : ["#F1F3F8", "#DADEE8", "#A9AEC2"];
+const LOCKED = themed((): [string, string, string] => (scheme === "dark" ? ["#3A4263", "#2A3150", "#1D2440"] : ["#F1F3F8", "#DADEE8", "#A9AEC2"]));
 
 /** A season's own colours, a holiday's violet; grey until earned. */
 export const windowMetal = (w: BadgeWindow): Metal => (!w.earned ? "locked" : w.family === "fete" ? "fete" : w.family === "chemin" || w.family === "ile" ? "or" : (w.key.split(":")[1] as Metal));

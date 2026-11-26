@@ -13,15 +13,15 @@ import { Check, celebrate } from "../src/components/organize";
 import { Button, Card, ErrorBox, Loading, Page, Segmented, T, TopBar } from "../src/components/ui";
 import { whenLabel } from "../src/lib/format";
 import { useLid } from "../src/lib/lid";
-import { color, radius, space } from "../src/theme/tokens";
+import { color, radius, space, themed } from "../src/theme/tokens";
 
 // The to-do list, sorted like the Eisenhower matrix but in a child's words.
-const BOXES = [
+const BOXES = themed(() => [
   { key: "ui", urgent: true, important: true, title: "Tout de suite", hint: "Urgent et important", fg: color.red, bg: color.redSoft, icon: "flame" },
   { key: "i", urgent: false, important: true, title: "À prévoir", hint: "Important, pas urgent", fg: color.violet, bg: color.violetSoft, icon: "calendar" },
   { key: "u", urgent: true, important: false, title: "Vite fait", hint: "Urgent, pas important", fg: color.skyDark, bg: color.skySoft, icon: "flash" },
   { key: "n", urgent: false, important: false, title: "Plus tard", hint: "Ni urgent ni important", fg: color.green, bg: color.greenSoft, icon: "leaf" },
-] as const;
+] as const);
 
 export default function Todos() {
   const { lid } = useLid();

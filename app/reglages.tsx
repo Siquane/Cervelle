@@ -7,8 +7,8 @@ import { askPermission, notificationsAllowed, useReminderPrefs } from "../src/li
 import { EVE_HOUR, type ReminderPrefs } from "../src/lib/reminders";
 import { useReading } from "../src/state/reading";
 import { useSession } from "../src/state/session";
-import { color, scheme, space, type Scheme } from "../src/theme/tokens";
-import { setScheme } from "../src/state/theme";
+import { color, space, type Scheme } from "../src/theme/tokens";
+import { setScheme, useTheme } from "../src/state/theme";
 
 type Key = "exams" | "review" | "daily" | "ready";
 
@@ -78,6 +78,7 @@ function Reminders() {
 export default function Reglages() {
   const child = useSession((s) => s.session?.kind === "child");
   const dyslexia = useReading((s) => s.dyslexia);
+  const theme = useTheme((s) => s.scheme);
   const setDyslexia = useReading((s) => s.setDyslexia);
 
   return (
@@ -92,10 +93,10 @@ export default function Reglages() {
             { key: "dark", label: "Sombre" },
             { key: "light", label: "Clair" },
           ]}
-          value={scheme}
-          onChange={(k) => void setScheme(k)}
+          value={theme}
+          onChange={(k) => setScheme(k)}
         />
-        <T v="small">L'appli redémarre pour changer de thème. Réglage de ce téléphone.</T>
+        <T v="small">Réglage de ce téléphone.</T>
       </Card>
 
       <T v="label">Lecture</T>

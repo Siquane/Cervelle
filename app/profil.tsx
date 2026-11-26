@@ -10,15 +10,15 @@ import { Mascot } from "../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { useLid } from "../src/lib/lid";
 import { ANSWERS, DIM_LABEL, PROFILES, QUESTIONS, computeProfile, methodById, type Dim, type Method, type ProfileId } from "../src/lib/profile";
-import { color, radius, space } from "../src/theme/tokens";
+import { color, radius, space, themed } from "../src/theme/tokens";
 
-const FAMILY_TINT: Record<Method["family"], { fg: string; bg: string }> = {
+const FAMILY_TINT: Record<Method["family"], { fg: string; bg: string }> = themed(() => ({
   Comprendre: { fg: color.skyDark, bg: color.skySoft },
   Apprendre: { fg: color.brandDark, bg: color.brandSoft },
   Réviser: { fg: color.sunDark, bg: color.sunSoft },
   "S'organiser": { fg: color.violet, bg: color.violetSoft },
   "Se concentrer": { fg: color.tealDark, bg: color.tealSoft },
-};
+}));
 
 export default function StudyProfile() {
   const { lid } = useLid();

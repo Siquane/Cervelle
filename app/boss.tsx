@@ -8,6 +8,7 @@ import { api, errorMessage } from "../src/api/client";
 import { learnerPath, useRefreshLearner } from "../src/api/hooks";
 import type { AnswerResult, Question, SessionResult } from "../src/api/types";
 import { BossArt, BossFighter, bossName } from "../src/components/Boss";
+import { Reaction, StarBurst } from "../src/components/motion";
 import { QuestionView, type Answer } from "../src/components/QuestionView";
 import { Button, Card, ErrorBox, Loading, Page, T, TopBar } from "../src/components/ui";
 import { useLid } from "../src/lib/lid";
@@ -162,6 +163,7 @@ export default function BossFight() {
       {answer.isPending ? <T v="small">Correction…</T> : null}
       {answer.error ? <ErrorBox message={errorMessage(answer.error)} onRetry={() => answer.reset()} /> : null}
       {result ? (
+        <Reaction good={result.correct}>
         <Card style={{ gap: space.sm, backgroundColor: result.correct ? color.greenSoft : color.sunSoft, borderColor: result.correct ? color.green : color.sunEdge }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
             <Ionicons name={result.correct ? "flash" : "shield"} size={26} color={result.correct ? color.green : color.sunDark} />
@@ -172,6 +174,8 @@ export default function BossFight() {
           {!result.correct ? <T read v="bodyBold">Réponse : {result.expected}</T> : null}
           {result.explanation ? <T read v="body">{result.explanation}</T> : null}
         </Card>
+        {result.correct ? <StarBurst k={hits} now /> : null}
+        </Reaction>
       ) : null}
     </Page>
   );

@@ -15,6 +15,7 @@ import { todayIso } from "../../../src/lib/format";
 import { BottomSheet, RevisionIcon, Stat } from "../../../src/components/bits";
 import { GoalRow } from "../../../src/components/GoalCard";
 import { RoutineCard } from "../../../src/components/RoutineCard";
+import { Alive, Cascade, useBlink } from "../../../src/components/motion";
 import { Mascot } from "../../../src/components/mascot/Mascot";
 import { Scene } from "../../../src/components/mascot/Scene";
 import { RevisionRow } from "../../../src/components/RevisionRow";
@@ -45,6 +46,9 @@ export default function ChildHome() {
   const signOut = useSession((s) => s.signOut);
   const [ask, setAsk] = useState("");
   const [menu, setMenu] = useState(false);
+  // Cervelle cligne des yeux et saute de joie (coffre ouvert, missions finies).
+  const blink = useBlink();
+  const [joy, setJoy] = useState(0);
   const [allRevisions, setAllRevisions] = useState(false);
   const agenda = useAgenda(lid);
   const todos = useTodos(lid);
@@ -54,6 +58,7 @@ export default function ChildHome() {
     refresh();
     qc.invalidateQueries({ queryKey: keys.todos(lid) });
     qc.invalidateQueries({ queryKey: keys.habits(lid) });
+    setJoy((j) => j + 1);
     celebrate(r);
   };
   const tick = useMutation({
@@ -71,6 +76,7 @@ export default function ChildHome() {
     mutationFn: () => api.post<{ coins: number }>(`${learnerPath(lid)}/chest`),
     onSuccess: (r) => {
       refresh();
+      setJoy((j) => j + 1);
       Alert.alert("Coffre ouvert !", `+${r.coins} pièces. Bravo pour tes missions !`);
     },
     onError: (e) => Alert.alert("Coffre pas encore ouvert", errorMessage(e)),
@@ -132,9 +138,12 @@ export default function ChildHome() {
             </T>
           </View>
         ) : null}
+        <Cascade index={0}>
         <Card onPress={() => router.push({ pathname: "/child/shop", params: { lid } })} style={{ flexDirection: "row", alignItems: "center", gap: space.lg, backgroundColor: tint.soft, borderColor: tint.soft }}>
           <Scene equipped={learner.equipped} width={112} height={112} radius={18}>
-            <Mascot size={104} accessories={learner.equipped} mood={learner.streak ? "happy" : "wow"} />
+            <Alive jump={joy}>
+              <Mascot size={104} accessories={learner.equipped} mood={blink ? "sleep" : learner.streak ? "happy" : "wow"} />
+            </Alive>
           </Scene>
           <View style={{ flex: 1, gap: 6 }}>
             <T v="h3">Salut {learner.name} !</T>
@@ -145,6 +154,7 @@ export default function ChildHome() {
             <T v="small">Touche pour habiller Cervelle</T>
           </View>
         </Card>
+        </Cascade>
 
         {teachUnseen.data ? (
           <Button tone="sky" icon="school" label={teachUnseen.data > 1 ? "Tes parents ont répondu à tes quiz !" : "Un parent a répondu à ton quiz !"} onPress={() => router.push({ pathname: "/apprends", params: { lid } })} />
@@ -225,6 +235,7 @@ export default function ChildHome() {
         )}
 
 
+        <Cascade index={1}>
         <Card style={{ gap: space.md }}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <T v="h3" style={{ flex: 1 }}>
@@ -249,7 +260,9 @@ export default function ChildHome() {
             <Button tone="sun" icon="gift" label={missions.done === missions.total ? `Ouvrir le coffre (+${missions.chestCoins})` : "Termine tes missions pour ouvrir le coffre"} disabled={missions.done < missions.total} loading={chest.isPending} onPress={() => chest.mutate()} />
           )}
         </Card>
+        </Cascade>
 
+        <Cascade index={2}>
         <Card style={{ gap: space.md }}>
           <Section title="Aujourd'hui" action="Agenda" onAction={() => router.navigate({ pathname: "/child/agenda", params: { lid } })} />
           {todayItems.length === 0 ? (
@@ -271,7 +284,9 @@ export default function ChildHome() {
             })
           )}
         </Card>
+        </Cascade>
 
+        <Cascade index={3}>
         <Card style={{ gap: space.md }}>
           <Section title="Mes tâches" action="Tout voir" onAction={() => router.push({ pathname: "/todos", params: { lid } })} />
           {openTodos.length === 0 ? (
@@ -289,7 +304,9 @@ export default function ChildHome() {
           )}
           <Button small tone="white" icon="add" label="Ajouter une tâche" onPress={() => router.push({ pathname: "/todos", params: { lid, add: "1" } })} />
         </Card>
+        </Cascade>
 
+        <Cascade index={4}>
         <Card style={{ gap: space.md }}>
           <Section title="Mes habitudes" action="Mes habitudes" onAction={() => router.push({ pathname: "/habits", params: { lid } })} />
           {todayHabits.length === 0 ? (
@@ -319,6 +336,7 @@ export default function ChildHome() {
             </View>
           )}
         </Card>
+        </Cascade>
 
         {revisions.length ? (
           <>
@@ -343,6 +361,7 @@ export default function ChildHome() {
           </>
         ) : null}
 
+        <Cascade index={5}>
         <Card style={{ flexDirection: "row", gap: space.md, alignItems: "center", backgroundColor: color.inverse, borderColor: color.inverse }}>
           <View style={{ flex: 1, gap: space.sm }}>
             <T v="h3" style={{ color: color.white }}>
@@ -355,6 +374,7 @@ export default function ChildHome() {
           </View>
           <Mascot size={86} accessories={["lunettes"]} />
         </Card>
+        </Cascade>
         <Button tone="white" icon="school" label="Apprends-le à tes parents" onPress={() => router.push({ pathname: "/apprends", params: { lid } })} />
         <Button tone="white" icon="albums" label="Mon album de cartes" onPress={() => router.push({ pathname: "/album", params: { lid } })} />
         <Button tone="white" icon="map" label="Ma carte au trésor" onPress={() => router.push({ pathname: "/carte", params: { lid } })} />

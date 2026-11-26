@@ -9,6 +9,7 @@ import { cardsKey, learnerPath, useRefreshLearner } from "../src/api/hooks";
 import type { AnswerResult, Question, QuizMode, SessionResult } from "../src/api/types";
 import { MasteryTag } from "../src/components/bits";
 import { Mascot } from "../src/components/mascot/Mascot";
+import { Reaction, StarBurst } from "../src/components/motion";
 import { QuestionView, type Answer } from "../src/components/QuestionView";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { MODE_LABEL } from "../src/lib/format";
@@ -20,6 +21,7 @@ import { color, font, space } from "../src/theme/tokens";
 function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
   const selfGraded = mode === "cartes";
   return (
+    <Reaction good={r.correct}>
     <Card style={{ gap: space.sm, backgroundColor: r.correct ? color.greenSoft : color.redSoft, borderColor: r.correct ? color.green : color.red }}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
         <Ionicons name={r.correct ? "checkmark-circle" : "close-circle"} size={28} color={r.correct ? color.green : color.red} />
@@ -33,6 +35,8 @@ function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
       {r.explanation ? <T read v="body">{r.explanation}</T> : null}
       <MasteryTag value={r.mastery} compact />
     </Card>
+    {r.correct ? <StarBurst k={r.expected} now /> : null}
+    </Reaction>
   );
 }
 

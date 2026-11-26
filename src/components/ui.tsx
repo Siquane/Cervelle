@@ -7,7 +7,7 @@ import { color, font, GUTTER, onColor, radius, reading, size, space, themed } fr
 import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
 import { withEmojis } from "./Emoji";
-import { motionReduced } from "./motion";
+import { motionReduced, useFill } from "./motion";
 
 type Variant = "title" | "h2" | "h3" | "body" | "bodyBold" | "small" | "label";
 
@@ -185,9 +185,11 @@ export function Card({ children, style, onPress }: { children: ReactNode; style?
 
 export function ProgressBar({ value, tint = color.brand, track = color.line, height = 12 }: { value: number; tint?: string; track?: string; height?: number }) {
   const pct = Math.max(0, Math.min(100, value));
+  // La barre se remplit jusqu'à sa valeur.
+  const fill = useFill(pct);
   return (
     <View style={{ height, backgroundColor: track, borderRadius: radius.pill, overflow: "hidden" }} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }}>
-      <View style={{ width: `${pct}%`, height: "100%", backgroundColor: tint, borderRadius: radius.pill }} />
+      <Animated.View style={{ width: fill.interpolate({ inputRange: [0, 100], outputRange: ["0%", "100%"] }), height: "100%", backgroundColor: tint, borderRadius: radius.pill }} />
     </View>
   );
 }

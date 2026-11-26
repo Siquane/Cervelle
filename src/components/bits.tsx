@@ -1,4 +1,5 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FloatUp, Pop } from "./motion";
 import { Emoji } from "./Emoji";
 import { KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -81,10 +82,14 @@ export function RevisionIcon({ icon, size: px = 56, seed = "" }: { icon: string;
 /** Coins, streak… in a little rounded chip. */
 export function Stat({ icon, value, tint, label }: { icon: keyof typeof Ionicons.glyphMap | "coin"; value: string | number; tint: string; label: string }) {
   return (
-    <View style={s.stat} accessibilityLabel={`${label} : ${value}`}>
-      {icon === "coin" ? <Coin /> : <Ionicons name={icon} size={20} color={tint} />}
-      <Text style={[s.statText, { fontFamily: font.textBlack }]}>{value}</Text>
-    </View>
+    // Le compteur saute quand il change, et « +5 » s'envole quand il augmente.
+    <Pop k={String(value)} scale={1.18}>
+      <View style={s.stat} accessibilityLabel={`${label} : ${value}`}>
+        {icon === "coin" ? <Coin /> : <Ionicons name={icon} size={20} color={tint} />}
+        <Text style={[s.statText, { fontFamily: font.textBlack }]}>{value}</Text>
+      </View>
+      {typeof value === "number" ? <FloatUp value={value} color={tint} /> : null}
+    </Pop>
   );
 }
 

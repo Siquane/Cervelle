@@ -111,7 +111,13 @@ export function mascotTree(accessories: string[] = [], mood: Mood = "happy", pre
   const p = new Paints(prefix);
   const items = accessories.map((id) => ITEMS[id]).filter(Boolean);
   const tint = BRAIN_COLORS[accessories.find((id) => BRAIN_COLORS[id]) ?? "rose"];
-  const layer = (l: Item["layer"]) => items.filter((it) => it.layer === l).flatMap((it) => it.shapes.map((s) => soft(s, p)));
+  const layer = (l: Item["layer"]) =>
+    items
+      .filter((it) => it.layer === l)
+      .flatMap((it) => {
+        const shapes = it.shapes.map((s) => soft(s, p));
+        return it.fit ? [el("g", { transform: it.fit }, shapes)] : shapes;
+      });
 
   const brainFill = tint.gradient ? p.linear("brain", tint.gradient) : p.ball(tint.fill);
   const edge = shade(tint.folds, -0.1);

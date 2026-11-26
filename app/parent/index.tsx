@@ -1,4 +1,5 @@
 import { useParentWeeklyReminder } from "../../src/lib/notifications";
+import { SlideIn, useCountUp, useDirection } from "../../src/components/motion";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
@@ -44,6 +45,9 @@ export default function ParentHome() {
 
   const tint = learnerColorOf(selected?.color ?? "violet");
   const o = overview.data;
+  const learnerDir = useDirection(Math.max(0, learners.data?.findIndex((l) => l.id === selected?.id) ?? 0));
+  // Le temps passé défile jusqu'à sa nouvelle valeur quand on change d'enfant ou de période.
+  const shownSeconds = useCountUp(o ? (range === "30" ? o.time.last30Seconds : o.time.totalSeconds) : 0);
 
   return (
     <Page>
@@ -102,6 +106,7 @@ export default function ParentHome() {
             <Segmented options={learners.data!.map((l) => ({ key: l.id, label: l.name }))} value={selected.id} onChange={setLearner} tint={tint.fill} />
           ) : null}
 
+          <SlideIn k={selected.id} direction={learnerDir} style={{ gap: space.lg }}>
           <Button label="Ajouter une révision" icon="camera" onPress={() => router.push({ pathname: "/revision/new", params: { lid: selected.id } })} style={{ minHeight: 72 }} />
           <Button tone="white" icon="stats-chart" label={`Bilan de la semaine ${de(selected.name)}`} onPress={() => router.push("/parent/bilan")} />
           <Button tone="white" icon="flag" label={`Objectifs ${de(selected.name)}`} onPress={() => router.push("/parent/objectifs")} />
@@ -113,9 +118,10 @@ export default function ParentHome() {
             <>
               <T v="h2">Utilisation</T>
               <Segmented options={[{ key: "total", label: "Total" }, { key: "30", label: "30 derniers jours" }]} value={range} onChange={setRange} tint={tint.fill} />
+              <SlideIn k={range} direction={range === "30" ? 1 : -1}>
               <Card style={{ alignItems: "center", gap: 4, paddingVertical: space.xl }}>
                 <T v="small">Temps passé à réviser</T>
-                <T style={{ fontFamily: font.title, fontSize: 48, lineHeight: 58, color: color.ink }}>{duration(range === "30" ? o.time.last30Seconds : o.time.totalSeconds)}</T>
+                <T style={{ fontFamily: font.title, fontSize: 48, lineHeight: 58, color: color.ink }}>{duration(Math.round(shownSeconds))}</T>
                 {range === "30" ? (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <Ionicons name={o.time.changePercent >= 0 ? "arrow-up" : "arrow-down"} size={18} color={o.time.changePercent >= 0 ? color.green : color.red} />
@@ -127,6 +133,7 @@ export default function ParentHome() {
                   <T v="small">{o.time.sessionsTotal} séances en tout</T>
                 )}
               </Card>
+              </SlideIn>
               <T v="small" style={{ textAlign: "center" }}>
                 {o.lastActiveAt ? `Dernière révision : ${longDate(o.lastActiveAt)}` : `${selected.name} n'a pas encore révisé.`}
                 {o.learner.streak > 1 ? ` · ${o.learner.streak} jours d'affilée` : ""}
@@ -211,6 +218,7 @@ export default function ParentHome() {
               </View>
             </>
           ) : null}
+          </SlideIn>
         </>
       ) : null}
 

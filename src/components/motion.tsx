@@ -147,7 +147,7 @@ export function StarBurst({ k, color = "#FFC23D", count = 10, now = false }: { k
               ],
             }}
           >
-            ★
+            {"\u2605" /* étoile dessinée avec la police, pas un émoji */}
           </Animated.Text>
         );
       })}

@@ -1,10 +1,8 @@
 import { useParentWeeklyReminder } from "../../src/lib/notifications";
 import { SlideIn, useCountUp, useDirection } from "../../src/components/motion";
 
-/** Hauteur d'une ligne de « Dernières séances ». */
-const SESSION_ROW = 44;
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
@@ -31,6 +29,7 @@ export default function ParentHome() {
   const selected = learners.data?.find((l) => l.id === learnerId) ?? learners.data?.[0] ?? null;
   const overview = useOverview(selected?.id ?? null);
   const [range, setRange] = useState<"total" | "30">("30");
+  const [allSessions, setAllSessions] = useState(false);
   const [menu, setMenu] = useState(false);
   const session = useSession((s) => s.session);
   const signOut = useSession((s) => s.signOut);
@@ -120,16 +119,22 @@ export default function ParentHome() {
           {o ? (
             <>
               <T v="h2">Utilisation</T>
-              <Segmented options={[{ key: "total", label: "Total" }, { key: "30", label: "30 derniers jours" }]} value={range} onChange={setRange} tint={tint.fill} />
+              <Segmented options={[{ key: "total", label: "Total" }, { key: "30", label: "30 jours" }]} value={range} onChange={setRange} tint={tint.fill} />
               <SlideIn k={range} direction={range === "30" ? 1 : -1}>
               <Card style={{ alignItems: "center", gap: 4, paddingVertical: space.xl }}>
-                <T v="small">Temps passé à réviser</T>
+                <T v="small" style={{ alignSelf: "stretch", textAlign: "center" }}>Temps passé à réviser</T>
                 <T style={{ fontFamily: font.title, fontSize: 48, lineHeight: 58, color: color.ink }}>{duration(Math.round(shownSeconds))}</T>
                 {range === "30" ? (
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Ionicons name={o.time.changePercent >= 0 ? "arrow-up" : "arrow-down"} size={18} color={o.time.changePercent >= 0 ? color.green : color.red} />
-                    <T v="bodyBold" style={{ color: o.time.changePercent >= 0 ? color.green : color.red }}>
-                      {Math.abs(o.time.changePercent)} % par rapport aux 30 jours d'avant
+                  <View style={{ alignSelf: "stretch", alignItems: "center", gap: 2 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <Ionicons name={o.time.changePercent >= 0 ? "arrow-up" : "arrow-down"} size={18} color={o.time.changePercent >= 0 ? color.green : color.red} />
+                      <T v="bodyBold" style={{ color: o.time.changePercent >= 0 ? color.green : color.red }}>
+                        {o.time.changePercent >= 0 ? "+" : "−"}
+                        {Math.abs(o.time.changePercent)} %
+                      </T>
+                    </View>
+                    <T v="small" style={{ textAlign: "center" }}>
+                      par rapport aux 30 jours précédents
                     </T>
                   </View>
                 ) : (
@@ -191,11 +196,10 @@ export default function ParentHome() {
               {o.recentSessions.length ? (
                 <>
                   <T v="h2">Dernières séances</T>
-                  {/* Les 4 dernières en vue, les autres avec l'ascenseur. */}
-                  <Card style={{ paddingVertical: space.sm }}>
-                    <ScrollView nestedScrollEnabled persistentScrollbar showsVerticalScrollIndicator style={{ maxHeight: SESSION_ROW * 4 }}>
-                    {o.recentSessions.map((s) => (
-                      <View key={s.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm, height: SESSION_ROW, paddingRight: space.sm }}>
+                  {/* Les 4 dernières, et les autres en dépliant (accordéon). */}
+                  <Card style={{ gap: space.md }}>
+                    {(allSessions ? o.recentSessions : o.recentSessions.slice(0, 4)).map((s) => (
+                      <View key={s.id} style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
                         <T v="small" style={{ width: 64 }}>
                           {shortDate(s.createdAt)}
                         </T>
@@ -208,8 +212,21 @@ export default function ParentHome() {
                         </T>
                       </View>
                     ))}
-                    </ScrollView>
                   </Card>
+                  {o.recentSessions.length > 4 ? (
+                    <Pressable
+                      onPress={() => setAllSessions((v) => !v)}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: allSessions }}
+                      accessibilityLabel={allSessions ? "Voir moins de séances" : `Voir les ${o.recentSessions.length - 4} autres séances`}
+                      style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.xs, paddingVertical: space.sm }}
+                    >
+                      <T v="bodyBold" style={{ color: color.brand }}>
+                        {allSessions ? "Voir moins" : `Voir les ${o.recentSessions.length - 4} autres`}
+                      </T>
+                      <Ionicons name={allSessions ? "chevron-up" : "chevron-down"} size={22} color={color.brand} />
+                    </Pressable>
+                  ) : null}
                 </>
               ) : null}
 

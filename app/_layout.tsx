@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -11,10 +11,11 @@ import { useFonts } from "expo-font";
 import { Outfit_600SemiBold, Outfit_700Bold } from "@expo-google-fonts/outfit";
 import { AtkinsonHyperlegible_400Regular, AtkinsonHyperlegible_700Bold } from "@expo-google-fonts/atkinson-hyperlegible";
 import { useReading } from "../src/state/reading";
+import { useTheme } from "../src/state/theme";
 import { queryClient } from "../src/api/hooks";
 import { clearNotifications } from "../src/lib/notifications";
 import { API_URL, useSession } from "../src/state/session";
-import { color, scheme } from "../src/theme/tokens";
+import { color } from "../src/theme/tokens";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 SystemUI.setBackgroundColorAsync(color.bg).catch(() => {});
@@ -34,6 +35,11 @@ export default function RootLayout() {
   const hydrated = useSession((s) => s.hydrated);
   const hydrate = useSession((s) => s.hydrate);
   const signedIn = useSession((s) => !!s.session);
+  // Changing the theme (Réglages) redraws every screen at once: the navigator
+  // gets a new key, then we reopen the page the change was made from.
+  const themeVersion = useTheme((s) => s.version);
+  const scheme = useTheme((s) => s.scheme);
+  const returnTo = useTheme((s) => s.returnTo);
 
   useEffect(() => {
     hydrate();
@@ -56,6 +62,12 @@ export default function RootLayout() {
     }
   }, [signedIn]);
 
+  useEffect(() => {
+    if (themeVersion === 0 || !returnTo) return;
+    const t = setTimeout(() => router.navigate(returnTo as never), 0);
+    return () => clearTimeout(t);
+  }, [themeVersion, returnTo]);
+
   if (!fonts || !hydrated || !readingLoaded) return null;
 
   return (
@@ -63,7 +75,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg }, animation: "slide_from_right" }} />
+          <Stack key={themeVersion} screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg }, animation: "slide_from_right" }} />
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

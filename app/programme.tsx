@@ -9,13 +9,13 @@ import { Chip } from "../src/components/Chip";
 import { Mascot } from "../src/components/mascot/Mascot";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { useLid } from "../src/lib/lid";
-import { color, radius, space } from "../src/theme/tokens";
+import { color, radius, space, themed } from "../src/theme/tokens";
 
-const STATUS: Record<ProgrammeChapter["status"], { label: string; fg: string; bg: string; icon: keyof typeof Ionicons.glyphMap }> = {
+const STATUS: Record<ProgrammeChapter["status"], { label: string; fg: string; bg: string; icon: keyof typeof Ionicons.glyphMap }> = themed(() => ({
   todo: { label: "Pas encore révisé", fg: color.muted, bg: color.chip, icon: "ellipse-outline" },
   started: { label: "Commencé", fg: color.skyDark, bg: color.skySoft, icon: "sync" },
   mastered: { label: "Bien révisé", fg: color.green, bg: color.greenSoft, icon: "checkmark-circle" },
-};
+}));
 
 function ChapterCard({ c, lid, subject }: { c: ProgrammeChapter; lid: string; subject: string }) {
   const [open, setOpen] = useState(false);

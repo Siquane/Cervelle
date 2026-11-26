@@ -4,15 +4,15 @@ import { KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, View } from "
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import type { Mastery } from "../api/types";
-import { color, font, radius, size, space } from "../theme/tokens";
+import { color, font, radius, size, space, themed } from "../theme/tokens";
 import { Button, T } from "./ui";
 import { Coin } from "./Coin";
 
-export const MASTERY: Record<Mastery, { label: string; icon: keyof typeof Ionicons.glyphMap; fg: string; bg: string; help: string }> = {
+export const MASTERY: Record<Mastery, { label: string; icon: keyof typeof Ionicons.glyphMap; fg: string; bg: string; help: string }> = themed(() => ({
   new: { label: "En cours", icon: "sync", fg: color.skyDark, bg: color.skySoft, help: "Pas encore travaillée, ou seulement une fois. Continue les exercices !" },
   review: { label: "À revoir", icon: "alert-circle", fg: color.sunDark, bg: color.sunSoft, help: "Une erreur récente, ou il est temps de la revoir pour ne pas l'oublier." },
   mastered: { label: "Maîtrisé", icon: "checkmark-circle", fg: color.green, bg: color.greenSoft, help: "Réussie plusieurs fois, à des jours différents. Elle reviendra plus tard pour vérifier." },
-};
+}));
 
 export function MasteryTag({ value, compact }: { value: Mastery; compact?: boolean }) {
   const m = MASTERY[value];
@@ -67,7 +67,7 @@ const ICON: Record<string, string> = {
   livre: "📘", plante: "🌱", planete: "🪐", couronne: "👑", globe: "🌍", calcul: "🔢", fiole: "🧪", atome: "⚛️", palette: "🎨",
   musique: "🎵", langue: "💬", plume: "🪶", sablier: "⏳", corps: "🫀", ballon: "⚽", ordinateur: "💻", carte: "🗺️", balance: "⚖️",
 };
-const TILE = [color.brandSoft, color.tealSoft, color.sunSoft, color.skySoft, color.violetSoft, color.corailSoft];
+const TILE = themed(() => ([color.brandSoft, color.tealSoft, color.sunSoft, color.skySoft, color.violetSoft, color.corailSoft]));
 
 export function RevisionIcon({ icon, size: px = 56, seed = "" }: { icon: string; size?: number; seed?: string }) {
   const bg = TILE[[...seed].reduce((n, c) => n + c.charCodeAt(0), 0) % TILE.length];
@@ -88,7 +88,7 @@ export function Stat({ icon, value, tint, label }: { icon: keyof typeof Ionicons
   );
 }
 
-const s = StyleSheet.create({
+const s = themed(() => StyleSheet.create({
   tag: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill },
   tagText: { fontSize: size.sm, includeFontPadding: false },
   backdrop: { flex: 1, backgroundColor: color.backdrop },
@@ -96,4 +96,4 @@ const s = StyleSheet.create({
   grabber: { alignSelf: "center", width: 44, height: 5, borderRadius: 3, backgroundColor: color.line },
   stat: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: color.card, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 2, borderColor: color.line },
   statText: { fontSize: size.md, color: color.ink, includeFontPadding: false },
-});
+}));

@@ -9,17 +9,17 @@ import { SpeakButton } from "../src/components/VoiceButtons";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { CARD_IMAGES } from "../src/lib/cardImages";
 import { useLid } from "../src/lib/lid";
-import { color, font, radius, size, space } from "../src/theme/tokens";
+import { color, font, radius, size, space, themed } from "../src/theme/tokens";
 
 // Album de cartes « Animaux du monde » : une carte par notion « Maîtrisé ».
 // Les cartes pas encore trouvées sont des ombres. Toucher une carte montre son
 // fait étonnant, qu'on peut écouter.
 
-const RARITY: Record<CardRarity, { label: string; fg: string; bg: string; edge: string }> = {
+const RARITY: Record<CardRarity, { label: string; fg: string; bg: string; edge: string }> = themed(() => ({
   commune: { label: "Commune", fg: color.teal, bg: color.tealSoft, edge: color.line },
   rare: { label: "Rare", fg: color.sky, bg: color.skySoft, edge: color.sky },
   legendaire: { label: "Légendaire ✨", fg: color.sunDark, bg: color.sunSoft, edge: color.sunEdge },
-};
+}));
 const FILTERS: { key: CardRarity | "all"; label: string }[] = [
   { key: "all", label: "Toutes" },
   { key: "commune", label: "Communes" },

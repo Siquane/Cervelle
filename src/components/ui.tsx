@@ -3,7 +3,7 @@ import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, StylePr
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { color, font, GUTTER, onColor, radius, reading, size, space } from "../theme/tokens";
+import { color, font, GUTTER, onColor, radius, reading, size, space, themed } from "../theme/tokens";
 import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
 import { withEmojis } from "./Emoji";
@@ -111,7 +111,7 @@ export function TopBar({ title, right, onBack }: { title?: string; right?: React
 }
 
 type BtnTone = "brand" | "teal" | "sun" | "sky" | "ghost" | "danger" | "white";
-const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = {
+const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = themed(() => ({
   brand: { bg: color.brandFill, edge: color.brandEdge, fg: color.white },
   teal: { bg: color.tealFill, edge: color.tealEdge, fg: color.white },
   sun: { bg: color.sun, edge: color.sunEdge, fg: color.onSun },
@@ -120,7 +120,7 @@ const tones: Record<BtnTone, { bg: string; edge: string; fg: string }> = {
   danger: { bg: color.card, edge: color.red, fg: color.red },
   white: { bg: color.card, edge: color.line, fg: color.ink },
   ghost: { bg: "transparent", edge: "transparent", fg: color.ink },
-};
+}));
 
 /** A chunky button that sinks when pressed. */
 export function Button({
@@ -229,7 +229,7 @@ export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () =
   );
 }
 
-export const styles = StyleSheet.create({
+export const styles = themed(() => StyleSheet.create({
   topBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: GUTTER - 6, paddingVertical: space.sm, gap: space.sm },
   iconBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
   btn: {
@@ -249,4 +249,4 @@ export const styles = StyleSheet.create({
   segment: { flexDirection: "row", backgroundColor: color.chip, borderRadius: radius.lg, padding: 5, gap: 5 },
   segmentItem: { flex: 1, minHeight: 46, borderRadius: radius.md, alignItems: "center", justifyContent: "center", paddingHorizontal: space.sm },
   segmentText: { fontSize: size.md, includeFontPadding: false },
-});
+}));

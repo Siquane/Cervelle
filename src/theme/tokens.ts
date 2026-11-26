@@ -135,10 +135,37 @@ function storedScheme(): Scheme {
   }
 }
 
-export const scheme: Scheme = storedScheme();
+/** The theme in use. Changes live (applyScheme) — always read it at render time. */
+export let scheme: Scheme = storedScheme();
 
-/** The palette of the chosen theme. Set once at start-up (see above). */
+/** The palette of the chosen theme. The same object for the whole life of the app: applyScheme fills it in again. */
 export const color: Palette = scheme === "dark" ? { ...dark } : { ...light };
+
+const refreshers: (() => void)[] = [];
+
+/**
+ * A value computed from the theme outside a component (a table of colours, a
+ * StyleSheet…): built now, and built again in place when the theme changes, so
+ * code that kept it sees the new colours.
+ */
+export function themed<T extends object>(build: () => T): T {
+  const value = build();
+  refreshers.push(() => {
+    const next = build();
+    if (Array.isArray(value)) value.splice(0, value.length, ...(next as unknown[]));
+    else Object.assign(value, next);
+  });
+  return value;
+}
+
+/** Switches the theme without restarting the app: the palettes, then every themed() value. */
+export function applyScheme(next: Scheme) {
+  scheme = next;
+  Object.assign(color, next === "dark" ? dark : light);
+  Object.assign(learnerColor, next === "dark" ? learnerDark : learnerLight);
+  for (const refresh of refreshers) refresh();
+  saveScheme(next);
+}
 
 export function saveScheme(next: Scheme) {
   try {
@@ -178,7 +205,7 @@ const learnerDark: Record<string, LearnerTint> = {
   framboise: { main: "#FF5C8A", dark: "#FF5C8A", fill: "#BC1252", edge: "#9A0040", soft: "#3A1830" },
 };
 
-export const learnerColor: Record<string, LearnerTint> = scheme === "dark" ? learnerDark : learnerLight;
+export const learnerColor: Record<string, LearnerTint> = { ...(scheme === "dark" ? learnerDark : learnerLight) };
 
 /** White or near-black, whichever reads best on the background `bg` (#RRGGBB). */
 export function onColor(bg: string): string {

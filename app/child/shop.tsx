@@ -13,7 +13,7 @@ import { Scene } from "../../src/components/mascot/Scene";
 import { Button, Card, ErrorBox, Loading, Page, T, TopBar } from "../../src/components/ui";
 import { shortDate } from "../../src/lib/format";
 import { useLid } from "../../src/lib/lid";
-import { color, font, radius, size, space } from "../../src/theme/tokens";
+import { color, font, radius, size, space, themed } from "../../src/theme/tokens";
 
 const RAYONS: { slot: ShopSlot; label: string }[] = [
   { slot: "tete", label: "Tête" },
@@ -27,14 +27,14 @@ const RAYONS: { slot: ShopSlot; label: string }[] = [
 
 const KIND_ORDER = { normal: 0, saison: 1, legendaire: 2, badge: 3, chemin: 4, avent: 5, tresor: 6 } as const;
 
-const KIND_TAG: Record<Exclude<ShopItem["kind"], "normal">, { label: string; fg: string; bg: string }> = {
+const KIND_TAG: Record<Exclude<ShopItem["kind"], "normal">, { label: string; fg: string; bg: string }> = themed(() => ({
   saison: { label: "De saison", fg: color.sunDark, bg: color.sunSoft },
   legendaire: { label: "Légendaire", fg: color.violet, bg: color.violetSoft },
   badge: { label: "Badge", fg: color.teal, bg: color.tealSoft },
   chemin: { label: "Chemin d'étoiles", fg: color.sky, bg: color.skySoft },
   avent: { label: "Calendrier de l'Avent", fg: color.red, bg: color.redSoft },
   tresor: { label: "Carte au trésor", fg: color.teal, bg: color.tealSoft },
-};
+}));
 
 /** What Cervelle wears with `item` tried on (it takes its slot's place). */
 function wearWith(equipped: string[], items: ShopItem[], item: ShopItem | null): string[] {

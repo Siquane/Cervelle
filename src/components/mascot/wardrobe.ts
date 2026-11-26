@@ -396,5 +396,5 @@ export const BRAIN_COLORS: Record<string, BrainColor> = {
   galaxie: { fill: "#3B2F86", gradient: ["#6D3FD9", "#3B2F86", "#1F2A6B"], folds: "#A98BFF", cheeks: "#FF5C8A", stars: true },
 };
 
-export const DECORS = ["classe", "bibliotheque", "plage", "foret", "espace", "neige", "aurore", "ile_tresor"] as const;
+export const DECORS = ["classe", "bibliotheque", "plage", "foret", "espace", "neige", "aurore", "ile_tresor", "fond_marin", "montagne", "jungle", "chateau"] as const;
 export type DecorId = (typeof DECORS)[number];

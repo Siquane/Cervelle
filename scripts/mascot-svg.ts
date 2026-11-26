@@ -1,6 +1,17 @@
+import { mascotTree, toSvgString } from "../src/components/mascot/soft";
 import { ACCESSORIES, BRAIN, EYES, eyeShapes, FOLDS, INK_COLOR, VIEWBOX, type Shape } from "../src/components/mascot/geometry";
 
 // The mascot as a plain SVG string (for the icon and splash generator).
+
+export function mascotSvg(opts: { accessories?: string[]; viewBox?: string } = {}): string {
+  const tree = mascotTree(opts.accessories ?? [], "happy", "i", { shadow: false });
+  if (opts.viewBox) tree.attrs.viewBox = opts.viewBox;
+  return toSvgString(tree, { width: "100%", height: "100%" });
+}
+
+
+// The flat drawing (one colour, ink lines): for the monochrome and notification
+// icons, where Android keeps only the shape.
 
 function shape(s: Shape): string {
   const stroke = s.stroke ? ` stroke="${s.stroke}" stroke-width="${s.strokeWidth ?? 4}" stroke-linejoin="round" stroke-linecap="round"` : "";
@@ -16,7 +27,7 @@ function shape(s: Shape): string {
   }
 }
 
-export function mascotSvg(opts: { accessories?: string[]; viewBox?: string; body?: string } = {}): string {
+export function mascotSvgFlat(opts: { accessories?: string[]; viewBox?: string; body?: string } = {}): string {
   const acc = (opts.accessories ?? []).map((id) => ACCESSORIES[id]).filter(Boolean);
   const body = opts.body ?? "#FF8FB1";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="${opts.viewBox ?? VIEWBOX}">

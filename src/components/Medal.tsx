@@ -24,7 +24,6 @@ const METALS: Record<Exclude<Metal, "locked">, [string, string, string]> = {
   fete: ["#EFE6FF", "#B79BFF", "#6D3FD9"],
 };
 const LOCKED: [string, string, string] = scheme === "dark" ? ["#3A4263", "#2A3150", "#1D2440"] : ["#F1F3F8", "#DADEE8", "#A9AEC2"];
-const INK = "#1F1A3D";
 
 /** A season's own colours, a holiday's violet; grey until earned. */
 export const windowMetal = (w: BadgeWindow): Metal => (!w.earned ? "locked" : w.family === "fete" ? "fete" : w.family === "chemin" || w.family === "ile" ? "or" : (w.key.split(":")[1] as Metal));
@@ -104,8 +103,11 @@ export const Medal = memo(function Medal({ shape, metal, icon, size = 96, dot = 
             <Stop offset="1" stopColor={mid} />
           </LinearGradient>
         </Defs>
-        {/* Rim: a thick ink outline, then the metal on top. */}
-        <ShapeArt shape={shape} fill={INK} stroke={locked ? dark : INK} strokeWidth={8} />
+        {/* « 3D douce » style, like Cervelle: a soft shadow, a rim in the metal's dark shade, then the metal. */}
+        <G transform="translate(0 3)" opacity={0.18}>
+          <ShapeArt shape={shape} fill="#1F1A3D" stroke="#1F1A3D" strokeWidth={6} />
+        </G>
+        <ShapeArt shape={shape} fill={dark} stroke={dark} strokeWidth={6} />
         <ShapeArt shape={shape} fill={`url(#face${id})`} />
         <G transform="translate(50 50) scale(0.74) translate(-50 -50)">
           <ShapeArt shape={shape} fill={`url(#inner${id})`} stroke={dark} strokeWidth={3} />
@@ -127,7 +129,7 @@ export const Medal = memo(function Medal({ shape, metal, icon, size = 96, dot = 
           borderRadius: tab / 2,
           backgroundColor: locked ? LOCKED[1] : dark,
           borderWidth: 2,
-          borderColor: locked ? LOCKED[2] : INK,
+          borderColor: locked ? LOCKED[2] : light,
           alignItems: "center",
           justifyContent: "center",
         }}

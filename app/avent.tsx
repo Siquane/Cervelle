@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useRef, useState } from "react";
+import { Animated, Easing, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +12,7 @@ import { Mascot } from "../src/components/mascot/Mascot";
 import { SpeakButton } from "../src/components/VoiceButtons";
 import { Button, ErrorBox, Loading, T } from "../src/components/ui";
 import { useLid } from "../src/lib/lid";
+import { motionReduced, StarBurst } from "../src/components/motion";
 import { font, GUTTER, radius, size, space } from "../src/theme/tokens";
 
 // Calendrier de l'Avent : 24 cases, une révision ouvre la case du jour (deux
@@ -45,6 +46,15 @@ function RewardArt({ r, big = false }: { r: AdventReward; big?: boolean }) {
 }
 
 function Door({ c, isToday, onPress }: { c: AdventCell; isToday: boolean; onPress: () => void }) {
+  // Une case à ouvrir pivote comme une vraie porte avant de montrer la surprise.
+  const swing = useRef(new Animated.Value(0)).current;
+  const press = () => {
+    if (!c.openable || motionReduced()) return onPress();
+    Animated.timing(swing, { toValue: 1, duration: 380, easing: Easing.in(Easing.cubic), useNativeDriver: true }).start(() => {
+      onPress();
+      swing.setValue(0);
+    });
+  };
   const bg = c.opened ? "#FFFFFF" : c.openable ? GOLD : DOORS[(c.day - 1) % DOORS.length];
   const label = c.opened
     ? `Case ${c.day}, ouverte`
@@ -54,10 +64,11 @@ function Door({ c, isToday, onPress }: { c: AdventCell; isToday: boolean; onPres
         ? `Case ${c.day}, fermée : fais une révision pour l'ouvrir`
         : `Case ${c.day}, s'ouvre le ${c.day} décembre`;
   return (
+    <Animated.View style={{ flex: 1, transform: [{ perspective: 600 }, { rotateY: swing.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "-95deg"] }) }] }}>
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      onPress={onPress}
+      onPress={press}
       style={({ pressed }) => ({
         flex: 1,
         aspectRatio: 0.82,
@@ -87,6 +98,7 @@ function Door({ c, isToday, onPress }: { c: AdventCell; isToday: boolean; onPres
         </>
       )}
     </Pressable>
+    </Animated.View>
   );
 }
 
@@ -208,7 +220,10 @@ export default function AdventScreen() {
       <BottomSheet open={!!shown} onClose={() => setShown(null)} title={shown ? `Case ${shown.day}${shown.fresh ? " : surprise !" : ""}` : ""}>
         {shown ? (
           <View style={{ gap: space.md, alignItems: "center" }}>
-            <RewardArt r={shown.reward} big />
+            <View>
+              <RewardArt r={shown.reward} big />
+              {shown.fresh ? <StarBurst k={shown.day} now /> : null}
+            </View>
             {shown.reward.type === "item" ? (
               <T v="bodyBold" style={{ textAlign: "center" }}>
                 {shown.reward.itemName} pour Cervelle !{shown.fresh ? " Il le porte déjà." : ""}

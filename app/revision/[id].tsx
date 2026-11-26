@@ -10,6 +10,7 @@ import { BottomSheet, MasteryHelp, MasteryTag, RevisionIcon } from "../../src/co
 import { DateField } from "../../src/components/DateField";
 import { Mascot } from "../../src/components/mascot/Mascot";
 import { BossArt, bossName } from "../../src/components/Boss";
+import { SlideIn } from "../../src/components/motion";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, Segmented, T, TopBar } from "../../src/components/ui";
 import { shortDate, whenLabel } from "../../src/lib/format";
 import { useLid } from "../../src/lib/lid";
@@ -248,7 +249,9 @@ export default function RevisionScreen() {
             ) : null}
           </View>
           <Segmented options={[{ key: "progress", label: "Progression" }, { key: "sheets", label: "Fiches" }]} value={tab} onChange={setTab} />
-          {tab === "progress" ? <Progression r={r} lid={lid} /> : <SheetList r={r} lid={lid} />}
+          <SlideIn k={tab} direction={tab === "sheets" ? 1 : -1} style={{ gap: space.lg }}>
+            {tab === "progress" ? <Progression r={r} lid={lid} /> : <SheetList r={r} lid={lid} />}
+          </SlideIn>
           <Button tone="white" icon="chatbubbles" label="Poser une question à Cervelle" onPress={() => router.push({ pathname: "/assistant", params: { lid, revisionId: r.id } })} />
         </>
       ) : null}

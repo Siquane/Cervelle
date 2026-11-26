@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Animated, KeyboardAvoidingView, Platform, Pressable, Vibration, ScrollView, StyleProp, StyleSheet, Text as RNText, TextProps, TextStyle, View, ViewStyle } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -7,6 +7,7 @@ import { color, font, GUTTER, onColor, radius, reading, size, space, themed } fr
 import { useFontRefresh } from "../state/reading";
 import { Coin } from "./Coin";
 import { withEmojis } from "./Emoji";
+import { motionReduced, useFill } from "./motion";
 
 type Variant = "title" | "h2" | "h3" | "body" | "bodyBold" | "small" | "label";
 
@@ -184,9 +185,11 @@ export function Card({ children, style, onPress }: { children: ReactNode; style?
 
 export function ProgressBar({ value, tint = color.brand, track = color.line, height = 12 }: { value: number; tint?: string; track?: string; height?: number }) {
   const pct = Math.max(0, Math.min(100, value));
+  // La barre se remplit jusqu'à sa valeur.
+  const fill = useFill(pct);
   return (
     <View style={{ height, backgroundColor: track, borderRadius: radius.pill, overflow: "hidden" }} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }}>
-      <View style={{ width: `${pct}%`, height: "100%", backgroundColor: tint, borderRadius: radius.pill }} />
+      <Animated.View style={{ width: fill.interpolate({ inputRange: [0, 100], outputRange: ["0%", "100%"] }), height: "100%", backgroundColor: tint, borderRadius: radius.pill }} />
     </View>
   );
 }
@@ -194,12 +197,46 @@ export function ProgressBar({ value, tint = color.brand, track = color.line, hei
 /** Two or more choices side by side (a child's name, a time range…). */
 export function Segmented<K extends string>({ options, value, onChange, tint = color.brandFill }: { options: { key: K; label: string }[]; value: K; onChange: (k: K) => void; tint?: string }) {
   useFontRefresh();
+  // La pastille glisse jusqu'à l'onglet choisi, et sa couleur change en douceur.
+  const [width, setWidth] = useState(0);
+  const index = Math.max(0, options.findIndex((o) => o.key === value));
+  const pos = useRef(new Animated.Value(index)).current;
+  const fade = useRef(new Animated.Value(1)).current;
+  const [colors, setColors] = useState({ from: tint, to: tint });
+  useEffect(() => {
+    if (motionReduced()) pos.setValue(index);
+    else Animated.spring(pos, { toValue: index, useNativeDriver: false, speed: 16, bounciness: 6 }).start();
+  }, [index]);
+  useEffect(() => {
+    if (tint === colors.to) return;
+    setColors({ from: colors.to, to: tint });
+    fade.setValue(0);
+    Animated.timing(fade, { toValue: 1, duration: 280, useNativeDriver: false }).start();
+  }, [tint]);
+  const PAD = 5;
+  const GAP = 5;
+  const n = options.length;
+  const itemW = width ? (width - PAD * 2 - GAP * (n - 1)) / n : 0;
+  const left = pos.interpolate({ inputRange: [0, Math.max(1, n - 1)], outputRange: [PAD, PAD + Math.max(1, n - 1) * (itemW + GAP)] });
+  const bg = fade.interpolate({ inputRange: [0, 1], outputRange: [colors.from, colors.to] });
   return (
-    <View style={styles.segment} accessibilityRole="tablist">
+    <View style={styles.segment} accessibilityRole="tablist" onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      {itemW > 0 ? <Animated.View pointerEvents="none" style={{ position: "absolute", top: PAD, bottom: PAD, width: itemW, left, borderRadius: radius.md, backgroundColor: bg }} /> : null}
       {options.map((o) => {
         const on = o.key === value;
         return (
-          <Pressable key={o.key} onPress={() => onChange(o.key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={[styles.segmentItem, on && { backgroundColor: tint }]}>
+          <Pressable
+            key={o.key}
+            onPress={() => {
+              if (on) return;
+              // Petite vibration, comme un vrai bouton.
+              if (Platform.OS === "android" && !motionReduced()) Vibration.vibrate(8);
+              onChange(o.key);
+            }}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: on }}
+            style={[styles.segmentItem, on && itemW === 0 && { backgroundColor: tint }]}
+          >
             <RNText numberOfLines={1} style={[styles.segmentText, { fontFamily: font.textBlack, color: on ? onColor(tint) : color.muted }]}>
               {o.label}
             </RNText>

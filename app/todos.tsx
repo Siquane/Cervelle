@@ -11,6 +11,7 @@ import { DateField } from "../src/components/DateField";
 import { Field } from "../src/components/Field";
 import { Check, celebrate } from "../src/components/organize";
 import { Button, Card, ErrorBox, Loading, Page, Segmented, T, TopBar } from "../src/components/ui";
+import { SlideIn } from "../src/components/motion";
 import { whenLabel } from "../src/lib/format";
 import { useLid } from "../src/lib/lid";
 import { color, radius, space, themed } from "../src/theme/tokens";
@@ -96,6 +97,7 @@ export default function Todos() {
     <Page header={<TopBar title="Mes tâches" />}>
       {todos.error ? <ErrorBox message={errorMessage(todos.error)} onRetry={() => todos.refetch()} /> : null}
       <Segmented options={[{ key: "matrix", label: "Matrice" }, { key: "list", label: "Liste" }]} value={view} onChange={setView} />
+      <SlideIn k={view} direction={view === "list" ? 1 : -1} style={{ gap: space.lg }}>
       {view === "matrix" ? (
         <>
           <T v="small">Range chaque tâche dans la bonne case. Commence toujours par la rouge !</T>
@@ -132,6 +134,7 @@ export default function Todos() {
       ) : (
         <Card style={{ gap: space.md }}>{open_.length ? open_.map(row) : <T v="body">Rien à faire ! Ajoute tes devoirs pour ne rien oublier.</T>}</Card>
       )}
+      </SlideIn>
       <Button icon="add" label="Ajouter une tâche" onPress={() => open("new")} />
       {done.length ? (
         <>

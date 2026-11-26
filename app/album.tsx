@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Easing, Image, Pressable, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { errorMessage } from "../src/api/client";
 import { useAlbum, useRefreshLearner } from "../src/api/hooks";
@@ -9,6 +9,7 @@ import { SpeakButton } from "../src/components/VoiceButtons";
 import { Button, Card, ErrorBox, Loading, Page, ProgressBar, T, TopBar } from "../src/components/ui";
 import { CARD_IMAGES } from "../src/lib/cardImages";
 import { useLid } from "../src/lib/lid";
+import { motionReduced, StarBurst } from "../src/components/motion";
 import { color, font, radius, size, space, themed } from "../src/theme/tokens";
 
 // Album de cartes « Animaux du monde » : une carte par notion « Maîtrisé ».
@@ -85,6 +86,27 @@ function BigCard({ card }: { card: Omit<AlbumCard, "count"> }) {
         </T>
         <SpeakButton id={`card-${card.id}`} text={`${card.name}. ${card.fact}`} />
       </View>
+    </View>
+  );
+}
+
+/** La nouvelle carte arrive face cachée et se retourne. */
+function Flip({ k, children }: { k: string; children: React.ReactNode }) {
+  const v = useRef(new Animated.Value(motionReduced() ? 1 : 0)).current;
+  useEffect(() => {
+    if (motionReduced()) return;
+    v.setValue(0);
+    Animated.timing(v, { toValue: 1, duration: 650, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
+  }, [k]);
+  const rotateY = v.interpolate({ inputRange: [0, 1], outputRange: ["180deg", "360deg"] });
+  // Le dos de la carte pendant la première moitié du retournement.
+  const back = v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [1, 1, 0, 0] });
+  return (
+    <View>
+      <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [0, 0, 1, 1] }), transform: [{ perspective: 900 }, { rotateY }] }}>{children}</Animated.View>
+      <Animated.View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: back, borderRadius: radius.lg, backgroundColor: color.brandFill, alignItems: "center", justifyContent: "center", transform: [{ perspective: 900 }, { rotateY: v.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "180deg"] }) }] }}>
+        <T style={{ fontSize: 64 }}>🧠</T>
+      </Animated.View>
     </View>
   );
 }
@@ -181,7 +203,10 @@ export default function AlbumScreen() {
       <BottomSheet open={!!current} onClose={() => setFresh([])} title={fresh.length > 1 ? `Nouvelle carte ${step + 1}/${fresh.length} !` : "Nouvelle carte !"}>
         {current ? (
           <View style={{ gap: space.md }}>
-            <BigCard card={current} />
+            <Flip k={`${step}-${current.id}`}>
+              <BigCard card={current} />
+              {!current.duplicate ? <StarBurst k={`${step}-${current.id}`} now color={current.rarity === "legendaire" ? "#FFC23D" : "#FF8FB1"} /> : null}
+            </Flip>
             {current.duplicate ? (
               <T v="bodyBold" style={{ textAlign: "center", color: color.sunDark }}>
                 Déjà dans ton album : +{current.coins} pièces !

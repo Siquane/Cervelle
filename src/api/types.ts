@@ -182,6 +182,8 @@ export interface ProgrammeChapter {
   id: string;
   title: string;
   notions: string[];
+  /** Compétences officielles (« ce que tu sauras faire ») ; absent avec un ancien serveur. */
+  competences?: string[];
   revisions: { id: string; title: string; progress: number }[];
   status: "todo" | "started" | "mastered";
 }

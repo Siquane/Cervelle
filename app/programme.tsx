@@ -47,6 +47,19 @@ function ChapterCard({ c, lid, subject }: { c: ProgrammeChapter; lid: string; su
               </View>
             ))}
           </View>
+          {c.competences?.length ? (
+            <View style={{ gap: 6 }}>
+              <T v="label">Ce que tu sauras faire</T>
+              {c.competences.map((k) => (
+                <View key={k} style={{ flexDirection: "row", gap: space.sm }}>
+                  <Ionicons name="checkmark-circle-outline" size={18} color={color.teal} style={{ marginTop: 3 }} />
+                  <T v="body" style={{ flex: 1 }}>
+                    {k}
+                  </T>
+                </View>
+              ))}
+            </View>
+          ) : null}
           {c.revisions.map((r) => (
             <Card key={r.id} onPress={() => router.push({ pathname: "/revision/[id]", params: { id: r.id, lid } })} style={{ gap: 6, backgroundColor: color.bg }}>
               <T v="bodyBold" numberOfLines={1}>

@@ -182,7 +182,7 @@ function expressUri(d: WidgetData): string {
 function Serie({ d, size, style }: { d: WidgetData; size: Size; style: WidgetStyle }) {
   const th = theme(style, G.serie);
   const wide = size.width >= 230;
-  const label = `Cervelle. ${d.streak} jour${d.streak > 1 ? "s" : ""} de suite. ${d.studiedToday ? "Tu as révisé aujourd'hui." : "Pas encore révisé aujourd'hui."}`;
+  const label = `Cervelle. ${d.streak} jour${d.streak > 1 ? "s" : ""} d'affilée. ${d.studiedToday ? "Tu as révisé aujourd'hui." : "Pas encore révisé aujourd'hui."}`;
   const mascot = <SvgWidget svg={mascotSvgString(d.equipped, d.studiedToday ? "happy" : "sleep")} style={wide ? { width: 110, height: 107 } : { width: 64, height: 62 }} />;
   const count = (
     <FlexWidget style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
@@ -190,7 +190,7 @@ function Serie({ d, size, style }: { d: WidgetData; size: Size; style: WidgetSty
       <TextWidget text={` ${d.streak}`} style={{ fontSize: wide ? 44 : 30, color: th.text, fontFamily: TITLE }} />
     </FlexWidget>
   );
-  const status = <Txt th={th} text={d.studiedToday ? "Bravo, c'est fait !" : d.streak > 0 ? "Garde ta série !" : "C'est parti !"} size={13} color={th.soft} font={BOLD} />;
+  const status = <Txt th={th} text={d.studiedToday ? "Bravo, c'est fait !" : d.streak > 0 ? "Garde le rythme !" : "C'est parti !"} size={13} color={th.soft} font={BOLD} />;
   if (!wide) {
     return (
       <Frame th={th} label={label}>
@@ -229,7 +229,7 @@ function Interro({ d, style }: { d: WidgetData; style: WidgetStyle }) {
         <Gap h={6} />
         <Txt th={th} text="Pas d'interro prévue" size={17} font={TITLE} />
         <Gap h={4} />
-        <Txt th={th} text="Ajoute la date dans un cours pour la voir ici." size={13} color={th.soft} lines={2} />
+        <Txt th={th} text="Ajoute la date dans une révision pour la voir ici." size={13} color={th.soft} lines={2} />
       </Frame>
     );
   }
@@ -272,12 +272,12 @@ function Carte({ d, flipped, style }: { d: WidgetData; flipped: boolean; style: 
   const c = d.card;
   if (!c) {
     return (
-      <Frame th={th} label="Carte mémoire du jour">
+      <Frame th={th} label="Fiche-question du jour">
         <Txt th={th} text="🃏" size={26} />
         <Gap h={6} />
         <Txt th={th} text="Carte du jour" size={17} font={TITLE} />
         <Gap h={4} />
-        <Txt th={th} text="Photographie un cours pour avoir tes cartes." size={13} color={th.soft} lines={2} />
+        <Txt th={th} text="Prends une leçon en photo pour avoir tes questions." size={13} color={th.soft} lines={2} />
       </Frame>
     );
   }

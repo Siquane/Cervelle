@@ -106,7 +106,7 @@ export default function ProgrammeScreen() {
             <ChapterCard key={c.id} c={c} lid={lid} subject={current.subject} />
           ))}
           <T v="small" style={{ color: color.faint }}>
-            Source : {current.source}.{current.verified ? "" : " Intitulés résumés, à vérifier sur le texte officiel."}
+            Source : {current.source}.{current.verified ? "" : " Résumé par Cervelle : le texte officiel peut le dire un peu autrement."}
           </T>
         </>
       ) : null}

@@ -37,7 +37,7 @@ export default function HomeworkHome() {
       const picked = await pickPhotos(source, 3);
       if (picked.length) send.mutate(picked.map(({ data, mimeType }) => ({ data, mimeType })));
     } catch (e) {
-      Alert.alert(e instanceof PermissionDenied ? "Autorisation nécessaire" : "Photo non ajoutée", errorMessage(e));
+      Alert.alert(e instanceof PermissionDenied ? "Autorisation nécessaire" : "Oups, la photo n'est pas ajoutée", errorMessage(e));
     } finally {
       setPicking(false);
     }

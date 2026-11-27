@@ -72,16 +72,16 @@ export default function TimerTab() {
   const prefs = useMutation({
     mutationFn: (b: { focus: number; pause: number }) => api.patch<{ learner: Learner }>(`${learnerPath(lid)}/timer`, b),
     onSuccess: () => refresh(),
-    onError: (e) => Alert.alert("Réglages non enregistrés", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, tes réglages ne sont pas enregistrés", errorMessage(e)),
   });
   const finish = useMutation({
     mutationFn: (body: { seconds: number; label: string; revisionId: string | null; todoId: string | null }) => api.post<FocusResult>(`${learnerPath(lid)}/focus`, body),
     onSuccess: (r) => {
       refresh();
-      if (!r.counted) Alert.alert("Presque !", "À partir de 5 minutes, ta séance compte pour ta série de jours.");
+      if (!r.counted) Alert.alert("Presque !", "À partir de 5 minutes, ta séance compte pour tes jours d'affilée.");
       else celebrate(r, "Séance terminée !");
     },
-    onError: (e) => Alert.alert("Séance non enregistrée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ta séance n'est pas enregistrée", errorMessage(e)),
   });
 
   if (home.isLoading || !home.data) return <Loading />;
@@ -166,7 +166,7 @@ export default function TimerTab() {
           <Mascot size={70} accessories={home.data.learner.equipped} mood={todayMinutes ? "happy" : "wow"} />
           <View style={{ flex: 1, gap: 2 }}>
             <T v="bodyBold">{todayMinutes ? `${todayMinutes} min de travail aujourd'hui` : "Pas encore travaillé aujourd'hui"}</T>
-            <T v="small">1 pièce toutes les 5 minutes. Dès 5 minutes, ta série de jours compte !</T>
+            <T v="small">1 pièce toutes les 5 minutes. Dès 5 minutes, ta journée compte dans tes jours d'affilée !</T>
           </View>
         </Card>
       </ScrollView>

@@ -71,7 +71,7 @@ export default function Todos() {
       refresh();
       celebrate(r, "Tâche finie !");
     },
-    onError: (e) => Alert.alert("Tâche non enregistrée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ta tâche n'est pas enregistrée", errorMessage(e)),
   });
 
   if (todos.isLoading) return <Loading />;

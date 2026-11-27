@@ -132,7 +132,7 @@ export default function AgendaTab() {
       <BottomSheet open={syncOpen} onClose={() => setSyncOpen(false)} title="Synchroniser avec Passerelle">
         {data?.canSync ? (
           <>
-            <T v="body">L'agenda de Cervelle reste séparé. La synchronisation se fait seulement quand tu la demandes, et ne crée jamais de doublon.</T>
+            <T v="body">Ton agenda et celui de la famille ne se mélangent que si tu touches ce bouton. Rien n'est jamais en double.</T>
             {sync.error ? <ErrorBox message={errorMessage(sync.error)} /> : null}
             <Button icon="swap-vertical" label="Dans les deux sens" loading={sync.isPending} onPress={() => sync.mutate("both")} />
             <Button tone="white" icon="arrow-up" label="Cervelle → planning familial" disabled={sync.isPending} onPress={() => sync.mutate("to_passerelle")} />

@@ -59,7 +59,7 @@ export function QuestionView({ q, onAnswer, locked, verdict, mode }: { q: Questi
     const back = q.back ?? null;
     return (
       <View style={{ gap: space.lg }}>
-        <Pressable accessibilityRole="button" accessibilityLabel={flipped ? "Réponse" : "Retourner la carte"} onPress={() => setFlipped(true)} style={{ minHeight: 220, borderRadius: radius.lg, backgroundColor: flipped ? color.tealSoft : color.card, borderWidth: 2, borderBottomWidth: 6, borderColor: flipped ? color.teal : color.line, alignItems: "center", justifyContent: "center", padding: space.xl, gap: space.md }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={flipped ? "Réponse" : "Retourner la fiche"} onPress={() => setFlipped(true)} style={{ minHeight: 220, borderRadius: radius.lg, backgroundColor: flipped ? color.tealSoft : color.card, borderWidth: 2, borderBottomWidth: 6, borderColor: flipped ? color.teal : color.line, alignItems: "center", justifyContent: "center", padding: space.xl, gap: space.md }}>
           <T v="label">{flipped ? "Réponse" : "Question"}</T>
           <T read v="h3" style={{ textAlign: "center" }}>
             {flipped ? back ?? "Dis la réponse à voix haute, puis vérifie avec la correction." : q.prompt}

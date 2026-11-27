@@ -64,13 +64,13 @@ export default function ChildHome() {
   const tick = useMutation({
     mutationFn: (t: Todo) => api.patch<Reward>(`${learnerPath(lid)}/todos/${t.id}`, { done: !t.done }),
     onSuccess: afterReward,
-    onError: (e) => Alert.alert("Tâche non enregistrée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ta tâche n'est pas enregistrée", errorMessage(e)),
   });
   const habitTick = useMutation({
     mutationFn: (h: { id: string; on: boolean }) =>
       h.on ? api.delete<Reward>(`${learnerPath(lid)}/habits/${h.id}/check?day=${habits.data?.today ?? todayIso()}`) : api.post<Reward>(`${learnerPath(lid)}/habits/${h.id}/check`, {}),
     onSuccess: (r) => afterReward({ ...r, coins: r.coins ?? 0 }),
-    onError: (e) => Alert.alert("Habitude non enregistrée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ton habitude n'est pas enregistrée", errorMessage(e)),
   });
   const chest = useMutation({
     mutationFn: () => api.post<{ coins: number }>(`${learnerPath(lid)}/chest`),

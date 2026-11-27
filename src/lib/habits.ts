@@ -40,6 +40,6 @@ export const HABIT_IDEAS = [
   { title: "Boire de l'eau", emoji: "💧" },
   { title: "8 h de sommeil", emoji: "😴" },
   { title: "20 min de sport", emoji: "🏃" },
-  { title: "Relire mes cours le soir", emoji: "✏️" },
+  { title: "Relire mes leçons le soir", emoji: "✏️" },
   { title: "Pas d'écran avant le lit", emoji: "📵" },
 ];

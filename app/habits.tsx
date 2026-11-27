@@ -60,7 +60,7 @@ export default function Habits() {
       reload();
       celebrate({ coins: r.coins ?? 0, levelUp: r.levelUp });
     },
-    onError: (e) => Alert.alert("Habitude non enregistrée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ton habitude n'est pas enregistrée", errorMessage(e)),
   });
 
   if (habits.isLoading || !habits.data) return <Loading />;

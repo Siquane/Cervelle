@@ -152,7 +152,7 @@ export default function AlbumScreen() {
               </T>
             </View>
             <ProgressBar value={(a.collected / a.total) * 100} tint={color.brandBrain} track={color.line} />
-            <T v="small">Chaque notion « Maîtrisé » te donne une carte. Une carte que tu as déjà se change en pièces.</T>
+            <T v="small">Chaque notion « Maîtrisé » te donne une carte. Si tu as déjà la carte, elle se change en pièces.</T>
           </Card>
 
           <View style={{ flexDirection: "row", gap: space.xs, flexWrap: "wrap" }}>

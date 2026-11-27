@@ -177,7 +177,7 @@ export default function ParentHome() {
                         {r.title}
                       </T>
                       <T v="small">
-                        {whenLabel(r.examDate!)} · prêt à {r.progress} %
+                        {whenLabel(r.examDate!)} · révisé à {r.progress} %
                       </T>
                     </View>
                   </Card>

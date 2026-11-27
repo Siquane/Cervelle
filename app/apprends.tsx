@@ -54,7 +54,7 @@ export default function TeachScreen() {
             <>
               <T v="small">
                 {quiz.answeredByName ?? "Ton parent"} a répondu. +{list.data!.stars} étoiles pour toi !{" "}
-                {quiz.score === quiz.total ? "Tu lui as bien appris ta leçon." : "Explique-lui ce qu'il n'avait pas trouvé :"}
+                {quiz.score === quiz.total ? "Tu lui as bien appris ta leçon." : "Explique-lui les bonnes réponses :"}
               </T>
               {quiz.questions
                 .filter((q) => q.correct === false)

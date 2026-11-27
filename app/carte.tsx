@@ -169,7 +169,7 @@ export default function TreasureMapScreen() {
               <T style={{ fontFamily: font.title, fontSize: size.lg, color: "#FFFFFF" }}>
                 {found ? `${found} lieu${found > 1 ? "x" : ""} découvert${found > 1 ? "s" : ""}` : "À l'aventure !"}
               </T>
-              <T style={{ color: SOFT, fontSize: size.sm }}>Chaque notion « Maîtrisé » chasse un nuage. 12 lieux, et le coffre de l'île s'ouvre !</T>
+              <T style={{ color: SOFT, fontSize: size.sm }}>Chaque notion « Maîtrisé » chasse un nuage. Découvre 12 lieux et le coffre de l'île s'ouvre !</T>
               {m.completeCount ? (
                 <T style={{ color: GOLD, fontFamily: font.textBold, fontSize: size.sm }}>
                   {m.completeCount} île{m.completeCount > 1 ? "s" : ""} explorée{m.completeCount > 1 ? "s" : ""}

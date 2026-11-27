@@ -126,7 +126,7 @@ export default function BossFight() {
           <T v="body" style={{ textAlign: "center" }}>
             {won
               ? "Tu as montré que tu connais toute la leçon. Bravo pour ton travail !"
-              : `Il lui reste ${hearts} cœur${hearts > 1 ? "s" : ""}. Relis les fiches des questions difficiles, puis reviens le battre : tu y es presque.`}
+              : `Il lui reste ${hearts} cœur${hearts > 1 ? "s" : ""}. Relis tes fiches, puis reviens le battre. Tu y es presque !`}
           </T>
           {won && boss?.first ? (
             <T v="bodyBold" style={{ color: color.sunDark, textAlign: "center" }}>

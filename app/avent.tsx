@@ -121,7 +121,7 @@ function statusOf(a: Advent): { title: string; text: string; revise: boolean } {
   if (missed.length) {
     return {
       title: a.phase === "rattrapage" ? "Rattrape tes cases" : "Une case oubliée ?",
-      text: a.phase === "rattrapage" ? "Jusqu'au 6 janvier, chaque révision ouvre une case oubliée. Deux révisions le même jour en ouvrent deux." : "Fais deux révisions le même jour : la deuxième ouvre une case oubliée.",
+      text: a.phase === "rattrapage" ? "Jusqu'au 6 janvier, chaque jour où tu révises ouvre une case oubliée. Fais deux révisions le même jour pour en ouvrir deux." : "Fais deux révisions le même jour : la deuxième ouvre une case oubliée.",
       revise: true,
     };
   }

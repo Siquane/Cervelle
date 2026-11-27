@@ -32,7 +32,7 @@ export default function AddPages() {
       const picked = await pickPhotos(source, room);
       setPages((p) => [...p, ...picked].slice(0, MAX_PAGES - already));
     } catch (e) {
-      Alert.alert(e instanceof PermissionDenied ? "Autorisation nécessaire" : "Photo non ajoutée", errorMessage(e));
+      Alert.alert(e instanceof PermissionDenied ? "Autorisation nécessaire" : "Oups, la photo n'est pas ajoutée", errorMessage(e));
     } finally {
       setPicking(false);
     }
@@ -81,7 +81,7 @@ export default function AddPages() {
           <Button small tone="white" icon="images" label="Galerie" onPress={() => add("library")} disabled={picking} />
         </View>
       ) : (
-        <T v="small">C'est le maximum de pages pour un cours.</T>
+        <T v="small">C'est le maximum de pages pour une leçon.</T>
       )}
 
       {send.error ? <ErrorBox message={errorMessage(send.error)} /> : null}

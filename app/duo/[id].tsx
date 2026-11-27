@@ -93,9 +93,9 @@ export default function Duo() {
               key={p}
               value={names[p]}
               onChangeText={(v) => setNames((n) => (p === 0 ? [v.slice(0, 20), n[1]] : [n[0], v.slice(0, 20)]))}
-              placeholder={p === 0 ? `Joueur 1 (${home.data?.learner.name ?? "toi"})` : "Prénom du joueur 2"}
+              placeholder={p === 0 ? `Personne 1 (${home.data?.learner.name ?? "toi"})` : "Prénom de la personne 2"}
               placeholderTextColor={color.faint}
-              accessibilityLabel={p === 0 ? "Prénom du joueur 1" : "Prénom du joueur 2"}
+              accessibilityLabel={p === 0 ? "Prénom de la personne 1" : "Prénom de la personne 2"}
               style={{ minHeight: 52, borderRadius: radius.md, borderWidth: 2, borderColor: color.line, paddingHorizontal: 16, fontFamily: font.text, fontSize: size.md, color: color.ink }}
             />
           ))}

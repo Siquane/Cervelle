@@ -37,7 +37,7 @@ export default function FriendsTab() {
       // The challenger plays first; the friend sees it in their list.
       router.push({ pathname: "/duel/[id]", params: { id: r.duel.id, lid } });
     },
-    onError: (e) => Alert.alert("Défi non lancé", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, le défi n'est pas lancé", errorMessage(e)),
   });
   const refresh = () => qc.invalidateQueries({ queryKey: keys.friends(lid) });
 
@@ -48,7 +48,7 @@ export default function FriendsTab() {
       refresh();
       Alert.alert("Demande envoyée", `Quand tes parents et ceux ${de(r.friendship.name)} auront dit oui, vous serez amis.`);
     },
-    onError: (e) => Alert.alert("Demande non envoyée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ta demande n'est pas partie", errorMessage(e)),
   });
   const cheer = useMutation({
     mutationFn: (b: { toId: string; kind: string }) => api.post(`${learnerPath(lid)}/cheers`, b),
@@ -56,21 +56,21 @@ export default function FriendsTab() {
       setPicked(null);
       Alert.alert("Envoyé !", "Ton encouragement est parti.");
     },
-    onError: (e) => Alert.alert("Encouragement non envoyé", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ton encouragement n'est pas parti", errorMessage(e)),
   });
   const challenge = useMutation({
     mutationFn: (toId: string) => api.post(`${learnerPath(lid)}/challenges`, { toId }),
     onSuccess: () => {
       setPicked(null);
       refresh();
-      Alert.alert("Défi lancé !", "Qui travaillera le plus cette semaine ? Le gagnant remporte 20 pièces.");
+      Alert.alert("Défi lancé !", "Qui travaillera le plus cette semaine ? Qui travaille le plus gagne 20 pièces.");
     },
-    onError: (e) => Alert.alert("Défi non lancé", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, le défi n'est pas lancé", errorMessage(e)),
   });
   const answer = useMutation({
     mutationFn: (b: { id: string; action: "accept" | "decline" }) => api.post(`${learnerPath(lid)}/challenges/${b.id}/${b.action}`),
     onSuccess: refresh,
-    onError: (e) => Alert.alert("Réponse non envoyée", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ta réponse n'est pas partie", errorMessage(e)),
   });
   const unfriend = useMutation({
     mutationFn: (id: string) => api.delete(`${learnerPath(lid)}/friends/${id}`),
@@ -260,7 +260,7 @@ export default function FriendsTab() {
       </KeyboardSafe>
 
       <BottomSheet open={!!duelFor} onClose={() => setDuelFor(null)} title={`Défi quiz avec ${duelFor?.name ?? ""}`}>
-        <T v="body">Choisis un de tes cours : vous aurez les mêmes 10 questions. 10 pièces chacun pour le finir, et 10 de plus si tu progresses depuis ton dernier défi.</T>
+        <T v="body">Choisis une leçon. Vous aurez les mêmes 10 questions. Fini = 10 pièces. Mieux que la dernière fois = 10 de plus !.</T>
         <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={{ gap: space.sm }}>
           {(revisions.data ?? [])
             .filter((r) => r.status === "ready")
@@ -278,7 +278,7 @@ export default function FriendsTab() {
                 <T v="small">{r.subject}</T>
               </Pressable>
             ))}
-          {revisions.data && !revisions.data.some((r) => r.status === "ready") ? <T v="small">Prends d'abord un cours en photo : le défi se fait sur ses questions.</T> : null}
+          {revisions.data && !revisions.data.some((r) => r.status === "ready") ? <T v="small">Prends d'abord une leçon en photo : le défi se fait sur ses questions.</T> : null}
         </ScrollView>
       </BottomSheet>
 
@@ -298,7 +298,7 @@ export default function FriendsTab() {
           ))}
         </View>
         {!asParent ? (
-          <Button icon="flash" label="Défi quiz sur un de mes cours" onPress={() => { setDuelFor(picked); setPicked(null); }} />
+          <Button icon="flash" label="Défi quiz sur une de mes leçons" onPress={() => { setDuelFor(picked); setPicked(null); }} />
         ) : null}
         <Button tone="sun" icon="trophy" label="Lancer un défi pour la semaine" loading={challenge.isPending} onPress={() => picked && challenge.mutate(picked.id)} />
         {picked?.friendshipId ? <Button tone="ghost" icon="person-remove" label="Retirer de mes amis" onPress={() => unfriend.mutate(picked.friendshipId!)} /> : null}
@@ -337,7 +337,7 @@ function DuelsCard({ duels, lid, canPlay }: { duels: Duel[]; lid: string; canPla
             </T>
             <T v="small">
               {d.status === "open"
-                ? `Toi : ${d.myScore}/${d.total} · en attente ${de(d.friend.name)}`
+                ? `Tu as fini · en attente ${de(d.friend.name)}`
                 : d.status === "expired"
                   ? "Terminé sans gagnant"
                   : `Fini tous les deux · +10 pièces${d.result === "progress" ? " · +10 pour ton progrès" : ""}`}

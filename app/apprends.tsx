@@ -32,7 +32,7 @@ export default function TeachScreen() {
       {list.data && list.data.quizzes.length === 0 ? (
         <Card style={{ gap: space.sm }}>
           <T v="h3">Deviens le prof !</T>
-          <T v="body">Ouvre une de tes révisions et touche « Apprends-le à papa/maman » : Cervelle envoie 5 questions à tes parents. Toi, tu gagnes {list.data.stars} étoiles quand ils ont répondu.</T>
+          <T v="body">Ouvre une de tes révisions et touche « Apprends-le à tes parents » : Cervelle envoie 5 questions à tes parents. Toi, tu gagnes {list.data.stars} étoiles quand ils ont répondu.</T>
         </Card>
       ) : null}
       {list.data?.quizzes.map((quiz) => (

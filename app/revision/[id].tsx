@@ -71,7 +71,7 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
         { text: "Voir mes quiz", onPress: () => router.push({ pathname: "/apprends", params: { lid } }) },
         { text: "OK" },
       ]),
-    onError: (e) => Alert.alert("Pas envoyé", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, ton quiz n'est pas parti", errorMessage(e)),
   });
   return (
     <>
@@ -83,12 +83,12 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
           <T v="h3">{r.progress} %</T>
         </View>
         <Step done={r.steps.sheets} label="Fiches de révision" detail={r.steps.sheets ? "Lues" : `${r.sheets.length} fiches à lire`} onPress={() => router.push({ pathname: "/revision/sheets", params: { lid, id: r.id } })} />
-        <Step done={r.steps.quizBest !== null} label="QCM" detail={r.steps.quizBest !== null ? `Fait · ${toReviewLabel}` : "10 questions rapides"} onPress={() => play("qcm")} />
+        <Step done={r.steps.quizBest !== null} label="Quiz" detail={r.steps.quizBest !== null ? `Fait · ${toReviewLabel}` : "10 questions rapides"} onPress={() => play("qcm")} />
         <Step done={r.steps.examBest !== null} label="Interro" detail={r.steps.examBest !== null ? `Faite · ${toReviewLabel}` : "15 questions de tous types"} onPress={() => play("interro")} />
-        <Button tone="white" small icon="albums" label="Cartes mémoire" onPress={() => play("cartes")} style={{ marginTop: space.sm }} />
+        <Button tone="white" small icon="albums" label="Fiches-questions" onPress={() => play("cartes")} style={{ marginTop: space.sm }} />
         <Button tone="white" small icon="flash" label="Révision express · 6 questions" onPress={() => play("express")} />
         <Button tone="white" small icon="people" label="Réviser à deux" onPress={() => router.push({ pathname: "/duo/[id]", params: { id: r.id, lid } })} />
-        <Button tone="white" small icon="school" label="Apprends-le à papa/maman" loading={teach.isPending} onPress={() => teach.mutate()} />
+        <Button tone="white" small icon="school" label="Apprends-le à tes parents" loading={teach.isPending} onPress={() => teach.mutate()} />
       </Card>
 
       {r.boss ? <BossCard r={r} lid={lid} /> : null}
@@ -160,7 +160,7 @@ export default function RevisionScreen() {
   const [tab, setTab] = useState<"progress" | "sheets">("progress");
   const [menu, setMenu] = useState(false);
 
-  const retry = useMutation({ mutationFn: () => api.post(`${learnerPath(lid)}/revisions/${id}/retry`), onSuccess: () => { revision.refetch(); refresh(); }, onError: (e) => Alert.alert("Préparation non relancée", errorMessage(e)) });
+  const retry = useMutation({ mutationFn: () => api.post(`${learnerPath(lid)}/revisions/${id}/retry`), onSuccess: () => { revision.refetch(); refresh(); }, onError: (e) => Alert.alert("Oups, la préparation n'a pas redémarré", errorMessage(e)) });
   const remove = useMutation({ mutationFn: () => api.delete(`${learnerPath(lid)}/revisions/${id}`), onSuccess: () => { refresh(); router.back(); } });
   const setDate = useMutation({ mutationFn: (examDate: string | null) => api.patch(`${learnerPath(lid)}/revisions/${id}`, { examDate }), onSuccess: () => { revision.refetch(); refresh(); } });
 
@@ -258,7 +258,7 @@ export default function RevisionScreen() {
 
       <BottomSheet open={menu} onClose={() => setMenu(false)} title="Options">
         <DateField label="Date de l'interro" value={r?.examDate ?? null} onChange={(d) => setDate.mutate(d)} />
-        {r?.status === "ready" ? <Button tone="white" icon="camera" label="Ajouter des pages au cours" onPress={() => { setMenu(false); router.push({ pathname: "/revision/pages", params: { lid, id } }); }} /> : null}
+        {r?.status === "ready" ? <Button tone="white" icon="camera" label="Ajouter des pages à la leçon" onPress={() => { setMenu(false); router.push({ pathname: "/revision/pages", params: { lid, id } }); }} /> : null}
         <Button tone="white" icon="document-text" label="Envoyer l'interro corrigée" onPress={() => { setMenu(false); router.push({ pathname: "/exam/new", params: { lid, revisionId: id } }); }} />
         <Button
           tone="danger"

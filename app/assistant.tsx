@@ -72,7 +72,7 @@ export default function Assistant() {
           <View style={{ flexDirection: "row", gap: space.md, alignItems: "center" }}>
             <Mascot size={70} accessories={["lunettes"]} />
             <T v="body" style={{ flex: 1 }}>
-              {revision.data?.title ? `Pose-moi tes questions sur « ${revision.data.title} ».` : "Pose-moi une question sur tes cours, je t'explique pas à pas."}
+              {revision.data?.title ? `Pose-moi tes questions sur « ${revision.data.title} ».` : "Pose-moi une question sur tes leçons, je t'explique pas à pas."}
             </T>
           </View>
           {turns.length === 0 ? (

@@ -44,8 +44,8 @@ export const LEVEL_LABEL: Record<string, string> = {
 
 export const MODE_LABEL: Record<string, string> = {
   fiches: "Fiches",
-  qcm: "QCM",
-  cartes: "Cartes mémoire",
+  qcm: "Quiz",
+  cartes: "Fiches-questions",
   interro: "Interro",
   a_revoir: "À revoir",
   express: "Révision express",

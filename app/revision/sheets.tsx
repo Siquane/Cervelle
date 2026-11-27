@@ -36,7 +36,7 @@ export default function Sheets() {
     onSuccess: (r) => {
       refresh();
       router.back();
-      if (r?.session.coins) Alert.alert("Fiches lues !", `+${r.session.coins} pièces. Maintenant, teste-toi avec le QCM.`);
+      if (r?.session.coins) Alert.alert("Fiches lues !", `+${r.session.coins} pièces. Maintenant, teste-toi avec le quiz.`);
     },
     onError: () => router.back(),
   });
@@ -44,7 +44,7 @@ export default function Sheets() {
   const sheets = revision.data?.sheets ?? [];
   const s = sheets[index];
   if (revision.isLoading) return <Loading />;
-  if (!s) return <Page header={<TopBar title="Fiches" />}><T v="body">Pas de fiche pour cette révision. Fais le QCM pour t'entraîner.</T></Page>;
+  if (!s) return <Page header={<TopBar title="Fiches" />}><T v="body">Pas de fiche pour cette révision. Fais le quiz pour t'entraîner.</T></Page>;
   const last = index === sheets.length - 1;
 
   return (

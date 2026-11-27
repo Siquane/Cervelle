@@ -40,7 +40,7 @@ function LearnerCard({ l }: { l: Learner }) {
   const create = useMutation({
     mutationFn: () => api.post<{ code: string; expiresAt: string }>(`/cervelle/learners/${l.id}/code`),
     onSuccess: setCode,
-    onError: (e) => Alert.alert("Code non créé", errorMessage(e)),
+    onError: (e) => Alert.alert("Oups, le code n'est pas créé", errorMessage(e)),
   });
   const tint = learnerColorOf(l.color);
   return (

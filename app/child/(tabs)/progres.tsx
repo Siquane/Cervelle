@@ -50,7 +50,7 @@ function BadgesPreview({ lid }: { lid: string }) {
         <View style={{ flexDirection: "row", alignItems: "center", gap: space.md }}>
           <Medal shape="star" metal="locked" icon="camera" size={60} />
           <T v="body" style={{ flex: 1 }}>
-            Prends un cours en photo pour gagner ton premier badge.
+            Prends une leçon en photo pour gagner ton premier badge.
           </T>
         </View>
       )}

@@ -145,7 +145,7 @@ export default function Quiz() {
           </T>
           <T v="body" style={{ textAlign: "center" }}>
             Tu as travaillé {score.total} question{score.total > 1 ? "s" : ""}.{" "}
-            {great ? "Tu sais tout ce qui était demandé." : `Il te reste ${left} point${left > 1 ? "s" : ""} à revoir : c'est comme ça qu'on apprend.`}
+            {great ? "Tu sais tout ce qui était demandé." : `Il te reste ${left} question${left > 1 ? "s" : ""} à revoir : c'est comme ça qu'on apprend.`}
           </T>
           <T v="small">
             {score.correct} réponse{score.correct > 1 ? "s" : ""} juste{score.correct > 1 ? "s" : ""} sur {score.total}

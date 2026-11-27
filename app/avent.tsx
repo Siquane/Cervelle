@@ -226,7 +226,7 @@ export default function AdventScreen() {
             </View>
             {shown.reward.type === "item" ? (
               <T v="bodyBold" style={{ textAlign: "center" }}>
-                {shown.reward.itemName} pour Cervelle !{shown.fresh ? " Il le porte déjà." : ""}
+                {shown.reward.itemName} pour Cervelle !{shown.fresh ? " Elle le porte déjà." : ""}
               </T>
             ) : shown.reward.type === "stars" ? (
               <T v="bodyBold" style={{ textAlign: "center" }}>

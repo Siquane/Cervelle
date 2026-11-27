@@ -17,7 +17,7 @@ export const DIM_LABEL: Record<Dim, string> = {
 export const QUESTIONS: { text: string; dim: Dim; hard: boolean }[] = [
   { text: "Quand j'ai beaucoup de devoirs, je les remets à plus tard.", dim: "motivation", hard: true },
   { text: "Je sais toujours ce que j'ai à faire pour demain.", dim: "organisation", hard: false },
-  { text: "Je suis vite distrait par mon téléphone ou par le bruit.", dim: "concentration", hard: true },
+  { text: "Mon téléphone ou le bruit me déconcentrent vite.", dim: "concentration", hard: true },
   { text: "J'oublie vite ce que j'ai appris la veille.", dim: "memoire", hard: true },
   { text: "Je relis ma leçon, mais je ne sais pas si je l'ai comprise.", dim: "comprehension", hard: true },
   { text: "J'arrive à travailler 20 minutes sans m'arrêter.", dim: "concentration", hard: false },
@@ -62,7 +62,7 @@ export const METHODS: Method[] = [
   { id: "planning", title: "Le planning de la semaine", family: "S'organiser", how: "Note tes interros et place tes révisions plusieurs jours avant, pas la veille.", dims: ["organisation"], route: "agenda" },
   { id: "routine", title: "La routine du soir", family: "S'organiser", how: "Même heure, même endroit, chaque jour. Au bout de 2 semaines, ça devient facile.", dims: ["motivation", "organisation"], route: "habits" },
   { id: "espacee", title: "La révision espacée", family: "Réviser", how: "Revois une leçon le lendemain, puis 3 jours après, puis une semaine après.", dims: ["memoire"], route: "quiz_revoir" },
-  { id: "cartes", title: "Les cartes mémoire", family: "Apprendre", how: "Une question devant, la réponse derrière. Garde de côté celles que tu rates.", dims: ["memoire"], route: "quiz_cartes" },
+  { id: "cartes", title: "Les fiches-questions", family: "Apprendre", how: "Une question devant, la réponse derrière. Garde de côté celles que tu rates.", dims: ["memoire"], route: "quiz_cartes" },
   { id: "auto_interro", title: "Je m'interroge", family: "Réviser", how: "Ferme ton cahier et réponds à des questions. C'est plus efficace que relire.", dims: ["memoire", "comprehension"], route: "revision" },
   { id: "explique", title: "Explique-le à quelqu'un", family: "Comprendre", how: "Raconte ta leçon avec tes mots, comme à un petit frère. Là où tu bloques, relis.", dims: ["comprehension"], route: "assistant" },
   { id: "fiche", title: "La fiche résumé", family: "Comprendre", how: "Une page par leçon : l'essentiel, les mots clés, un exemple.", dims: ["comprehension", "memoire"], route: "revision" },

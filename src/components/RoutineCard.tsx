@@ -40,7 +40,7 @@ export function RoutineCard({ lid }: { lid: string }) {
     },
     onError: (e, _p, ctx) => {
       if (ctx?.prev) qc.setQueryData(key, ctx.prev);
-      Alert.alert("Pas enregistré", errorMessage(e));
+      Alert.alert("Oups, ce n'est pas enregistré", errorMessage(e));
     },
   });
   const r = q.data?.routines.find((x) => x.kind === kind);

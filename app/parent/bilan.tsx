@@ -72,7 +72,7 @@ export default function Bilan() {
               note={w.minutesBefore || w.minutes ? { text: diff === 0 ? "comme la semaine d'avant" : `${diff > 0 ? "+" : "−"}${duration(Math.abs(diff) * 60)} par rapport à la semaine d'avant`, good: diff >= 0 } : null}
             />
             <Figure value={`${w.activeDays}/7`} label="jours de travail" />
-            <Figure value={w.quizAverage === null ? "—" : `${w.quizAverage} %`} label={`de bonnes réponses (${w.quizzes} quiz)`} />
+            <Figure value={w.quizAverage === null ? "—" : `${w.quizAverage} %`} label={`de réponses justes (${w.quizzes} quiz faits)`} />
             <Figure value={String(w.mastered)} label={w.mastered > 1 ? "notions maîtrisées" : "notion maîtrisée"} />
           </View>
 
@@ -118,7 +118,7 @@ export default function Bilan() {
                       {e.title}
                     </T>
                     <T v="small">
-                      {whenLabel(e.day)} · {e.examBest !== null ? "interro de Cervelle déjà faite" : e.quizBest !== null ? "déjà entraîné en QCM" : "pas encore entraîné"}
+                      {whenLabel(e.day)} · {e.examBest !== null ? "interro de Cervelle déjà faite" : e.quizBest !== null ? "déjà entraîné en quiz" : "pas encore entraîné"}
                     </T>
                   </View>
                   <Ionicons name="chevron-forward" size={20} color={color.muted} />

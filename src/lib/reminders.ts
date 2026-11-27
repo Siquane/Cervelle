@@ -130,8 +130,9 @@ export function planReminders(data: RemindersData, prefs: ReminderPrefs, now: Da
       const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i, h, m, 0, 0);
       const key = dayKey(at);
       if (taken.has(key)) continue;
-      const nudge = dailyNudge(at);
-      out.push({ id: `coucou:${key}`, at, ...nudge, url: "" });
+      // Le dimanche : le journal de fierté de la semaine.
+      if (at.getDay() === 0) out.push({ id: `fierte:${key}`, at, ...PRIDE_NUDGE, url: "/fierte" });
+      else out.push({ id: `coucou:${key}`, at, ...dailyNudge(at), url: "" });
     }
   }
 
@@ -149,6 +150,9 @@ export const NUDGES: { title: string; body: string }[] = [
   { title: "💪 Tu peux le faire", body: "Un petit pas chaque jour, et tu apprends plein de choses." },
 ];
 
+/** Le dimanche : la page de la semaine à envoyer aux parents. */
+export const PRIDE_NUDGE = { title: "\u{1F31F} Ton journal de fierté", body: "C'est dimanche ! Regarde tout ce que tu as appris cette semaine et envoie ta page à tes parents." };
+
 /** Du 1er au 24 décembre : le calendrier de l'Avent. */
 export function adventNudge(day: Date): { title: string; body: string } | null {
   if (day.getMonth() !== 11 || day.getDate() > 24) return null;
@@ -164,7 +168,7 @@ export function dailyNudge(day: Date): { title: string; body: string } {
 }
 
 // Seuls ces écrans peuvent être ouverts depuis une notification.
-const ALLOWED = /^\/(apprends|revision\/[A-Za-z0-9_-]{1,40}|quiz\?mode=(a_revoir|express(&revisionId=[A-Za-z0-9_-]{1,40})?))$/;
+const ALLOWED = /^\/(apprends|fierte|revision\/[A-Za-z0-9_-]{1,40}|quiz\?mode=(a_revoir|express(&revisionId=[A-Za-z0-9_-]{1,40})?))$/;
 
 export function safeRoute(url: unknown): string | null {
   return typeof url === "string" && ALLOWED.test(url) ? url : null;

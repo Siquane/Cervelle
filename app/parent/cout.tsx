@@ -18,6 +18,8 @@ const KIND_LABEL: Record<UsageKind, string> = {
   grading: "Réponses courtes corrigées",
   timetable: "Emplois du temps lus",
   homework: "Aide aux devoirs",
+  dictation: "Dictées",
+  mindmap: "Cartes mentales",
   brevet: "Sujets de Brevet",
 };
 

@@ -462,7 +462,7 @@ export interface Goal {
   wins: number;
 }
 
-export type UsageKind = "revision" | "exam" | "assistant" | "grading" | "timetable" | "homework" | "brevet";
+export type UsageKind = "revision" | "exam" | "assistant" | "grading" | "timetable" | "homework" | "brevet" | "dictation" | "mindmap";
 export interface AiUsageReport {
   month: string;
   /** Dollars. */
@@ -590,4 +590,56 @@ export interface TeachQuizList {
   quizzes: TeachQuiz[];
   unseen: number;
   stars: number;
+}
+
+// ─── Dictée, carte mentale, calcul mental, journal de fierté ─────────────
+
+export interface Dictation {
+  id: string;
+  createdAt: string;
+  words: string[];
+  finished: boolean;
+  toReview: string[];
+  sentences: { index: number; text: string; typed: string | null; missed: string[]; words: number }[];
+}
+
+export interface MindMap {
+  centre: string;
+  branches: { title: string; notionIds: string[]; ideas: string[] }[];
+}
+
+export interface MentalProblem {
+  id: string;
+  prompt: string;
+  answer: number;
+}
+
+export interface MentalState {
+  level: number;
+  label: string;
+  levels: { level: number; label: string }[];
+  tables: number[];
+  /** Best time (seconds) at this level with 9/10 or more, or null. */
+  record: number | null;
+  /** Good runs in a row at this level. */
+  streak: number;
+  /** Good runs needed to level up, or null at the top level. */
+  toLevelUp: number | null;
+  goal: number;
+}
+
+export interface Pride {
+  name: string;
+  week: string;
+  to: string;
+  learned: { day: string; text: string }[];
+  proud: { day: string; text: string }[];
+  notions: string[];
+  activeDays: number;
+  minutes: number;
+  badges: string[];
+  message: string;
+  sent: boolean;
+  sharePath: string | null;
+  seen: boolean;
 }

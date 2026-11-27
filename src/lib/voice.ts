@@ -10,13 +10,13 @@ const listeners = new Set<(key: string | null) => void>();
 const emit = () => listeners.forEach((l) => l(current));
 
 /** Reads `text` aloud; `key` lets a button know it is the one speaking. */
-export function speak(key: string, text: string) {
+export function speak(key: string, text: string, opts: { slow?: boolean } = {}) {
   Speech.stop();
   current = key;
   emit();
   Speech.speak(text, {
     language: "fr-FR",
-    rate: Platform.OS === "ios" ? 0.5 : 0.95,
+    rate: opts.slow ? (Platform.OS === "ios" ? 0.38 : 0.7) : Platform.OS === "ios" ? 0.5 : 0.95,
     onDone: () => {
       if (current === key) current = null;
       emit();

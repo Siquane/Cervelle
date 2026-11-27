@@ -87,6 +87,7 @@ function Progression({ r, lid }: { r: RevisionDetail; lid: string }) {
         <Step done={r.steps.examBest !== null} label="Interro" detail={r.steps.examBest !== null ? `Faite · ${toReviewLabel}` : "15 questions de tous types"} onPress={() => play("interro")} />
         <Button tone="white" small icon="albums" label="Fiches-questions" onPress={() => play("cartes")} style={{ marginTop: space.sm }} />
         <Button tone="white" small icon="flash" label="Révision express · 6 questions" onPress={() => play("express")} />
+        <Button tone="white" small icon="git-network" label="Carte mentale" onPress={() => router.push({ pathname: "/revision/mindmap", params: { lid, revisionId: r.id } })} />
         <Button tone="white" small icon="people" label="Réviser à deux" onPress={() => router.push({ pathname: "/duo/[id]", params: { id: r.id, lid } })} />
         <Button tone="white" small icon="school" label="Apprends-le à tes parents" loading={teach.isPending} onPress={() => teach.mutate()} />
       </Card>

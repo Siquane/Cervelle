@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Pressable, useWindowDimensions, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Svg, { Path } from "react-native-svg";
 import { errorMessage } from "../../src/api/client";
 import { useMindMap } from "../../src/api/hooks";
 import type { MindMap } from "../../src/api/types";
 import { BottomSheet } from "../../src/components/bits";
+import { Mascot } from "../../src/components/mascot/Mascot";
 import { Cascade } from "../../src/components/motion";
 import { SpeakButton } from "../../src/components/VoiceButtons";
 import { Button, Card, ErrorBox, Loading, Page, T, TopBar } from "../../src/components/ui";
@@ -14,62 +14,47 @@ import { useLid } from "../../src/lib/lid";
 import { useStopSpeakingOnLeave } from "../../src/lib/voice";
 import { color, font, learnerColorOf, radius, space } from "../../src/theme/tokens";
 
-// Carte mentale d'une leçon : la leçon au centre, les grandes idées autour.
-// Toucher une branche : ses idées clés, lues à voix haute, et un mini-quiz
-// de 3 questions sur ses notions.
+// Carte mentale d'une leçon, en arbre de haut en bas (lisible sur un
+// téléphone en hauteur, de 3 à 6 branches) : Cervelle tient la leçon en haut,
+// chaque grande idée est une branche de couleur avec ses mots-clés en
+// pastilles. Toucher une branche : ses idées lues à voix haute, et un
+// mini-quiz de 3 questions sur ses notions.
 
 const TINTS = ["ciel", "menthe", "corail", "violet", "soleil", "framboise"];
 type Branch = MindMap["branches"][number];
+const TRUNK = 6;
+const TRUNK_X = 22;
 
-function Diagram({ map, width, done, onPick }: { map: MindMap; width: number; done: (b: Branch) => boolean; onPick: (i: number) => void }) {
-  const n = map.branches.length;
-  const bubble = Math.min(124, width * 0.34);
-  const h = Math.min(580, width * 1.6);
-  const cx = width / 2;
-  const cy = h / 2;
-  const rx = (width - bubble) / 2 - 2;
-  const ry = h / 2 - 40;
-  // Pas de branche juste à gauche ou à droite du centre : elle le toucherait.
-  const flat = Array.from({ length: n }, (_, i) => Math.abs(Math.sin((2 * Math.PI * i) / n - Math.PI / 2)) < 0.3).some(Boolean);
-  const start = -Math.PI / 2 + (flat ? Math.PI / n : 0);
-  const pos = map.branches.map((_, i) => {
-    const a = start + (2 * Math.PI * i) / n;
-    return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
-  });
+function BranchRow({ b, i, last, done, onPress }: { b: Branch; i: number; last: boolean; done: boolean; onPress: () => void }) {
+  const t = learnerColorOf(TINTS[i % TINTS.length]);
   return (
-    <View style={{ width, height: h }}>
-      <Svg width={width} height={h} style={{ position: "absolute" }}>
-        {pos.map((p, i) => (
-          <Path key={i} d={`M ${cx} ${cy} Q ${(cx + p.x) / 2 + (p.y - cy) * 0.15} ${(cy + p.y) / 2 - (p.x - cx) * 0.15} ${p.x} ${p.y}`} stroke={learnerColorOf(TINTS[i % TINTS.length]).main} strokeWidth={5} strokeLinecap="round" fill="none" />
-        ))}
-      </Svg>
-      <View style={{ position: "absolute", left: cx - 58, top: cy - 38, width: 116, minHeight: 76, borderRadius: 38, backgroundColor: color.brandFill, borderBottomWidth: 5, borderColor: color.brandEdge, alignItems: "center", justifyContent: "center", padding: space.sm }}>
-        <T style={{ fontFamily: font.title, fontSize: 17, color: color.white, textAlign: "center" }} numberOfLines={3}>
-          {map.centre}
-        </T>
+    <View style={{ flexDirection: "row" }}>
+      {/* Le tronc et le petit rameau vers la branche. */}
+      <View style={{ width: TRUNK_X + 18 }}>
+        <View style={{ position: "absolute", left: TRUNK_X - TRUNK / 2, top: 0, bottom: last ? undefined : 0, height: last ? 30 : undefined, width: TRUNK, backgroundColor: color.line, borderBottomLeftRadius: last ? TRUNK : 0, borderBottomRightRadius: last ? TRUNK : 0 }} />
+        <View style={{ position: "absolute", left: TRUNK_X, top: 24, width: 18, height: TRUNK, borderRadius: TRUNK / 2, backgroundColor: t.main }} />
       </View>
-      {map.branches.map((b, i) => {
-        const t = learnerColorOf(TINTS[i % TINTS.length]);
-        const p = pos[i];
-        return (
-          <Pressable
-            key={i}
-            accessibilityRole="button"
-            accessibilityLabel={`${b.title}${done(b) ? ", maîtrisé" : ""}`}
-            onPress={() => onPick(i)}
-            style={({ pressed }) => ({ position: "absolute", left: p.x - bubble / 2, top: p.y - 34, width: bubble, minHeight: 68, borderRadius: radius.lg, backgroundColor: t.fill, borderBottomWidth: 5, borderColor: t.edge, alignItems: "center", justifyContent: "center", padding: space.sm, opacity: pressed ? 0.85 : 1 })}
-          >
-            <T style={{ fontFamily: font.textBold, fontSize: 15, color: color.white, textAlign: "center" }} numberOfLines={3}>
-              {b.title}
-            </T>
-            {done(b) ? (
-              <View style={{ position: "absolute", top: -8, right: -8, backgroundColor: color.card, borderRadius: 14 }}>
-                <Ionicons name="checkmark-circle" size={26} color={color.green} />
-              </View>
-            ) : null}
-          </Pressable>
-        );
-      })}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${b.title}${done ? ", maîtrisé" : ""}. ${b.ideas.join(", ")}`}
+        accessibilityHint="Écouter et se tester"
+        onPress={onPress}
+        style={({ pressed }) => ({ flex: 1, gap: space.xs, paddingBottom: space.lg, opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] })}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", alignSelf: "flex-start", gap: space.xs, minHeight: 54, maxWidth: "100%", paddingHorizontal: space.md, paddingVertical: space.sm, borderRadius: radius.lg, backgroundColor: t.fill, borderBottomWidth: 4, borderColor: t.edge }}>
+          <T style={{ fontFamily: font.title, fontSize: 19, color: color.white, flexShrink: 1 }}>{b.title}</T>
+          {done ? <Ionicons name="checkmark-circle" size={24} color={color.white} /> : <Ionicons name="volume-high" size={20} color={color.white} />}
+        </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.xs }}>
+          {b.ideas.map((idea, k) => (
+            <View key={k} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: t.soft, borderWidth: 2, borderColor: t.main }}>
+              <T read style={{ fontFamily: font.textBold, fontSize: 15, color: color.ink }}>
+                {idea}
+              </T>
+            </View>
+          ))}
+        </View>
+      </Pressable>
     </View>
   );
 }
@@ -79,11 +64,11 @@ export default function MindMapScreen() {
   const { revisionId } = useLocalSearchParams<{ revisionId: string }>();
   const { lid } = useLid();
   const q = useMindMap(lid, revisionId ?? "");
-  const { width } = useWindowDimensions();
   const [open, setOpen] = useState<number | null>(null);
   const map = q.data?.map;
   const done = (b: Branch) => b.notionIds.length > 0 && b.notionIds.every((id) => q.data?.mastery[id] === "mastered");
   const branch = map && open !== null ? map.branches[open] : null;
+  const mastered = map ? map.branches.filter(done).length : 0;
 
   return (
     <Page header={<TopBar title="Carte mentale" />}>
@@ -97,22 +82,26 @@ export default function MindMapScreen() {
       ) : null}
       {q.error ? <ErrorBox message={errorMessage(q.error)} onRetry={() => q.refetch()} /> : null}
       {map ? (
-        <>
-          <T v="body">Touche une branche pour voir ses idées et te tester.</T>
-          <Diagram map={map} width={Math.min(width - 40, 520)} done={done} onPick={setOpen} />
+        <View>
+          {/* Cervelle tient la leçon, en haut de l'arbre. */}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
+            <Mascot size={92} mood="happy" accessories={mastered === map.branches.length ? ["couronne_or"] : []} />
+            <View style={{ flex: 1, gap: 4 }}>
+              <View style={{ alignSelf: "flex-start", maxWidth: "100%", paddingHorizontal: space.md, paddingVertical: space.sm, borderRadius: radius.lg, backgroundColor: color.brandFill, borderBottomWidth: 4, borderColor: color.brandEdge }}>
+                <T style={{ fontFamily: font.title, fontSize: 21, color: color.white }}>{map.centre}</T>
+              </View>
+              <T v="small">
+                {mastered ? `${mastered} branche${mastered > 1 ? "s" : ""} sur ${map.branches.length} maîtrisée${mastered > 1 ? "s" : ""}. ` : ""}Touche une branche pour l'écouter et te tester.
+              </T>
+            </View>
+          </View>
+          <View style={{ height: space.sm, marginLeft: TRUNK_X - TRUNK / 2, width: TRUNK, backgroundColor: color.line }} />
           {map.branches.map((b, i) => (
             <Cascade key={i} index={i}>
-              <Card onPress={() => setOpen(i)} style={{ gap: 4, borderLeftWidth: 6, borderLeftColor: learnerColorOf(TINTS[i % TINTS.length]).main }}>
-                <T v="bodyBold">{b.title}</T>
-                {b.ideas.map((idea, k) => (
-                  <T key={k} read v="body">
-                    {"•"} {idea}
-                  </T>
-                ))}
-              </Card>
+              <BranchRow b={b} i={i} last={i === map.branches.length - 1} done={done(b)} onPress={() => setOpen(i)} />
             </Cascade>
           ))}
-        </>
+        </View>
       ) : null}
 
       <BottomSheet open={!!branch} onClose={() => setOpen(null)} title={branch?.title ?? ""}>

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api, errorMessage } from "../../../src/api/client";
-import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos, useAdvent, useAlbumPending } from "../../../src/api/hooks";
+import { keys, learnerPath, useAgenda, useHabits, useHome, useQueryClient, useRefreshLearner, useStars, useGoals, useTodos, useAdvent, useAlbumPending, usePride } from "../../../src/api/hooks";
 import type { Advent, Reward, Todo } from "../../../src/api/types";
 import { Check, Section, celebrate } from "../../../src/components/organize";
 import { EVENT_KIND, itemsForDay, styleOf } from "../../../src/lib/agenda";
@@ -32,6 +32,9 @@ export default function ChildHome() {
   const stars = useStars(lid);
   const goals = useGoals(lid);
   const advent = useAdvent(lid);
+  // Le dimanche : rappel du journal de fierté tant qu'il n'est pas envoyé.
+  const sunday = new Date().getDay() === 0;
+  const pride = usePride(sunday ? lid : "");
   const albumPending = useAlbumPending(lid);
   const teachUnseen = useQuery({ queryKey: ["teachUnseen", lid], enabled: !!lid, queryFn: () => api.get<{ unseen: number }>(`${learnerPath(lid)}/teach`).then((r) => r.unseen) });
   const home = useHome(lid);
@@ -161,6 +164,9 @@ export default function ChildHome() {
         ) : null}
         {albumPending.data ? (
           <Button tone="sun" icon="albums" label={`${albumPending.data} nouvelle${albumPending.data > 1 ? "s" : ""} carte${albumPending.data > 1 ? "s" : ""} pour ton album ! 🎁`} onPress={() => router.push({ pathname: "/album", params: { lid } })} />
+        ) : null}
+        {sunday && pride.data && !pride.data.pride.sent ? (
+          <Button tone="sun" icon="star" label="C'est dimanche : prépare ton journal de fierté !" onPress={() => router.push({ pathname: "/fierte", params: { lid } })} />
         ) : null}
         {advent.data ? <AdventCard a={advent.data} onPress={() => router.push({ pathname: "/avent", params: { lid } })} /> : null}
 
@@ -380,6 +386,9 @@ export default function ChildHome() {
         <Button tone="white" icon="map" label="Ma carte au trésor" onPress={() => router.push({ pathname: "/carte", params: { lid } })} />
         <Button tone="white" icon="school" label="Mon programme de l'année" onPress={() => router.push({ pathname: "/programme", params: { lid } })} />
         <Button tone="white" icon="bulb" label="Aide aux devoirs" onPress={() => router.push({ pathname: "/devoirs", params: { lid } })} />
+        <Button tone="white" icon="create" label="Dictée" onPress={() => router.push({ pathname: "/dictee", params: { lid } })} />
+        <Button tone="white" icon="calculator" label="Calcul mental" onPress={() => router.push({ pathname: "/calcul", params: { lid } })} />
+        <Button tone="white" icon="star" label="Mon journal de fierté" onPress={() => router.push({ pathname: "/fierte", params: { lid } })} />
         {/^(3|troisi)/i.test(learner.grade.trim()) ? <Button tone="white" icon="ribbon" label="Mode Brevet" onPress={() => router.push({ pathname: "/brevet", params: { lid } })} /> : null}
         <Button tone="white" icon="document-text" label="Mes interros corrigées" onPress={() => router.push({ pathname: "/exam", params: { lid } })} />
       </ScrollView>

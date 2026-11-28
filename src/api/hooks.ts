@@ -2,7 +2,7 @@ import { focusManager, QueryClient, useMutation, useQuery, useQueryClient } from
 import { AppState, Platform } from "react-native";
 import { api } from "./client";
 import { withOffline } from "../lib/offline";
-import type { Advent, AiUsageReport, Album, TreasureMap, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
+import type { Dictation, MindMap, MentalProblem, MentalState, Pride, Mastery, Advent, AiUsageReport, Album, TreasureMap, Agenda, Badges, Goal, StarPath, Duel, Device, ExamReview, FriendRequest, Friends, Habit, Home, JournalEntry, Learner, Overview, Programme, RevisionCard, RevisionDetail, Shop, Stats, Todo, WeeklyReport, Homework, BrevetHome, BrevetSujet } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 15_000 } },
@@ -158,3 +158,19 @@ export const useBrevetSujet = (lid: string, id: string) =>
     refetchInterval: (q) => (q.state.data?.status === "processing" ? 3000 : false),
   });
 export { useMutation, useQueryClient };
+
+// ─── Dictée, carte mentale, calcul mental, journal de fierté ─────────────
+export const useDictations = (lid: string) =>
+  useQuery({ queryKey: ["dictations", lid], enabled: !!lid, queryFn: () => api.get<{ dictations: Dictation[]; stars: number }>(`${L(lid)}/dictations`) });
+export const useMindMap = (lid: string, revisionId: string) =>
+  useQuery({
+    queryKey: ["mindmap", lid, revisionId],
+    enabled: !!lid && !!revisionId,
+    retry: false,
+    staleTime: Infinity,
+    queryFn: () => api.get<{ map: MindMap; mastery: Record<string, Mastery> }>(`${L(lid)}/revisions/${revisionId}/mindmap`),
+  });
+export const useMental = (lid: string) =>
+  useQuery({ queryKey: ["mental", lid], enabled: !!lid, gcTime: 0, queryFn: () => api.get<MentalState & { problems: MentalProblem[]; stars: number }>(`${L(lid)}/mental`) });
+export const usePride = (lid: string, week?: string) =>
+  useQuery({ queryKey: ["pride", lid, week ?? ""], enabled: !!lid, queryFn: () => api.get<{ pride: Pride; stars: number }>(`${L(lid)}/pride${week ? `?week=${week}` : ""}`) });

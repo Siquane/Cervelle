@@ -42,13 +42,13 @@ function Feedback({ r, mode }: { r: AnswerResult; mode: string }) {
 
 export default function Quiz() {
   useStopSpeakingOnLeave();
-  const { mode = "qcm", revisionId } = useLocalSearchParams<{ mode?: QuizMode; revisionId?: string }>();
+  const { mode = "qcm", revisionId, notionIds } = useLocalSearchParams<{ mode?: QuizMode; revisionId?: string; notionIds?: string }>();
   const { lid } = useLid();
   const refresh = useRefreshLearner(lid);
   const quiz = useQuery({
-    queryKey: ["quiz", lid, revisionId ?? "", mode],
+    queryKey: ["quiz", lid, revisionId ?? "", mode, notionIds ?? ""],
     queryFn: () => {
-      const get = () => api.get<{ questions: Question[] }>(`${learnerPath(lid)}/quiz?mode=${mode}${revisionId ? `&revisionId=${revisionId}` : ""}`).then((r) => r.questions);
+      const get = () => api.get<{ questions: Question[] }>(`${learnerPath(lid)}/quiz?mode=${mode}${revisionId ? `&revisionId=${revisionId}` : ""}${notionIds ? `&notionIds=${notionIds}` : ""}`).then((r) => r.questions);
       // Memory cards of a revision also work offline (kept by the home screen).
       return mode === "cartes" && revisionId ? withOffline(cardsKey(lid, revisionId), get) : get();
     },

@@ -237,6 +237,8 @@ export default function ParentHome() {
                 <Button tone="white" icon="checkbox" label="Tâches" onPress={() => router.push({ pathname: "/todos", params: { lid: selected.id } })} />
                 <Button tone="white" icon="repeat" label="Habitudes" onPress={() => router.push({ pathname: "/habits", params: { lid: selected.id } })} />
                 <Button tone="white" icon="journal" label="Journal de bord" onPress={() => router.push({ pathname: "/journal", params: { lid: selected.id } })} />
+                <Button tone="white" icon="star" label="Journal de fierté de la semaine" onPress={() => router.push({ pathname: "/fierte", params: { lid: selected.id } })} />
+                <Button tone="white" icon="calculator" label="Calcul mental : niveau et tables" onPress={() => router.push({ pathname: "/parent/calcul", params: { lid: selected.id } })} />
                 <Button tone="white" icon="game-controller" label={`Ouvrir l'espace ${de(selected.name)}`} onPress={() => router.push({ pathname: "/child", params: { lid: selected.id } })} />
               </View>
             </>

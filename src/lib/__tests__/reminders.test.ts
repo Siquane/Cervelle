@@ -52,7 +52,9 @@ describe("petit mot du jour", () => {
     const plan = planReminders({ exams: [exam], reviewNow: 0, reviewDue: [] }, { ...DEFAULT_PREFS, review: false }, NOW);
     const days = plan.filter((r) => r.id.startsWith("coucou:")).map((r) => r.id);
     // Pas aujourd'hui (l'appli est ouverte), ni le 17 (J-3), ni le 19 (veille).
-    expect(days).toEqual(["coucou:2026-11-18", "coucou:2026-11-20", "coucou:2026-11-21", "coucou:2026-11-22"]);
+    expect(days).toEqual(["coucou:2026-11-18", "coucou:2026-11-20", "coucou:2026-11-21"]);
+    // Le dimanche 22 : le journal de fierté.
+    expect(plan.find((r) => r.id === "fierte:2026-11-22")).toMatchObject({ url: "/fierte" });
     const first = plan.find((r) => r.id === "coucou:2026-11-18")!;
     expect(first.at).toEqual(new Date(2026, 10, 18, 17, 30));
     expect(first.url).toBe("");
@@ -89,6 +91,7 @@ describe("examName", () => {
 describe("safeRoute", () => {
   it("n'ouvre que les écrans prévus", () => {
     expect(safeRoute("/apprends")).toBe("/apprends");
+    expect(safeRoute("/fierte")).toBe("/fierte");
     expect(safeRoute("/revision/ck123")).toBe("/revision/ck123");
     expect(safeRoute("/quiz?mode=express&revisionId=ck123")).toBe("/quiz?mode=express&revisionId=ck123");
     expect(safeRoute("/quiz?mode=a_revoir")).toBe("/quiz?mode=a_revoir");

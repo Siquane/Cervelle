@@ -175,6 +175,9 @@ Toute nouvelle route se fait **dans le dépôt Passerelle**, pas dans cervelle.
   `docs/programmes/` du dépôt Passerelle. Pour une nouvelle classe, lui
   demander les PDF officiels, vérifier les doublons par empreinte (md5, pas
   par nom), extraire avec `pdftotext -layout`.
+- Compétences (« Ce que tu sauras faire ») : CM2 et 5e, dans
+  `lib/cervelle/competences.ts` (Passerelle), par id de chapitre ; affichées dans
+  « Mon programme » et données à Claude (« Savoir-faire attendus »).
 - Pour ajouter une classe : une entrée dans `PROGRAMMES` + `programmeKey`
   (`lib/cervelle/programme.ts`). Les ids de chapitre ne doivent plus changer.
 
